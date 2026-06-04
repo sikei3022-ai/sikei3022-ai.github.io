@@ -450,6 +450,19 @@
 </div>
 
 <!-- ФРАЗА ДНЯ -->
+<!-- РАЗРЕШЕНИЯ -->
+<div class="modal" id="permModal">
+  <div class="sheet" style="text-align:center">
+    <div style="font-size:42px;margin-bottom:6px" id="permIcon">🎤</div>
+    <h3 id="permTitle" style="margin:0 0 6px">Нужен доступ</h3>
+    <p id="permText" style="color:var(--muted);font-size:14px;line-height:1.55;margin:0"></p>
+    <div class="row" style="margin-top:14px">
+      <button class="btn-sec" id="permClose">Позже</button>
+      <button class="btn-pri" id="permRetry">Разрешить</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal" id="quoteModal">
   <div class="sheet" style="text-align:center">
     <div style="font-size:42px;margin-bottom:4px">💬</div>
@@ -467,6 +480,7 @@
 <div id="ymBar" class="ym-bar" style="display:none">
   <div class="ym-eq"><i></i><i></i><i></i><i></i></div>
   <iframe id="ymIframe" frameborder="0" allow="autoplay"></iframe>
+  <button id="ymOpenExt" class="ym-bar-x" title="Открыть в Яндекс Музыке" aria-label="открыть в Яндекс Музыке">↗</button>
   <button id="ymBarClose" class="ym-bar-x" aria-label="скрыть плеер">✕</button>
 </div>
 
@@ -896,7 +910,7 @@
         <div><div class="t">Si Kei Lab · SECOR Group</div>
         <div class="d">Skride разработан в Si Kei Lab — IT-лаборатории холдинга SECOR Group. <a href="https://sekor.ae/" target="_blank" style="color:var(--orange);font-weight:700;text-decoration:none">sekor.ae →</a></div></div>
       </div>
-      <div class="row2"><span class="ic">🏃</span><div><div class="t">Skride</div><div class="d">GPS-трекер бега с голосовым тренером, пульсовыми зонами и сравнением со 100 легендами. Версия 7.3 — карусель пересобрана на вертикальные фото из проекта (ИИ-тренер, коллажи бег/вело).</div></div></div>
+      <div class="row2"><span class="ic">🏃</span><div><div class="t">Skride</div><div class="d">GPS-трекер бега с голосовым тренером, пульсовыми зонами и сравнением со 100 легендами. Версия 7.4 — при запрете доступа к микрофону/геолокации появляется окно с кнопкой «Разрешить» и шагами; в плеере кнопка ↗ открыть в Яндекс Музыке.</div></div></div>
     </div>
 
     <h3 style="font-size:16px;margin-top:18px">🧪 Тестирование</h3>
@@ -1081,7 +1095,8 @@ function centerOnUser(z, _hi){
     // если точный GPS не успел в помещении — пробуем сетевое определение
     if(_hi && err && (err.code===3 || err.code===2)){ centerOnUser(z, false); return; }
     let m='Не удалось определить место';
-    if(err){ if(err.code===1) m='Доступ к геолокации запрещён. Открой в браузере: замочек слева от адреса → Разрешения → Геолокация → Разрешить'; else if(err.code===2) m='Местоположение недоступно — включи геолокацию (GPS) в шторке телефона'; else if(err.code===3) m='Не успело определиться — нажми «Моё место» ещё раз'; }
+    if(err && err.code===1){ showPerm('geo'); return; }
+    if(err){ if(err.code===2) m='Местоположение недоступно — включи геолокацию (GPS) в шторке телефона'; else if(err.code===3) m='Не успело определиться — нажми «Моё место» ещё раз'; }
     toast(m);
   };
   const opts = _hi ? {enableHighAccuracy:true, timeout:8000, maximumAge:60000}
@@ -2023,6 +2038,7 @@ function ymStop(){ if($('ymIframe'))$('ymIframe').src=''; if($('ymBar'))$('ymBar
 if($('ymLoad')) $('ymLoad').onclick=ymPlay;
 if($('ymStop')) $('ymStop').onclick=ymStop;
 if($('ymBarClose')) $('ymBarClose').onclick=ymStop;
+if($('ymOpenExt')) $('ymOpenExt').onclick=()=>{ const u=_ymExternal||(($('ymLink')&&$('ymLink').value.trim())||'https://music.yandex.ru/'); window.open(u,'_blank'); };
 const YM_LISTS=[
  {n:'⚡ Энергия для бега', u:'music.partners/1169'},
  {n:'🔥 Интенсивная тренировка', u:'music-blog/2398'},
@@ -2031,7 +2047,7 @@ const YM_LISTS=[
  {n:'💪 Музыка для тренировок', u:'blackstarinc2014/1013'},
  {n:'🏋️ Для спортзала', u:'music-partners/1598'}
 ];
-function ymPlayList(u){ ymSet('https://music.yandex.ru/iframe/#playlist/'+u); }
+let _ymExternal=''; function ymPlayList(u){ const pr=u.split('/'); _ymExternal=(pr.length>=2)?('https://music.yandex.ru/users/'+pr[0]+'/playlists/'+pr[1]):'https://music.yandex.ru/'; ymSet('https://music.yandex.ru/iframe/#playlist/'+u); }
 function renderMoods(){ const c=$('ymMoods'); if(!c) return; c.innerHTML=''; YM_LISTS.forEach(m=>{ const b=document.createElement('button'); b.type='button'; b.className='bq-opt'; b.textContent=m.n; b.onclick=()=>ymPlayList(m.u); c.appendChild(b); }); }
 function ymDay(){ const d=new Date(); const doy=Math.floor((d-new Date(d.getFullYear(),0,0))/86400000); return YM_LISTS[doy % YM_LISTS.length]; }
 function setYmBarTop(){ try{ const h=document.querySelector('.apphead'); if(h){ document.documentElement.style.setProperty('--head-h', h.offsetHeight+'px'); } }catch(e){} }
@@ -2624,20 +2640,38 @@ if($('cloudVoiceSel')) $('cloudVoiceSel').onchange=async(e)=>{ unlockAudio(); tt
 
 /* ---- голосовой ввод: говоришь вопрос — тренер отвечает (как с Алисой) ---- */
 const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+let _permKind=null;
+function showPerm(kind){
+  _permKind=kind; const isMic=(kind==='mic');
+  if($('permIcon')) $('permIcon').textContent=isMic?'🎤':'📍';
+  if($('permTitle')) $('permTitle').textContent=isMic?'Доступ к микрофону':'Доступ к геолокации';
+  if($('permText')) $('permText').innerHTML=(isMic?'Чтобы говорить с тренером голосом, разреши доступ к микрофону.':'Чтобы показать тебя на карте, разреши доступ к геолокации.')+'<br><br>Нажми «Разрешить» ниже. Если окно не появилось — доступ заблокирован, открой:<br><b>значок слева от адреса → Настройки сайта → '+(isMic?'Микрофон':'Местоположение')+' → Разрешить</b>, затем вернись и нажми «Разрешить» ещё раз.';
+  if($('permModal')) $('permModal').style.display='flex';
+}
+async function permState(name){ try{ if(navigator.permissions&&navigator.permissions.query){ const r=await navigator.permissions.query({name}); return r.state; } }catch(e){} return 'prompt'; }
 let recog=null, recOn=false;
-function startVoiceAsk(){
+async function startVoiceAsk(){
   if(!SpeechRec){ toast('Голосовой ввод не поддерживается этим браузером'); return; }
+  if(await permState('microphone')==='denied'){ showPerm('mic'); return; }
   if(recOn){ try{recog.stop();}catch(e){} return; }
   try{
     recog=new SpeechRec(); recog.lang='ru-RU'; recog.interimResults=false; recog.maxAlternatives=1;
     recog.onstart=()=>{ recOn=true; const b=$('coachMic'); if(b)b.classList.add('rec'); toast('Слушаю... говори'); };
     recog.onresult=(ev)=>{ const t=ev.results[0][0].transcript; if(t){ coachSendText(t); } };
-    recog.onerror=(ev)=>{ toast(ev.error==='not-allowed'?'Разреши доступ к микрофону':'Не расслышал, попробуй ещё'); };
+    recog.onerror=(ev)=>{ if(ev.error==='not-allowed'||ev.error==='service-not-allowed'){ showPerm('mic'); } else { toast('Не расслышал, попробуй ещё'); } };
     recog.onend=()=>{ recOn=false; const b=$('coachMic'); if(b)b.classList.remove('rec'); };
     recog.start();
   }catch(e){ toast('Не удалось запустить микрофон'); }
 }
 if($('coachMic')) $('coachMic').onclick=()=>{ unlockAudio(); if(convoMode){ stopConvo(); } else { startVoiceAsk(); } };
+if($('permClose')) $('permClose').onclick=()=>{ if($('permModal'))$('permModal').style.display='none'; };
+if($('permRetry')) $('permRetry').onclick=async()=>{
+  if($('permModal'))$('permModal').style.display='none';
+  if(_permKind==='mic'){
+    try{ const st=await navigator.mediaDevices.getUserMedia({audio:true}); st.getTracks().forEach(t=>t.stop()); startVoiceAsk(); }
+    catch(e){ showPerm('mic'); }
+  } else if(_permKind==='geo'){ toast('Определяю местоположение…'); centerOnUser(16, true); }
+};
 
 /* ---- режим разговора (hands-free, как с Алисой): слушает → отвечает → снова слушает ---- */
 let convoMode=false;
