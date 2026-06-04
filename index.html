@@ -57,6 +57,39 @@
   .wavy-ic{width:22px;height:10px;vertical-align:middle;margin-right:4px}
   .bq-opt{padding:8px 13px;border:1px solid var(--line2);background:var(--card);border-radius:20px;font-family:var(--body);font-weight:700;font-size:13px;color:var(--ink2);cursor:pointer}
   .bq-opt.on{background:var(--grad);color:#fff;border-color:transparent;box-shadow:0 3px 10px rgba(20,180,90,.3)}
+  .dev-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:13px 15px;margin-bottom:10px;box-shadow:var(--shadow)}
+  .dev-row{display:flex;align-items:center;gap:13px;margin-bottom:11px}
+  .dev-ic{width:46px;height:46px;flex:none;border-radius:13px;background:linear-gradient(135deg,#eafaf0,#d6f3e0);display:grid;place-items:center;font-size:24px}
+  .dev-info{min-width:0}
+  .dev-n{font-family:var(--num);font-weight:800;font-size:16px;color:var(--ink)}
+  .dev-s{font-size:12px;font-weight:600;color:var(--muted);margin-top:2px}
+  .dev-s.on{color:var(--orange)}
+  .dev-btns{display:flex;gap:8px}
+  .dev-btns .chip{flex:1;justify-content:center}
+  .dev-note{font-size:11.5px;color:var(--muted);line-height:1.5;margin:4px 2px 0}
+  .screen{position:fixed;inset:0;z-index:250;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch;display:none;flex-direction:column}
+  .screen.show{display:flex}
+  .screen-top{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;padding:max(14px,env(safe-area-inset-top)) 16px 14px;z-index:2}
+  .screen-top h2{font-family:var(--num);font-weight:800;font-size:21px;margin:0}
+  .screen-back{background:var(--bg);border:none;width:38px;height:38px;border-radius:50%;font-size:24px;cursor:pointer;color:var(--ink);line-height:1;flex:none}
+  .screen-body{padding:16px 16px 40px}
+  .st-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px}
+  .st-box{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 14px;box-shadow:var(--shadow)}
+  .st-v{font-family:var(--num);font-weight:800;font-size:23px;color:var(--ink);line-height:1.1}
+  .st-v small{font-size:13px;color:var(--muted);font-weight:700}
+  .st-l{font-size:11.5px;font-weight:700;color:var(--muted);margin-top:3px}
+  .st-h{font-family:var(--num);font-weight:800;font-size:16px;margin:18px 2px 9px;color:var(--ink)}
+  .st-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:6px 15px;box-shadow:var(--shadow)}
+  .st-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--line);font-size:13.5px;color:var(--ink2)}
+  .st-row:last-child{border-bottom:none}
+  .st-row b{font-family:var(--num);font-weight:800;color:var(--ink);font-size:15px}
+  .st-rank{background:var(--grad);color:#fff;border-radius:16px;padding:17px 18px;box-shadow:var(--shadow)}
+  .st-rank .big{font-family:var(--num);font-weight:800;font-size:30px}
+  .st-bar{height:11px;border-radius:6px;background:rgba(255,255,255,.28);overflow:hidden;margin:11px 0 7px}
+  .st-bar i{display:block;height:100%;background:#fff;border-radius:6px}
+  .st-note{font-size:11.5px;color:var(--muted);line-height:1.5;margin:8px 2px 0}
+  .st-walk-in{display:flex;gap:8px;margin-top:10px}
+  .st-walk-in input{flex:1;border:1px solid var(--line2);border-radius:10px;padding:11px 12px;font-family:var(--body);font-size:15px;background:var(--bg)}
   .map-toggle .mt-opt{padding:7px 12px;border:1px solid var(--line2);background:var(--card);border-radius:20px;font-family:var(--body);font-weight:700;font-size:12.5px;color:var(--ink2);cursor:pointer}
   .map-toggle .mt-opt.on{background:var(--grad);color:#fff;border-color:transparent;box-shadow:0 3px 10px rgba(20,180,90,.3)}
   .map-fallback{height:300px;display:grid;place-items:center;text-align:center;color:var(--muted);
@@ -229,6 +262,10 @@
   .coach-ava{width:56px;height:56px;flex:none;border-radius:50%}
   .coach-head{font-family:var(--num);font-weight:800;font-size:15px;padding:15px 16px 4px}
   .coach-banner{width:100%;height:150px;object-fit:cover;object-position:center 30%;display:block;border-radius:16px 16px 0 0}
+  .cbike{display:flex;align-items:center;gap:16px;padding:0 24px;background:var(--grad);color:#fff;box-sizing:border-box}
+  .cbike-ic{font-size:64px;line-height:1;filter:drop-shadow(0 6px 16px rgba(0,0,0,.25))}
+  .cbike-tx b{font-family:var(--num);font-weight:800;font-size:22px;display:block;letter-spacing:.5px}
+  .cbike-tx span{font-weight:700;font-size:13px;opacity:.95}
   .coach-tip{padding:9px 16px;font-size:13.5px;font-weight:500;color:var(--ink2);line-height:1.5;border-top:1px solid var(--line);margin-top:8px}
   .coach-tip:first-of-type{border-top:none;margin-top:0;padding-top:4px}
   .coach-tip b{font-weight:800}
@@ -383,12 +420,24 @@
   </div>
 </div>
 
+<!-- STATS SCREEN (отдельная страница) -->
+<div class="screen" id="statsScreen">
+  <div class="screen-top">
+    <button class="screen-back" id="statsBack">‹</button>
+    <h2>Статистика</h2>
+  </div>
+  <div class="screen-body" id="statsBody"></div>
+</div>
+
 <div class="wrap">
 
   <div class="topbar">
     <div class="brand">Skride<span>·</span></div>
     <div class="sp"></div>
     <button id="installBtn"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg>Установить</button>
+    <button class="iconbtn" id="statsBtn" aria-label="статистика" title="Статистика">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>
+    </button>
     <button class="iconbtn" id="settingsBtn" aria-label="настройки">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1A1.6 1.6 0 0 0 8 19.4a1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H2a2 2 0 0 1 0-4h.1A1.6 1.6 0 0 0 3.6 8a1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H8a1.6 1.6 0 0 0 1-1.5V2a2 2 0 0 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V8a1.6 1.6 0 0 0 1.5 1H22a2 2 0 0 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg>
     </button>
@@ -413,6 +462,7 @@
         </div>
         <button class="edit" id="profGoalEdit">Цель</button>
       </div>
+      <button class="lg-btn" id="profStatsBtn" style="margin:14px 0 0">📊 Моя статистика</button>
     </div>
   </div>
 
@@ -500,14 +550,24 @@
 
   <!-- TREADMILL -->
   <div class="sec" id="treadSec">
-    <div class="sec-h"><h2 data-i18n="sec_tread">Беговая дорожка</h2><span style="font-size:11px;font-weight:600;color:var(--muted)">в зале или дома</span></div>
-    <div class="card" style="padding:14px 16px">
-      <div style="font-size:13px;color:var(--ink2);line-height:1.5;margin-bottom:12px">Подключи дорожку по Bluetooth — или сфотографируй её табло после забега, и впиши цифры (авто-распознавание фото добавим позже).</div>
-      <button class="chip" id="treadBt" style="width:100%;justify-content:center;margin-bottom:8px">🔗 Подключить дорожку (Bluetooth)</button>
-      <button class="chip cam" id="treadPhoto" style="width:100%;justify-content:center">📷 Сфотографировать табло</button>
-      <input type="file" id="treadFile" accept="image/*" capture="environment" style="display:none">
-      <div id="treadState" style="font-size:11.5px;color:var(--muted);margin-top:8px;text-align:center"></div>
+    <div class="sec-h"><h2>Устройства</h2><span style="font-size:11px;font-weight:600;color:var(--muted)">дорожка · часы · браслет</span></div>
+    <div class="dev-card">
+      <div class="dev-row"><div class="dev-ic">🏃</div><div class="dev-info"><div class="dev-n">Беговая дорожка</div><div class="dev-s" id="treadState">не подключена · в зале или дома</div></div></div>
+      <div class="dev-btns">
+        <button class="chip" id="treadBt">🔗 Bluetooth</button>
+        <button class="chip cam" id="treadPhoto">📷 Табло</button>
+        <input type="file" id="treadFile" accept="image/*" capture="environment" style="display:none">
+      </div>
     </div>
+    <div class="dev-card">
+      <div class="dev-row"><div class="dev-ic">⌚</div><div class="dev-info"><div class="dev-n">Умные часы</div><div class="dev-s" id="watchState">не подключены</div></div></div>
+      <button class="chip" id="watchBt" style="width:100%;justify-content:center">🔗 Подключить часы (Bluetooth)</button>
+    </div>
+    <div class="dev-card">
+      <div class="dev-row"><div class="dev-ic">📿</div><div class="dev-info"><div class="dev-n">Умный браслет</div><div class="dev-s" id="bandState">не подключён</div></div></div>
+      <button class="chip" id="bandBt" style="width:100%;justify-content:center">🔗 Подключить браслет (Bluetooth)</button>
+    </div>
+    <p class="dev-note">Часы, браслеты и пояса подключаются по стандарту Bluetooth (пульс в реальном времени). Полная синхронизация Garmin / Apple Watch / Mi Band и данные о шагах — в нативной версии. Дорожку без Bluetooth можно сфотографировать и вписать цифры.</p>
   </div>
 
   <!-- PULSE & ZONES -->
@@ -730,7 +790,7 @@
         <div><div class="t">Si Kei Lab · SECOR Group</div>
         <div class="d">Skride разработан в Si Kei Lab — IT-лаборатории холдинга SECOR Group. <a href="https://sekor.ae/" target="_blank" style="color:var(--orange);font-weight:700;text-decoration:none">sekor.ae →</a></div></div>
       </div>
-      <div class="row2"><span class="ic">🏃</span><div><div class="t">Skride</div><div class="d">GPS-трекер бега с голосовым тренером, пульсовыми зонами и сравнением со 100 легендами. Версия 5.3 — фиксы: карта не вылезает поверх окон, снимок с картой, тренер с подсказками.</div></div></div>
+      <div class="row2"><span class="ic">🏃</span><div><div class="t">Skride</div><div class="d">GPS-трекер бега с голосовым тренером, пульсовыми зонами и сравнением со 100 легендами. Версия 5.5 — экран статистики (спорт + ходьба + рейтинг), устройства: часы и браслет.</div></div></div>
     </div>
   </div>
 </div>
@@ -825,7 +885,7 @@
         </div>
         <div class="emoji-pick" id="emojiPick"></div>
       </div>
-      <div class="f full"><label>Пол (для фото тренера)</label>
+      <div class="f full"><label>Пол</label>
         <div class="act-pick" id="sexPick" style="margin:0">
           <button class="act-opt on" data-sex="m" type="button">👨 Мужчина</button>
           <button class="act-opt" data-sex="f" type="button">👩 Женщина</button>
@@ -1065,7 +1125,8 @@ function onHr(ev){
   updateHrTile();
   if(tracking && liveBpm) hrSamples.push(liveBpm);
 }
-async function connectHr(){
+async function connectHr(stateId, label){
+  stateId=stateId||'hrConnState'; label=label||'устройство';
   if(!navigator.bluetooth){ toast('Bluetooth недоступен. Нужен Chrome на Android и доступ по https.'); return; }
   try{
     toast('Поиск устройства...');
@@ -1076,12 +1137,14 @@ async function connectHr(){
     await ch.startNotifications();
     ch.addEventListener('characteristicvaluechanged', onHr);
     hrDevice=dev;
-    dev.addEventListener('gattserverdisconnected', ()=>{ liveBpm=null; updateHrTile(); if($('hrConnState'))$('hrConnState').textContent='отключено'; toast('Пульсометр отключён'); });
-    if($('hrConnState')) $('hrConnState').textContent='подключено: '+(dev.name||'устройство');
-    toast('Пульсометр подключён ❤️');
+    dev.addEventListener('gattserverdisconnected', ()=>{ liveBpm=null; updateHrTile(); const el=$(stateId); if(el){el.textContent='отключено'; el.classList.remove('on');} toast(label+': отключено'); });
+    const el=$(stateId); if(el){ el.textContent='подключено: '+(dev.name||label)+' · пульс идёт'; el.classList.add('on'); }
+    toast(label+' подключено ❤️');
   }catch(e){ toast('Не подключилось (отменено или не поддерживается устройством)'); }
 }
-$('hrConnect').onclick=()=>{ if(!requirePremium()) return; connectHr(); };
+$('hrConnect').onclick=()=>{ if(!requirePremium()) return; connectHr('hrConnState','Датчик пульса'); };
+if($('watchBt')) $('watchBt').onclick=()=>{ if(!requirePremium()) return; connectHr('watchState','Часы'); };
+if($('bandBt')) $('bandBt').onclick=()=>{ if(!requirePremium()) return; connectHr('bandState','Браслет'); };
 
 /* ===== Беговая дорожка ===== */
 $('treadPhoto').onclick=()=>{ $('treadFile').click(); };
@@ -1137,6 +1200,8 @@ function applyActivity(){
   const lh=document.querySelector('#levelSec h2'); if(lh) lh.textContent=bike?'Уровень велосипедиста':'Уровень бегуна';
   const lb=$('legendsBtn'); if(lb) lb.textContent=bike?'🚴 Легенды велоспорта — где ты среди них':'🌍 100 легенд бега — где ты среди них';
   if(typeof render==='function') renderLevelAuto();
+  if(typeof renderCoach==='function') renderCoach();
+  if(typeof renderChips==='function') renderChips();
 }
 document.querySelectorAll('#bikeQuick .bq-opt').forEach(b=>{
   b.onclick=async()=>{ bikeType=b.dataset.bt; await sSet(BIKE_KEY,bikeType); document.querySelectorAll('#bikeQuick .bq-opt').forEach(x=>x.classList.toggle('on',x===b)); if($('bikeTypeSel')) $('bikeTypeSel').value=bikeType; toast('Тип велосипеда: '+bikeType); };
@@ -1787,6 +1852,79 @@ function buildCyclists(){
 /* ---- кнопка «+» ведёт к записи на карте ---- */
 $('addBtn').onclick=()=>$('mapSec').scrollIntoView({behavior:'smooth'});
 
+/* ===== Экран статистики ===== */
+const WALK_KEY='stride:walk';
+let walkData={enabled:false, km:0};
+async function statsOpen(){
+  try{ const w=await sGet(WALK_KEY); if(w){ const p=JSON.parse(w); walkData={enabled:!!p.enabled, km:+p.km||0}; } }catch(e){}
+  statsRender();
+  $('statsScreen').classList.add('show'); $('statsScreen').scrollTop=0;
+}
+function statsClose(){ $('statsScreen').classList.remove('show'); }
+async function saveWalk(){ try{ await sSet(WALK_KEY, JSON.stringify(walkData)); }catch(e){} }
+function rankPct(weekly){ return Math.max(3, Math.min(98, Math.round(100*(1-Math.exp(-weekly/35))))); }
+function statsRender(){
+  const body=$('statsBody'); if(!body) return;
+  const R=runs.filter(r=>(r.type||'run')!=='bike'), B=runs.filter(r=>(r.type||'run')==='bike');
+  const sum=a=>a.reduce((s,r)=>s+r.km,0), sumT=a=>a.reduce((s,r)=>s+r.sec,0);
+  const sportKm=sum(runs), sportSec=sumT(runs);
+  let rBest=null,rLong=0; R.forEach(r=>{ if(r.km>rLong)rLong=r.km; if(r.sec>0){const p=r.sec/r.km; if(rBest===null||p<rBest)rBest=p;} });
+  let bBest=null,bLong=0; B.forEach(r=>{ if(r.km>bLong)bLong=r.km; const v=speedKmh(r.km,r.sec); if(v!==null&&(bBest===null||v>bBest))bBest=v; });
+  const walkKm=walkData.enabled?(+walkData.km||0):0;
+  const totalKm=sportKm+walkKm;
+  const now=Date.now(), cut=now-28*86400000;
+  const recent=runs.filter(r=>new Date(r.date+'T00:00').getTime()>=cut);
+  const weeklyAvg=sum(recent)/4;
+  const pct=rankPct(weeklyAvg);
+  let h='';
+  h+='<div class="st-grid">'+
+    '<div class="st-box"><div class="st-v">'+sportKm.toFixed(1)+'<small> км</small></div><div class="st-l">всего спорт</div></div>'+
+    '<div class="st-box"><div class="st-v">'+runs.length+'</div><div class="st-l">тренировок</div></div>'+
+    '<div class="st-box"><div class="st-v">'+(sportSec?fmtDur(sportSec):'0м')+'</div><div class="st-l">время в движении</div></div>'+
+    '<div class="st-box"><div class="st-v">'+calcStreak()+'</div><div class="st-l">дней подряд</div></div>'+
+  '</div>';
+  h+='<div class="st-h">🏃 Бег</div><div class="st-card">'+
+    '<div class="st-row"><span>Дистанция</span><b>'+sum(R).toFixed(1)+' км</b></div>'+
+    '<div class="st-row"><span>Тренировок</span><b>'+R.length+'</b></div>'+
+    '<div class="st-row"><span>Время</span><b>'+(sumT(R)?fmtDur(sumT(R)):'—')+'</b></div>'+
+    '<div class="st-row"><span>Лучший темп</span><b>'+(rBest?fmtPace(rBest)+' /км':'—')+'</b></div>'+
+    '<div class="st-row"><span>Макс. дистанция</span><b>'+(rLong?rLong.toFixed(1)+' км':'—')+'</b></div>'+
+  '</div>';
+  h+='<div class="st-h">🚴 Велосипед</div><div class="st-card">'+
+    '<div class="st-row"><span>Дистанция</span><b>'+sum(B).toFixed(1)+' км</b></div>'+
+    '<div class="st-row"><span>Заездов</span><b>'+B.length+'</b></div>'+
+    '<div class="st-row"><span>Время</span><b>'+(sumT(B)?fmtDur(sumT(B)):'—')+'</b></div>'+
+    '<div class="st-row"><span>Лучшая скорость</span><b>'+(bBest?bBest.toFixed(1)+' км/ч':'—')+'</b></div>'+
+    '<div class="st-row"><span>Длинный заезд</span><b>'+(bLong?bLong.toFixed(1)+' км':'—')+'</b></div>'+
+  '</div>';
+  h+='<div class="st-h">🚶 Данные с телефона (ходьба)</div><div class="st-card" style="padding:14px 15px">';
+  if(!walkData.enabled){
+    h+='<div style="font-size:13px;color:var(--ink2);line-height:1.5">Учитывать ежедневную ходьбу с телефона в общей активности. Автоматическое чтение шагов появится в нативной версии (Google Fit / Apple Health) — пока можно вписать вручную.</div>'+
+       '<button class="lg-btn" id="walkEnable" style="margin:12px 0 0">Разрешить и включить</button>';
+  } else {
+    h+='<div class="st-row" style="border:none;padding-top:0"><span>Пройдено пешком</span><b>'+walkKm.toFixed(1)+' км</b></div>'+
+       '<div class="st-walk-in"><input type="number" id="walkInput" inputmode="decimal" placeholder="км пешком" value="'+(walkKm||'')+'"><button class="btn-pri" id="walkSave" style="flex:none;width:auto;padding:0 18px">ОК</button></div>'+
+       '<div class="st-note">Авто-синхронизация шагов — в нативной версии. Сейчас значение вводится вручную.</div>';
+  }
+  h+='</div>';
+  h+='<div class="st-h">Σ Суммарная активность</div><div class="st-card">'+
+    '<div class="st-row"><span>Спорт (бег + вело)</span><b>'+sportKm.toFixed(1)+' км</b></div>'+
+    '<div class="st-row"><span>Телефон (ходьба)</span><b>'+walkKm.toFixed(1)+' км</b></div>'+
+    '<div class="st-row"><span>Всего</span><b style="color:var(--orange)">'+totalKm.toFixed(1)+' км</b></div>'+
+  '</div>';
+  h+='<div class="st-h">🏆 Рейтинг среди пользователей</div>'+
+    '<div class="st-rank"><div>Ты активнее <span class="big">~'+pct+'%</span> любителей</div>'+
+    '<div class="st-bar"><i style="width:'+pct+'%"></i></div>'+
+    '<div style="font-size:12px;opacity:.95">Оценка по среднему недельному объёму ('+weeklyAvg.toFixed(1)+' км/нед). Обезличенно.</div></div>'+
+    '<div class="st-note">Это ориентировочная оценка по усреднённым данным любителей. Точный рейтинг среди реальных пользователей Skride появится с аккаунтами и облаком — анонимно.</div>';
+  body.innerHTML=h;
+  if($('walkEnable')) $('walkEnable').onclick=async()=>{ walkData.enabled=true; await saveWalk(); statsRender(); toast('Ходьба с телефона включена'); };
+  if($('walkSave')) $('walkSave').onclick=async()=>{ walkData.km=Math.max(0,parseFloat($('walkInput').value)||0); await saveWalk(); statsRender(); toast('Сохранено ✓'); };
+}
+if($('statsBtn')) $('statsBtn').onclick=statsOpen;
+if($('profStatsBtn')) $('profStatsBtn').onclick=statsOpen;
+if($('statsBack')) $('statsBack').onclick=statsClose;
+
 /* ---- достопримечательности: чек-ин по фото ---- */
 let actLandmarks=[];
 function renderLmThumbs(){
@@ -2027,7 +2165,13 @@ function renderCoach(){
     '<path d="M26.5 39 q5.5 4.5 11 0" fill="none" stroke="#1c1c1e" stroke-width="2" stroke-linecap="round"/></svg>';
 
   const sex=(profile.sex==='f')?'f':'m';
-  const BANNER='<img class="coach-banner" src="'+(sex==='f'?COACH_F:COACH_M)+'" alt="Тренер по бегу">';
+  let BANNER;
+  if(activityType==='bike'){
+    const em = sex==='f'?'🚴‍♀️':'🚴‍♂️';
+    BANNER='<div class="coach-banner cbike"><div class="cbike-ic">'+em+'</div><div class="cbike-tx"><b>ТРЕНЕР ПО ВЕЛОСПОРТУ</b><span>Скорость · Выносливость · Техника</span></div></div>';
+  } else {
+    BANNER='<img class="coach-banner" src="'+(sex==='f'?COACH_F:COACH_M)+'" alt="Тренер по бегу">';
+  }
   if(!voiceCoach){
     c.innerHTML=BANNER+'<div class="coach-intro" style="padding-top:12px">'+
       '<div><div style="font-family:var(--num);font-weight:800;font-size:16px">Привет! Я твой ИИ-тренер</div>'+
@@ -2171,9 +2315,12 @@ function coachSendText(q){
     const ans=coachAnswer(q); setTimeout(()=>{ chatPush('coach',ans); if(voiceCoach) say(ans); },180);
   }
 }
-const CHAT_CHIPS=['Сколько раз в неделю бегать?','Как мой прогресс?','Болит колено','Какой у меня пульс?','Что есть перед бегом?','Как бегать правильно?','Совет по велосипеду'];
+const CHAT_CHIPS_RUN=['Сколько раз в неделю бегать?','Как мой прогресс?','Болит колено','Какой у меня пульс?','Что есть перед бегом?','Как бегать правильно?'];
+const CHAT_CHIPS_BIKE=['Какой каденс держать?','Как заезжать в гору?','Какое давление в шинах?','Как мой прогресс?','Что есть перед заездом?','Как тормозить на спуске?'];
+function chatChips(){ return activityType==='bike'?CHAT_CHIPS_BIKE:CHAT_CHIPS_RUN; }
+function renderChips(){ const c=$('coachChips'); if(!c) return; c.innerHTML=''; chatChips().forEach(t=>{ const b=document.createElement('button'); b.type='button'; b.textContent=t; b.onclick=()=>coachSendText(t); c.appendChild(b); }); }
 function initChat(){
-  const c=$('coachChips'); if(c){ c.innerHTML=''; CHAT_CHIPS.forEach(t=>{ const b=document.createElement('button'); b.type='button'; b.textContent=t; b.onclick=()=>coachSendText(t); c.appendChild(b); }); }
+  renderChips();
   if(chatMsgs.length) renderChat(); else chatPush('coach',greetText(),false);
 }
 if($('coachSend')) $('coachSend').onclick=()=>{ unlockAudio(); coachSendText($('coachQ').value); };
