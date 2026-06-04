@@ -28,11 +28,12 @@
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;padding:0}
   body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;    -webkit-font-smoothing:antialiased;padding-bottom:env(safe-area-inset-bottom)}
-  .wrap{max-width:540px;margin:0 auto;padding:var(--head-h,62px) 0 78px}
+  .wrap{max-width:540px;margin:0 auto;padding:0 0 78px}
+    body.has-player{padding-top:calc(120px + env(safe-area-inset-top))}
   svg{stroke-linecap:round;stroke-linejoin:round}
 
   /* top bar */
-  .apphead{position:fixed;top:0;left:0;right:0;margin:0 auto;max-width:540px;z-index:60;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.06)}
+  .apphead{position:relative;background:#fff}
   .topbar{background:#fff;border-bottom:1px solid var(--line);
     display:flex;align-items:center;gap:10px;padding:12px 16px;padding-top:max(12px,env(safe-area-inset-top))}
   .brand{font-family:var(--num);font-weight:800;font-size:32px;letter-spacing:1.5px;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;text-transform:uppercase}
@@ -96,7 +97,7 @@
   .qb-row{display:flex;justify-content:space-between;align-items:center;margin-top:10px;gap:10px}
   .qb-auth{font-size:12.5px;color:var(--orange);font-weight:700}
   .qb-spk{background:var(--bg);border:1px solid var(--line);color:var(--ink);width:34px;height:34px;border-radius:50%;font-size:15px;cursor:pointer;flex:none}
-  .ym-bar{margin:0 8px 8px;display:flex;align-items:center;gap:9px;background:linear-gradient(135deg,#0e9c55,#16b86a);padding:9px 11px;border-radius:18px;box-shadow:0 6px 18px rgba(14,156,85,.32)}
+  .ym-bar{position:fixed;top:0;left:0;right:0;margin:0 auto;max-width:540px;z-index:1000;display:flex;align-items:center;gap:9px;background:linear-gradient(135deg,#0e9c55,#16b86a);padding:calc(10px + env(safe-area-inset-top)) 11px 10px;border-radius:0 0 20px 20px;box-shadow:0 8px 24px rgba(14,156,85,.45)}
     
   .ym-bar iframe{flex:1;border:none;height:90px;border-radius:14px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.12)}
   .ym-bar-x{flex:none;width:30px;height:30px;border:none;border-radius:50%;background:rgba(255,255,255,.22);color:#fff;font-size:14px;cursor:pointer;transition:.15s}
@@ -465,6 +466,12 @@
   </div>
 </div>
 
+<div id="ymBar" class="ym-bar" style="display:none">
+  <div class="ym-eq"><i></i><i></i><i></i><i></i></div>
+  <iframe id="ymIframe" frameborder="0" allow="autoplay"></iframe>
+  <button id="ymBarClose" class="ym-bar-x" aria-label="скрыть плеер">✕</button>
+</div>
+
 <div class="wrap">
 
   <div class="apphead">
@@ -480,11 +487,6 @@
     </button>
   </div>
 
-  <div id="ymBar" class="ym-bar" style="display:none">
-    <div class="ym-eq"><i></i><i></i><i></i><i></i></div>
-    <iframe id="ymIframe" frameborder="0" allow="autoplay"></iframe>
-    <button id="ymBarClose" class="ym-bar-x" aria-label="скрыть плеер">✕</button>
-  </div>
   </div>
 
   <!-- PROFILE -->
@@ -896,7 +898,7 @@
         <div><div class="t">Si Kei Lab · SECOR Group</div>
         <div class="d">Skride разработан в Si Kei Lab — IT-лаборатории холдинга SECOR Group. <a href="https://sekor.ae/" target="_blank" style="color:var(--orange);font-weight:700;text-decoration:none">sekor.ae →</a></div></div>
       </div>
-      <div class="row2"><span class="ic">🏃</span><div><div class="t">Skride</div><div class="d">GPS-трекер бега с голосовым тренером, пульсовыми зонами и сравнением со 100 легендами. Версия 6.9 — шапка с плеером жёстко закреплена сверху (fixed) и никогда не уезжает; плеер в современном скруглённом дизайне.</div></div></div>
+      <div class="row2"><span class="ic">🏃</span><div><div class="t">Skride</div><div class="d">GPS-трекер бега с голосовым тренером, пульсовыми зонами и сравнением со 100 легендами. Версия 7.1 — плеер вынесен в отдельную закреплённую полосу в самом верху экрана (top:0), постоянно виден.</div></div></div>
     </div>
 
     <h3 style="font-size:16px;margin-top:18px">🧪 Тестирование</h3>
@@ -1074,17 +1076,19 @@ function loadYmaps(key){
   });
 }
 function mapFail(msg){ $('map').className='map-fallback'; $('map').innerHTML=msg||'Карта не загрузилась — проверь интернет. Геопозиция и ручной ввод работают и без карты.'; }
-function centerOnUser(z){
+function centerOnUser(z, _hi){
   if(!navigator.geolocation){ toast('Геолокация не поддерживается этим браузером'); return; }
-  navigator.geolocation.getCurrentPosition(
-    p=>{ const c=[p.coords.latitude,p.coords.longitude]; mapSetView(c,z||14); setMyMarker(c,'Вы здесь'); },
-    err=>{
-      let m='Не удалось определить место';
-      if(err){ if(err.code===1) m='Доступ к геолокации запрещён — разреши в настройках браузера/телефона'; else if(err.code===2) m='Местоположение недоступно — включи GPS/геолокацию'; else if(err.code===3) m='Геолокация не успела ответить, попробуй ещё раз'; }
-      toast(m);
-    },
-    {enableHighAccuracy:true, timeout:12000, maximumAge:60000}
-  );
+  const ok=p=>{ const c=[p.coords.latitude,p.coords.longitude]; mapSetView(c,z||15); setMyMarker(c,'Вы здесь'); };
+  const fail=err=>{
+    // если точный GPS не успел в помещении — пробуем сетевое определение
+    if(_hi && err && (err.code===3 || err.code===2)){ centerOnUser(z, false); return; }
+    let m='Не удалось определить место';
+    if(err){ if(err.code===1) m='Доступ к геолокации запрещён. Открой в браузере: замочек слева от адреса → Разрешения → Геолокация → Разрешить'; else if(err.code===2) m='Местоположение недоступно — включи геолокацию (GPS) в шторке телефона'; else if(err.code===3) m='Не успело определиться — нажми «Моё место» ещё раз'; }
+    toast(m);
+  };
+  const opts = _hi ? {enableHighAccuracy:true, timeout:8000, maximumAge:60000}
+                   : {enableHighAccuracy:false, timeout:12000, maximumAge:300000};
+  navigator.geolocation.getCurrentPosition(ok, fail, opts);
 }
 function initOSM(){
   try{
@@ -1093,7 +1097,7 @@ function initOSM(){
     lmap=L.map('map',{zoomControl:true}).setView([55.751,37.618],12);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(lmap);
     try{ lmap.attributionControl.setPrefix(false); }catch(e){}
-    const LocateCtl=L.Control.extend({ onAdd:function(){ const b=L.DomUtil.create('button','lf-locate'); b.type='button'; b.innerHTML='📍'; b.title='Моё место'; L.DomEvent.disableClickPropagation(b); L.DomEvent.on(b,'click',function(ev){ L.DomEvent.stop(ev); toast('Определяю местоположение...'); centerOnUser(16); }); return b; } });
+    const LocateCtl=L.Control.extend({ onAdd:function(){ const b=L.DomUtil.create('button','lf-locate'); b.type='button'; b.innerHTML='📍'; b.title='Моё место'; L.DomEvent.disableClickPropagation(b); L.DomEvent.on(b,'click',function(ev){ L.DomEvent.stop(ev); toast('Определяю местоположение…'); centerOnUser(16, true); }); return b; } });
     new LocateCtl({position:'topright'}).addTo(lmap);
     setTimeout(()=>{ try{lmap.invalidateSize();}catch(e){} },300);
     lmap.on('click', e=>{ if(appMode==='manual'){ mPts.push([e.latlng.lat,e.latlng.lng]); mRedraw(); } });
@@ -1394,13 +1398,9 @@ $('shotBtn').onclick=async()=>{
   mapImg.src=mapUrl;
 };
 $('locBtn').onclick=()=>{
-  if(!navigator.geolocation){toast('Геолокация недоступна на устройстве');return;}
-  toast('Определяю местоположение...');
-  navigator.geolocation.getCurrentPosition(
-    p=>{ const c=[p.coords.latitude,p.coords.longitude]; mapSetView(c,16); setMyMarker(c,'Вы здесь'); toast('Вы здесь'); },
-    err=>{ const m={1:'Доступ к геолокации запрещён. Разреши его для сайта/приложения в настройках.',2:'Местоположение недоступно — включи GPS на телефоне.',3:'GPS долго не отвечает. Попробуй у окна или на улице.'}; toast(m[err.code]||'Не удалось определить место'); },
-    {enableHighAccuracy:true, timeout:15000, maximumAge:0}
-  );
+  if(!navigator.geolocation){ toast('Геолокация недоступна на устройстве'); return; }
+  toast('Определяю местоположение…');
+  centerOnUser(16, true);
 };
 
 /* ---- GPS-трекинг (автозапись) ---- */
