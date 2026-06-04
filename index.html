@@ -1,0 +1,2064 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0fae9e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Skride">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon192.png">
+<title>Skride — Running Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --orange:#0fae9e; --orange-d:#0a8a7e;
+    --grad:linear-gradient(135deg,#1a9bd4 0%,#10b9a6 52%,#3ec98a 100%);
+    --grad-soft:linear-gradient(135deg,#e9f6f5,#eef3fb);
+    --bg:#eef4f5; --card:#ffffff; --ink:#10262b; --ink2:#33484d;
+    --muted:#7d9499; --line:#e4edee; --line2:#d6e4e6;
+    --body:'Barlow',-apple-system,BlinkMacSystemFont,sans-serif;
+    --num:'Barlow Semi Condensed','Barlow',sans-serif;
+    --shadow:0 1px 2px rgba(16,60,70,.05),0 4px 16px rgba(16,90,100,.08);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;
+    -webkit-font-smoothing:antialiased;padding-bottom:env(safe-area-inset-bottom)}
+  .wrap{max-width:540px;margin:0 auto;padding:0 0 78px}
+
+  /* top bar */
+  .topbar{position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid var(--line);
+    display:flex;align-items:center;gap:10px;padding:12px 16px;padding-top:max(12px,env(safe-area-inset-top))}
+  .brand{font-family:var(--num);font-weight:800;font-size:24px;letter-spacing:1px;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;text-transform:uppercase}
+  .brand span{color:var(--ink)}
+  .topbar .sp{flex:1}
+  .iconbtn{width:38px;height:38px;border-radius:50%;border:none;background:#f0f0f3;display:grid;place-items:center;cursor:pointer}
+  .iconbtn svg{width:19px;height:19px;stroke:var(--ink2)}
+  .iconbtn:active{background:#e6e6ea}
+  #installBtn{display:none;background:var(--orange);color:#fff;border:none;border-radius:20px;
+    font-family:var(--body);font-weight:700;font-size:13px;padding:9px 15px;cursor:pointer;align-items:center;gap:6px}
+  #installBtn svg{width:15px;height:15px;stroke:#fff}
+
+  .sec{padding:16px 16px 0}
+  .sec-h{display:flex;align-items:center;justify-content:space-between;margin:0 2px 9px}
+  .sec-h h2{margin:0;font-family:var(--num);font-weight:700;font-size:13px;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted)}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+
+  /* map */
+  #map{height:300px;width:100%;background:#e9eef1}
+  .map-fallback{height:300px;display:grid;place-items:center;text-align:center;color:var(--muted);
+    font-weight:600;padding:24px;line-height:1.5;background:linear-gradient(135deg,#fff,#f1f1f4)}
+  .map-search{display:flex;gap:8px;padding:11px 12px 0}
+  .map-search input{font-family:var(--body);font-size:15px;font-weight:600;background:#f6f6f9;border:1.5px solid #f6f6f9;
+    border-radius:11px;padding:11px 13px;flex:1;outline:none}
+  .map-search input:focus{border-color:var(--orange);background:#fff}
+  .map-search button{background:var(--grad);border:none;border-radius:11px;padding:0 15px;color:#fff;cursor:pointer;display:grid;place-items:center}
+  .map-search button svg{width:18px;height:18px;stroke:#fff}
+  .map-bar{display:flex;align-items:center;gap:8px;padding:11px 12px;border-top:1px solid var(--line);flex-wrap:wrap}
+  .mode-row{display:flex;gap:7px;padding:9px 12px 0}
+  .mode-row .seg{flex:1;display:flex;background:#f0f0f3;border-radius:10px;padding:3px}
+  .mode-row .seg button{flex:1;border:none;background:none;border-radius:8px;padding:8px;font-family:var(--body);
+    font-weight:700;font-size:12.5px;color:var(--muted);cursor:pointer}
+  .mode-row .seg button.on{background:#fff;color:var(--orange);box-shadow:0 1px 3px rgba(0,0,0,.1)}
+  .chip{font-family:var(--body);font-weight:600;font-size:13px;border:1px solid var(--line2);background:#fff;
+    border-radius:20px;padding:8px 13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;color:var(--ink2)}
+  .chip svg{width:15px;height:15px;stroke:var(--ink2)}
+  .chip:active{background:#f3f3f6}
+  .chip.cam{border-color:var(--orange);color:var(--orange)}
+  .chip.cam svg{stroke:var(--orange)}
+  .map-dist{margin-left:auto;display:flex;align-items:baseline;gap:5px;font-family:var(--num)}
+  .map-dist .n{font-size:24px;font-weight:800;color:var(--orange)}
+  .map-dist .u{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.5px}
+
+  /* profile */
+  .prof{padding:18px 16px;display:flex;align-items:center;gap:15px}
+  .prof .ava{width:64px;height:64px;border-radius:50%;background:var(--orange);color:#fff;display:grid;place-items:center;overflow:hidden;
+    font-family:var(--num);font-weight:800;font-size:28px;flex:none}
+  .ava-img{width:100%;height:100%;object-fit:cover;display:block}
+  .prof .pinfo{flex:1;min-width:0}
+  .prof .pname{font-family:var(--num);font-weight:800;font-size:22px;line-height:1.1}
+  .prof .pcity{color:var(--muted);font-size:13px;font-weight:600;margin-top:3px}
+  .prof .edit{background:#f0f0f3;border:none;border-radius:10px;padding:9px 14px;font-family:var(--body);font-weight:700;font-size:13px;color:var(--ink2);cursor:pointer}
+  .about{padding:16px}
+  .about .row2{display:flex;align-items:flex-start;gap:12px;padding:11px 0;border-top:1px solid var(--line)}
+  .about .row2:first-child{border-top:none;padding-top:0}
+  .about .ic{font-size:20px;flex:none;width:24px;text-align:center}
+  .about .t{font-weight:700;font-size:14px}
+  .about .d{color:var(--muted);font-size:12.5px;font-weight:500;line-height:1.5;margin-top:2px}
+
+  /* form */
+  .form{padding:14px 16px 4px;display:grid;grid-template-columns:1fr 1fr;gap:13px}
+  .f{display:flex;flex-direction:column;gap:6px}
+  .f.full{grid-column:1/-1}
+  label{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.6px;text-transform:uppercase}
+  input,textarea{font-family:var(--body);font-size:16px;font-weight:600;color:var(--ink);
+    background:#f6f6f9;border:1.5px solid #f6f6f9;border-radius:11px;padding:12px 13px;width:100%;outline:none}
+  input:focus,textarea:focus{border-color:var(--orange);background:#fff}
+  textarea{resize:none;min-height:44px;font-weight:500}
+  .time{display:flex;gap:8px}.time input{text-align:center}
+  .pace-row{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;padding:2px 2px 0}
+  .pace-row .lbl{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+  .pace-row b{font-family:var(--num);font-size:18px;font-weight:800;color:var(--orange)}
+  .save{grid-column:1/-1;margin:8px 0 14px;background:var(--grad);color:#fff;border:none;border-radius:13px;
+    font-family:var(--body);font-weight:700;font-size:16px;padding:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+  .save svg{width:18px;height:18px;stroke:#fff}
+  .save:active{background:var(--orange-d)}
+
+  /* weekly */
+  .week{display:grid;grid-template-columns:repeat(3,1fr)}
+  .week .cell{padding:16px 8px;text-align:center;border-right:1px solid var(--line)}
+  .week .cell:last-child{border-right:none}
+  .week .v{font-family:var(--num);font-weight:800;font-size:30px;line-height:1}
+  .week .v small{font-size:14px;font-weight:700;color:var(--muted)}
+  .week .l{font-size:10px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:var(--muted);margin-top:7px}
+
+  /* feed */
+  .feed{display:flex;flex-direction:column;gap:14px}
+  .act{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+  .act-head{display:flex;align-items:center;gap:11px;padding:13px 15px}
+  .avatar{width:40px;height:40px;border-radius:50%;background:var(--orange);color:#fff;display:grid;place-items:center;overflow:hidden;
+    font-family:var(--num);font-weight:800;font-size:16px;flex:none}
+  /* avatar editor */
+  .ava-edit{display:flex;align-items:center;gap:12px}
+  .ava-prev{width:60px;height:60px;border-radius:50%;background:var(--orange);color:#fff;display:grid;place-items:center;overflow:hidden;font-family:var(--num);font-weight:800;font-size:26px;flex:none}
+  .emoji-pick{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;margin-top:10px}
+  .emoji-pick button{font-size:22px;line-height:1;padding:7px 0;border:1px solid var(--line);background:var(--card);border-radius:10px;cursor:pointer}
+  .emoji-pick button.on{border-color:var(--orange);background:rgba(15,174,158,.13)}
+  .act-head .who{font-weight:700;font-size:15px;line-height:1.1}
+  .act-head .when{color:var(--muted);font-size:12.5px;font-weight:600;margin-top:1px}
+  .act-head .menu{margin-left:auto;background:none;border:none;cursor:pointer;color:var(--muted);font-size:20px;padding:4px 8px;line-height:1}
+  .act-title{padding:0 15px 11px;font-family:var(--num);font-weight:700;font-size:19px}
+  .act-stats{display:flex;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .act-stats .s{flex:1;padding:11px 14px;border-right:1px solid var(--line)}
+  .act-stats .s:last-child{border-right:none}
+  .act-stats .sl{font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--muted)}
+  .act-stats .sv{font-family:var(--num);font-weight:800;font-size:21px;margin-top:2px}
+  .act-map{width:100%;height:130px;display:block;background:#eef1f3}
+  .act-note{padding:11px 15px;font-size:14px;font-weight:500;color:var(--ink2)}
+  .empty{padding:40px 20px;text-align:center;color:var(--muted);font-weight:600;line-height:1.5}
+  .empty .big{font-size:40px;margin-bottom:8px}
+
+  /* bottom nav */
+  .nav{position:fixed;left:0;right:0;bottom:0;z-index:60;background:#fff;border-top:1px solid var(--line);
+    display:flex;justify-content:center;align-items:center;padding:8px 0 max(8px,env(safe-area-inset-bottom))}
+  .nav a{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted);text-decoration:none;
+    font-size:10px;font-weight:700;letter-spacing:.4px;background:none;border:none;cursor:pointer;font-family:var(--body)}
+  .nav a svg{width:23px;height:23px;stroke:var(--muted)}
+  .nav a.rec{background:var(--grad);width:52px;height:52px;border-radius:50%;justify-content:center;margin-top:-22px;box-shadow:0 6px 16px rgba(16,150,140,.4)}
+  .nav a.rec svg{width:26px;height:26px;stroke:#fff}
+  .nav a.active{color:var(--orange)} .nav a.active svg{stroke:var(--orange)}
+
+  /* modal */
+  .modal{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.45);display:none;align-items:flex-end;justify-content:center}
+  .modal.show{display:flex}
+  .sheet{background:#fff;width:100%;max-width:540px;border-radius:20px 20px 0 0;padding:22px 20px max(22px,env(safe-area-inset-bottom));animation:up .25s ease}
+  @keyframes up{from{transform:translateY(40px);opacity:.4}to{transform:translateY(0);opacity:1}}
+  .sheet h3{margin:0 0 6px;font-family:var(--num);font-weight:800;font-size:20px}
+  .sheet p{margin:0 0 14px;color:var(--muted);font-size:13.5px;font-weight:500;line-height:1.55}
+  .sheet p a{color:var(--orange);font-weight:700}
+  .sheet .row{display:flex;gap:10px;margin-top:14px}
+  .sheet .row button{flex:1;padding:13px;border-radius:11px;font-family:var(--body);font-weight:700;font-size:15px;cursor:pointer;border:none}
+  .btn-pri{background:var(--grad);color:#fff}.btn-sec{background:#f0f0f3;color:var(--ink2)}
+
+  /* goal ring */
+  .goal{display:flex;align-items:center;gap:16px;padding:16px}
+  .ring-wrap{position:relative;width:78px;height:78px;flex:none}
+  .ring-wrap svg{transform:rotate(-90deg)}
+  .ring-wrap .ctr{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:var(--num)}
+  .ring-wrap .ctr .pc{font-weight:800;font-size:19px;line-height:1;color:var(--ink)}
+  .ring-wrap .ctr .pl{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase}
+  .goal .meta{flex:1}
+  .goal .meta .big{font-family:var(--num);font-weight:800;font-size:22px}
+  .goal .meta .big em{color:var(--orange);font-style:normal}
+  .goal .meta .sub{color:var(--muted);font-size:12.5px;font-weight:600;margin-top:2px}
+  .goal .edit{background:#f0f0f3;border:none;border-radius:9px;padding:8px 12px;font-family:var(--body);font-weight:700;font-size:12px;color:var(--ink2);cursor:pointer}
+
+  /* records */
+  .recs{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line)}
+  .rec{background:#fff;padding:14px 14px;display:flex;align-items:center;gap:11px}
+  .rec .ic{font-size:22px;flex:none}
+  .rec .rv{font-family:var(--num);font-weight:800;font-size:20px;line-height:1}
+  .rec .rl{font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-top:3px}
+
+  /* onboarding intro */
+  .ob{position:fixed;inset:0;z-index:500;background:#fff;display:flex;flex-direction:column}
+  .ob-skip{position:absolute;top:max(14px,env(safe-area-inset-top));right:16px;z-index:2;background:rgba(255,255,255,.25);border:none;color:#fff;font-family:var(--body);font-weight:700;font-size:13px;padding:8px 14px;border-radius:20px;cursor:pointer}
+  .ob-view{flex:1;overflow:hidden}
+  .ob-track{display:flex;height:100%;transition:transform .45s ease}
+  .ob-slide{position:relative;min-width:100%;height:100%;box-sizing:border-box;display:flex;flex-direction:column;justify-content:flex-end;padding:30px 30px 40px;color:#fff;background-color:#0e1116;background-repeat:no-repeat;background-position:center;background-size:cover}
+  .ob-slide::after{content:"";position:absolute;left:0;right:0;bottom:0;height:46%;background:linear-gradient(transparent,rgba(0,0,0,.72));pointer-events:none}
+  .ob-slide.cover::after{display:none}
+  .ob-t,.ob-d{position:relative;z-index:1}
+  .ob-t{font-family:var(--num);font-weight:800;font-size:32px;line-height:1.06;text-shadow:0 2px 14px rgba(0,0,0,.6)}
+  .ob-d{font-size:16px;font-weight:600;opacity:.97;margin-top:14px;line-height:1.5;max-width:440px;text-shadow:0 1px 10px rgba(0,0,0,.7)}
+  .ob-slide.cover .ob-t,.ob-slide.cover .ob-d{display:none}
+  .ob-foot{display:flex;align-items:center;justify-content:space-between;padding:18px 24px max(20px,env(safe-area-inset-bottom));gap:16px}
+  .ob-dots{display:flex;gap:7px}
+  .ob-dots i{width:8px;height:8px;border-radius:50%;background:var(--line2);transition:.2s;cursor:pointer}
+  .ob-dots i.on{background:var(--orange);width:22px;border-radius:4px}
+  .ob-next{background:var(--grad);color:#fff;border:none;border-radius:24px;font-family:var(--body);font-weight:800;font-size:16px;padding:14px 30px;cursor:pointer}
+
+  /* heart-rate zone graph */
+  .hr-head{padding:14px 16px;font-size:12.5px;font-weight:600;color:var(--ink2);line-height:1.5}
+  .hr-head b{font-family:var(--num);font-size:16px;color:var(--orange)}
+  .hr-graph{padding:4px 16px 14px}
+  .hr-bars{display:flex;align-items:flex-end;gap:6px;height:120px}
+  .hr-bar{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+  .hr-bar .col{width:100%;border-radius:8px 8px 0 0;transition:height .4s}
+  .hr-bar .zl{font-family:var(--num);font-weight:800;font-size:13px;margin-top:6px}
+  .hr-bar .rng{font-size:9.5px;font-weight:700;color:var(--muted);margin-top:2px;text-align:center;line-height:1.2}
+  .hr-bar .zn{font-size:8.5px;font-weight:600;color:var(--muted);margin-top:1px;text-align:center;line-height:1.15}
+
+  /* coach */
+  .coach-intro{display:flex;align-items:center;gap:13px;padding:15px 16px 8px}
+  .coach-ava{width:56px;height:56px;flex:none;border-radius:50%}
+  .coach-head{font-family:var(--num);font-weight:800;font-size:15px;padding:15px 16px 4px}
+  .coach-tip{padding:9px 16px;font-size:13.5px;font-weight:500;color:var(--ink2);line-height:1.5;border-top:1px solid var(--line);margin-top:8px}
+  .coach-tip:first-of-type{border-top:none;margin-top:0;padding-top:4px}
+  .coach-tip b{font-weight:800}
+  .coach-note{padding:9px 16px 2px;font-size:10.5px;color:var(--muted);line-height:1.45}
+
+  /* coach chat */
+  .coach-chat{padding:14px 16px}
+  .coach-chat-h{font-family:var(--num);font-weight:800;font-size:18px;margin-bottom:10px}
+  .coach-thread{display:flex;flex-direction:column;gap:8px;max-height:340px;overflow-y:auto;padding:2px}
+  .cb{max-width:84%;padding:10px 13px;border-radius:15px;font-size:14px;line-height:1.45;white-space:pre-wrap;word-wrap:break-word}
+  .cb.coach{align-self:flex-start;background:var(--grad-soft);color:var(--ink);border-bottom-left-radius:5px}
+  .cb.me{align-self:flex-end;background:var(--grad);color:#fff;border-bottom-right-radius:5px}
+  .coach-chips{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0}
+  .coach-chips button{padding:7px 12px;border:1px solid var(--line2);background:var(--card);border-radius:16px;font-family:var(--body);font-weight:600;font-size:12.5px;color:var(--ink2);cursor:pointer}
+  .coach-input{display:flex;gap:8px;align-items:center}
+  .coach-input input{flex:1;padding:12px 14px;border:1px solid var(--line2);border-radius:22px;font-family:var(--body);font-size:14px;background:var(--card);color:var(--ink)}
+  .coach-input button{flex:none;width:44px;height:44px;border-radius:50%;border:none;background:var(--grad);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center}
+  .coach-input button svg{width:20px;height:20px}
+  #coachMic{background:var(--card);border:1px solid var(--line2);color:var(--ink2)}
+  #coachMic.rec{background:#e23b3b;border-color:#e23b3b;color:#fff;animation:micpulse 1s infinite}
+  @keyframes micpulse{0%,100%{box-shadow:0 0 0 0 rgba(226,59,59,.5)}50%{box-shadow:0 0 0 7px rgba(226,59,59,0)}}
+
+  /* premium */
+  .prem-row{display:grid;grid-template-columns:1fr 56px 56px;align-items:center;padding:10px 16px;border-top:1px solid var(--line);font-size:13px}
+  .prem-row:first-child{border-top:none}
+  .prem-row .prem-f{font-weight:600;color:var(--ink2);line-height:1.3}
+  .prem-row .prem-y{text-align:center;color:#2ec06b;font-weight:800}
+  .prem-row .prem-n{text-align:center;color:var(--muted);font-weight:800}
+  .prem-head{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase}
+  .prem-head span{text-align:center}
+
+  /* manual input panel */
+  .manual-panel{margin-top:12px}
+  .mp-tools{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+  .mp-hint{font-size:12px;font-weight:600;color:var(--muted);line-height:1.4}
+  .mp-form{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+  .mp-f{display:flex;flex-direction:column;gap:5px}
+  .mp-f.full{grid-column:1/-1}
+  .mp-f label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.3px}
+  .mp-f input{padding:11px;border:1px solid var(--line2);border-radius:10px;font-size:15px;font-weight:600;font-family:var(--body);background:var(--card);color:var(--ink)}
+  .mp-time{display:flex;gap:6px}
+  .mp-time input{width:100%;text-align:center}
+  /* mode switch rows */
+  .switch{position:relative;display:inline-block;width:50px;height:28px;flex:none}
+  .switch input{opacity:0;width:0;height:0}
+  .switch .sl{position:absolute;inset:0;background:#d0d0d6;border-radius:28px;transition:.2s;cursor:pointer}
+  .switch .sl:before{content:"";position:absolute;width:22px;height:22px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
+  .switch input:checked + .sl{background:var(--orange)}
+  .switch input:checked + .sl:before{transform:translateX(22px)}
+
+  /* runner level */
+  .lvl-top{display:flex;align-items:center;gap:14px;padding:16px}
+  .lvl-emoji{font-size:42px;flex:none;width:54px;text-align:center}
+  .lvl-name{font-family:var(--num);font-weight:800;font-size:22px;line-height:1}
+  .lvl-band{color:var(--muted);font-size:12.5px;font-weight:600;margin-top:3px}
+  .lvl-desc{font-size:13px;font-weight:500;color:var(--ink2);margin-top:5px;line-height:1.4}
+  .lvl-bar{height:8px;background:#f0f0f3;border-radius:6px;overflow:hidden;margin:0 16px}
+  .lvl-bar i{display:block;height:100%;background:var(--orange);border-radius:6px;transition:width .4s}
+  .lvl-next{font-size:11.5px;font-weight:600;color:var(--muted);padding:8px 16px 2px;line-height:1.4}
+  .lvl-cmp{border-top:1px solid var(--line);margin-top:12px;padding:6px 16px 14px}
+  .lvl-pct{text-align:center;font-family:var(--num);font-weight:800;font-size:34px;color:var(--orange);padding:10px 0 2px;line-height:1}
+  .lvl-pct small{display:block;font-family:var(--body);font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.5px;margin-top:4px}
+  .lvl-cmp .r{display:flex;justify-content:space-between;align-items:baseline;padding:6px 0;font-size:13px;font-weight:600;color:var(--ink2)}
+  .lvl-cmp .r b{font-family:var(--num);font-weight:800;color:var(--ink)}
+  .lvl-cmp .r b.hl{color:var(--orange)}
+  .lvl-fun{color:var(--muted);font-size:12px;font-weight:600;border-top:1px solid var(--line);margin-top:6px;padding-top:9px;line-height:1.45}
+  .lvl-list .li{display:flex;align-items:center;gap:12px;padding:11px 6px;border-top:1px solid var(--line)}
+  .lvl-list .li:first-child{border-top:none}
+  .lvl-list .li.cur{background:#fff5f0;border-radius:12px;border-top-color:transparent}
+  .lvl-list .li .e{font-size:24px;width:34px;text-align:center;flex:none}
+  .lvl-list .li .n{font-weight:700;font-size:14px}
+  .lvl-list .li .b{color:var(--muted);font-size:11.5px;font-weight:600;margin-top:1px;line-height:1.35}
+
+  /* legends list */
+  .lg-btn{width:100%;margin-top:12px;background:#fff;border:1px solid var(--line);box-shadow:var(--shadow);border-radius:16px;
+    padding:15px;font-family:var(--body);font-weight:700;font-size:14.5px;color:var(--ink);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+  .lg-btn:active{background:#f6f6f9}
+  .lg{display:flex;align-items:center;gap:11px;padding:8px 6px;border-top:1px solid var(--line)}
+  .lg:first-child{border-top:none}
+  .lg.you{background:#fff5f0;border-radius:12px;border-top-color:transparent}
+  .lg .rk{width:24px;text-align:center;font-family:var(--num);font-weight:800;font-size:13px;color:var(--muted);flex:none}
+  .lg-av{width:38px;height:38px;border-radius:50%;flex:none;display:grid;place-items:center;color:#fff;font-family:var(--num);font-weight:800;font-size:13px;text-transform:uppercase}
+  .lg-i{flex:1;min-width:0}
+  .lg-n{font-weight:700;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .lg-b{color:var(--muted);font-size:11.5px;font-weight:600;margin-top:1px}
+  .lg.you .lg-n{color:var(--orange)}
+
+  /* landmarks */
+  .lm-thumbs{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 8px}
+  .lm-t{position:relative;width:64px}
+  .lm-t img{width:64px;height:64px;object-fit:cover;border-radius:10px;display:block}
+  .lm-t .x{position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:#d63a14;color:#fff;border:none;font-size:13px;line-height:1;cursor:pointer}
+  .lm-t .cap{font-size:9px;font-weight:700;color:var(--ink2);margin-top:3px;line-height:1.15;text-align:center}
+  .act-lm{display:flex;flex-wrap:wrap;gap:8px;padding:0 15px 13px}
+  .act-lm .lm{width:66px}
+  .act-lm .lm img{width:66px;height:66px;object-fit:cover;border-radius:10px;display:block}
+  .act-lm .lm span{display:block;font-size:9.5px;font-weight:700;color:var(--ink2);margin-top:3px;line-height:1.2;text-align:center}
+
+  .toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;
+    font-weight:700;font-size:13.5px;padding:12px 20px;border-radius:30px;opacity:0;pointer-events:none;transition:.3s;z-index:300}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  /* GPS tracking panel */
+  .track-panel{padding:14px 16px;border-top:1px solid var(--line)}
+  .act-pick{display:flex;gap:6px;padding:12px 14px 0}
+  .act-opt{flex:1;padding:11px;border:1px solid var(--line2);background:var(--card);border-radius:11px;font-family:var(--body);font-weight:800;font-size:14px;color:var(--ink2);cursor:pointer;transition:.15s}
+  .act-opt.on{background:var(--grad);color:#fff;border-color:transparent;box-shadow:0 4px 12px rgba(16,150,140,.28)}
+  .track-live{display:none;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border-radius:12px;overflow:hidden;margin-bottom:12px}
+  .track-live.on{display:grid}
+  .tl{background:#fff;padding:14px 8px;text-align:center}
+  .tl .tv{font-family:var(--num);font-weight:800;font-size:26px;line-height:1;color:var(--ink)}
+  .tl .tv.accent{color:var(--orange)}
+  .tl .tu{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:5px}
+  .track-btns{display:flex;gap:10px}
+  .track-btns button{flex:1;border:none;border-radius:13px;font-family:var(--body);font-weight:800;font-size:16px;
+    padding:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+  .track-btns svg{width:18px;height:18px}
+  .btn-start{background:var(--orange);color:#fff}
+  .btn-start svg{stroke:#fff;fill:#fff}
+  .btn-pause{background:#48484a;color:#fff;display:none}
+  .btn-pause.on{display:flex}
+  .btn-stop{background:#d63a14;color:#fff;display:none}
+  .btn-stop.on{display:flex}
+  .btn-start.hide{display:none}
+  .gps-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#2ecc71;margin-right:6px;animation:pulse 1.5s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+  .gps-status{font-size:11px;font-weight:600;color:var(--muted);text-align:center;margin-top:8px;min-height:14px}
+  .track-mode-note{font-size:11px;font-weight:600;color:var(--muted);margin-bottom:10px;text-align:center}
+  .switch input:checked + .slider{background:var(--orange)}
+  .switch .slider::before{content:'';position:absolute;height:22px;width:22px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
+  .switch input:checked + .slider::before{transform:translateX(22px)}
+</style>
+</head>
+<body>
+
+<!-- ONBOARDING (вступительная карусель при первом запуске) -->
+<div id="onboarding" class="ob" style="display:none">
+  <button class="ob-skip" id="obSkip" data-i18n="obskip">Пропустить</button>
+  <div class="ob-view"><div class="ob-track" id="obTrack">
+    <div class="ob-slide" data-img="img/promo-1.jpg" data-grad="linear-gradient(160deg,#1a9bd4,#10b9a6)">
+      <div class="ob-t">Skride</div>
+      <div class="ob-d" data-i18n="ob1_d">Беговой трекер, который делает тебя быстрее: запись по GPS, ИИ-тренер и сравнение с легендами.</div>
+    </div>
+    <div class="ob-slide" data-img="img/promo-2.jpg" data-grad="linear-gradient(160deg,#0e2a33,#15436b)">
+      <div class="ob-t" data-i18n="ob2_t">Беги за лучшими бегунами планеты</div>
+      <div class="ob-d" data-i18n="ob2_d">Сравни свой темп со 100 легендами мирового бега — от Кипчоге до Чепнгетич — и поднимайся в рейтинге.</div>
+    </div>
+    <div class="ob-slide" data-img="img/promo-3.jpg" data-cover="1" data-grad="linear-gradient(160deg,#0d2b45,#15436b)">
+      <div class="ob-t">ИИ-тренер</div>
+      <div class="ob-d">Разбирает твои пробежки и подсказывает голосом, как тренироваться правильно — на основе беговых книг.</div>
+    </div>
+    <div class="ob-slide" data-img="img/promo-4.jpg" data-cover="1" data-grad="linear-gradient(160deg,#16b8a6,#2bbf7e)">
+      <div class="ob-t">Пульс, зоны и карта</div>
+      <div class="ob-d">Тренируйся в правильной пульсовой зоне и следи за маршрутом на карте. Готов начать?</div>
+    </div>
+  </div></div>
+  <div class="ob-foot">
+    <div class="ob-dots" id="obDots"></div>
+    <button class="ob-next" id="obNext">Далее</button>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="brand">Skride<span>·</span></div>
+    <div class="sp"></div>
+    <button id="installBtn"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg>Установить</button>
+    <button class="iconbtn" id="settingsBtn" aria-label="настройки">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1A1.6 1.6 0 0 0 8 19.4a1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H2a2 2 0 0 1 0-4h.1A1.6 1.6 0 0 0 3.6 8a1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H8a1.6 1.6 0 0 0 1-1.5V2a2 2 0 0 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V8a1.6 1.6 0 0 0 1.5 1H22a2 2 0 0 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg>
+    </button>
+  </div>
+
+  <!-- PROFILE -->
+  <div class="sec" id="profSec">
+    <div class="card">
+      <div class="prof">
+        <div class="ava" id="pAva">Я</div>
+        <div class="pinfo">
+          <div class="pname" id="pName">Бегун</div>
+          <div class="pcity" id="pCity">Укажи город в профиле</div>
+        </div>
+        <button class="edit" id="profEdit">Изменить</button>
+      </div>
+      <div class="prof" style="border-top:1px solid var(--line);padding-top:14px">
+        <span class="ic" style="font-size:22px">🎯</span>
+        <div class="pinfo">
+          <div class="pname" style="font-size:18px"><span id="pGoal">20</span> км / неделя</div>
+          <div class="pcity">недельная цель по дистанции</div>
+        </div>
+        <button class="edit" id="profGoalEdit">Цель</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAP -->
+  <div class="sec" id="mapSec">
+    <div class="sec-h"><h2 data-i18n="sec_route">Маршрут</h2><span style="font-size:11px;font-weight:600;color:var(--muted)">автозапись по GPS</span></div>
+    <div class="card">
+      <div class="map-search">
+        <input id="searchInput" type="text" placeholder="Поиск места: улица, парк, город..." autocomplete="off">
+        <button id="searchBtn" aria-label="найти"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></button>
+      </div>
+      <div id="map"></div>
+
+      <div class="act-pick" id="actPick">
+        <button class="act-opt on" data-act="run" type="button">🏃 Бег</button>
+        <button class="act-opt" data-act="bike" type="button">🚴 Велосипед</button>
+      </div>
+
+      <!-- GPS tracking -->
+      <div class="track-panel">
+        <div class="track-mode-note" id="trackModeNote">Автозапись по GPS — нажми «Старт» и беги</div>
+        <button class="chip" id="voiceBtn" style="margin:0 auto 12px;display:inline-flex">🎧 Голос ИИ-тренера: выкл</button>
+        <div class="track-live" id="trackLive">
+          <div class="tl"><div class="tv accent" id="liveDist">0.00</div><div class="tu">км</div></div>
+          <div class="tl"><div class="tv" id="liveTime">0:00</div><div class="tu">время</div></div>
+          <div class="tl"><div class="tv" id="livePace">—</div><div class="tu">темп /км</div></div>
+          <div class="tl"><div class="tv" id="liveHr">—</div><div class="tu">пульс</div></div>
+        </div>
+        <div class="track-btns">
+          <button class="btn-start" id="startBtn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>Старт</button>
+          <button class="btn-pause" id="pauseBtn"><svg viewBox="0 0 24 24" fill="#fff"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>Пауза</button>
+          <button class="btn-stop" id="stopBtn"><svg viewBox="0 0 24 24" fill="#fff"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>Стоп</button>
+        </div>
+        <button class="chip cam" id="lmRunBtn" style="display:none;margin:10px auto 0">📷 Отметить место</button>
+        <div class="lm-thumbs" id="lmThumbs" style="justify-content:center;margin-top:10px"></div>
+        <input type="file" id="lmFile" accept="image/*" capture="environment" style="display:none">
+        <div class="gps-status" id="gpsStatus"></div>
+      </div>
+
+      <!-- ручной ввод (показывается в режиме ручного ввода) -->
+      <div class="manual-panel" id="manualPanel" style="display:none">
+        <div class="mp-tools">
+          <span class="mp-hint">✏️ Тапай по карте — начертится маршрут. Время и дату впиши ниже.</span>
+          <div style="display:flex;gap:8px">
+            <button class="chip" id="mUndo">↩ Точку назад</button>
+            <button class="chip" id="mClear">Очистить</button>
+          </div>
+        </div>
+        <div class="mp-form">
+          <div class="mp-f"><label>Дистанция, км</label><input id="mDist" type="number" inputmode="decimal" step="0.01" placeholder="0.00"></div>
+          <div class="mp-f"><label>Дата</label><input id="mDate" type="date"></div>
+          <div class="mp-f full"><label>Время (Ч : М : С)</label>
+            <div class="mp-time"><input id="mH" type="number" inputmode="numeric" min="0" placeholder="0"><input id="mM" type="number" inputmode="numeric" min="0" max="59" placeholder="00"><input id="mS" type="number" inputmode="numeric" min="0" max="59" placeholder="00"></div>
+          </div>
+          <div class="mp-f full"><label>Название</label><input id="mTitle" type="text" placeholder="Пробежка"></div>
+        </div>
+        <img id="mPhoto" style="display:none;width:100%;border-radius:12px;margin-bottom:10px">
+        <button class="btn-pri" id="mSave" style="width:100%">Сохранить пробежку</button>
+      </div>
+
+      <div class="map-bar" id="mapBar">
+        <button class="chip" id="locBtn"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>Моё место</button>
+        <button class="chip cam" id="shotBtn"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 7h3l2-2h8l2 2h3v12H3z"/><circle cx="12" cy="13" r="3.5"/></svg>Снимок маршрута</button>
+        <span id="mapDist" style="display:none">0.00</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TREADMILL -->
+  <div class="sec" id="treadSec">
+    <div class="sec-h"><h2 data-i18n="sec_tread">Беговая дорожка</h2><span style="font-size:11px;font-weight:600;color:var(--muted)">в зале или дома</span></div>
+    <div class="card" style="padding:14px 16px">
+      <div style="font-size:13px;color:var(--ink2);line-height:1.5;margin-bottom:12px">Подключи дорожку по Bluetooth — или сфотографируй её табло после забега, и впиши цифры (авто-распознавание фото добавим позже).</div>
+      <button class="chip" id="treadBt" style="width:100%;justify-content:center;margin-bottom:8px">🔗 Подключить дорожку (Bluetooth)</button>
+      <button class="chip cam" id="treadPhoto" style="width:100%;justify-content:center">📷 Сфотографировать табло</button>
+      <input type="file" id="treadFile" accept="image/*" capture="environment" style="display:none">
+      <div id="treadState" style="font-size:11.5px;color:var(--muted);margin-top:8px;text-align:center"></div>
+    </div>
+  </div>
+
+  <!-- PULSE & ZONES -->
+  <div class="sec" id="hrSec">
+    <div class="sec-h"><h2 data-i18n="sec_hr">Пульс и зоны</h2><span id="hrEdit" style="font-size:11px;font-weight:700;color:var(--orange);cursor:pointer">макс. пульс ▾</span></div>
+    <div class="card" id="hrCard"></div>
+  </div>
+
+  <!-- WEEKLY -->
+  <div class="sec">
+    <div class="sec-h"><h2 data-i18n="sec_week">Эта неделя</h2><span id="weekRange" style="font-size:11px;font-weight:600;color:var(--muted)"></span></div>
+    <div class="card" style="margin-bottom:14px">
+      <div class="goal">
+        <div class="ring-wrap">
+          <svg width="78" height="78" viewBox="0 0 78 78">
+            <circle cx="39" cy="39" r="33" fill="none" stroke="#f0f0f3" stroke-width="10"/>
+            <circle id="goalArc" cx="39" cy="39" r="33" fill="none" stroke="#0fae9e" stroke-width="10" stroke-linecap="round" stroke-dasharray="207.3" stroke-dashoffset="207.3"/>
+          </svg>
+          <div class="ctr"><div class="pc" id="goalPc">0%</div><div class="pl">цель</div></div>
+        </div>
+        <div class="meta">
+          <div class="big"><em id="wKm2">0</em> / <span id="goalVal">20</span> км</div>
+          <div class="sub" id="goalSub">осталось 20 км до цели недели</div>
+        </div>
+        <button class="edit" id="goalEdit">Цель</button>
+      </div>
+    </div>
+    <div class="card week">
+      <div class="cell"><div class="v" id="wKm">0<small> км</small></div><div class="l">дистанция</div></div>
+      <div class="cell"><div class="v" id="wRuns">0</div><div class="l">пробежки</div></div>
+      <div class="cell"><div class="v" id="wTime">0<small>м</small></div><div class="l">время</div></div>
+    </div>
+  </div>
+
+  <!-- RECORDS -->
+  <div class="sec">
+    <div class="sec-h"><h2 data-i18n="sec_records">Рекорды</h2></div>
+    <div class="card recs">
+      <div class="rec"><span class="ic">🔥</span><div><div class="rv" id="rStreak">0</div><div class="rl">дней подряд</div></div></div>
+      <div class="rec"><span class="ic">🏅</span><div><div class="rv" id="rLong">—</div><div class="rl">макс. дистанция</div></div></div>
+      <div class="rec"><span class="ic">⚡</span><div><div class="rv" id="rPace">—</div><div class="rl">лучший темп</div></div></div>
+      <div class="rec"><span class="ic">📅</span><div><div class="rv" id="rTotal">0</div><div class="rl">всего пробежек</div></div></div>
+    </div>
+  </div>
+
+  <!-- RUNNER LEVEL -->
+  <div class="sec" id="levelSec">
+    <div class="sec-h"><h2 data-i18n="sec_level">Уровень бегуна</h2><span id="levelMore" style="font-size:11px;font-weight:700;color:var(--orange);cursor:pointer">все уровни ▾</span></div>
+    <div class="card" id="levelCard"></div>
+    <button class="lg-btn" id="legendsBtn">🌍 100 легенд бега — где ты среди них</button>
+  </div>
+
+  <!-- AI COACH -->
+  <div class="sec" id="coachSec">
+    <div class="sec-h"><h2 data-i18n="sec_coach">ИИ-тренер</h2><span style="font-size:11px;font-weight:600;color:var(--muted)">анализ твоего бега</span></div>
+    <div class="card" id="coachCard"></div>
+    <div class="card coach-chat" id="coachChat" style="margin-top:12px">
+      <div class="coach-chat-h">💬 Спроси тренера</div>
+      <div class="coach-thread" id="coachThread"></div>
+      <div class="coach-chips" id="coachChips"></div>
+      <div class="coach-input">
+        <input id="coachQ" type="text" placeholder="Тренировки, пульс, травмы, питание, техника..." autocomplete="off">
+        <button id="coachMic" type="button" aria-label="говорить" title="Спросить голосом"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
+        <button id="coachSend" type="button" aria-label="отправить"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 12h15M13 6l6 6-6 6"/></svg></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FEED -->
+  <div class="sec" id="feedSec">
+    <div class="sec-h"><h2 data-i18n="sec_feed">Активности</h2><span id="allTime" style="font-size:11px;font-weight:600;color:var(--muted)"></span></div>
+    <div class="feed" id="feed"></div>
+  </div>
+
+  <!-- footer -->
+  <div class="sec" style="padding-bottom:6px">
+    <div style="text-align:center;color:var(--muted);font-size:11px;font-weight:700;letter-spacing:1px">SI KEI LAB</div>
+  </div>
+</div>
+
+<!-- bottom nav -->
+<div class="nav">
+  <button class="nav-a rec" id="addBtn"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg></button>
+</div>
+
+<!-- settings sheet -->
+<div class="modal" id="setModal">
+  <div class="sheet">
+    <h3 data-i18n="set_title">Настройки</h3>
+
+    <h3 style="font-size:16px;margin-top:8px" data-i18n="set_mode">Режим записи</h3>
+    <div class="prof" style="padding:10px 0;gap:13px">
+      <span class="ic" style="font-size:22px">📍</span>
+      <div class="pinfo">
+        <div class="pname" style="font-size:16px">Автозапись по GPS</div>
+        <div class="pcity">телефон сам пишет маршрут, темп и время</div>
+      </div>
+      <label class="switch"><input type="checkbox" id="gpsToggle" checked><span class="sl"></span></label>
+    </div>
+    <div class="prof" style="padding:10px 0;gap:13px;border-top:1px solid var(--line)">
+      <span class="ic" style="font-size:22px">✏️</span>
+      <div class="pinfo">
+        <div class="pname" style="font-size:16px">Ручной ввод данных</div>
+        <div class="pcity">сам чертишь маршрут и вводишь время, дату, дистанцию</div>
+      </div>
+      <label class="switch"><input type="checkbox" id="manualToggle"><span class="sl"></span></label>
+    </div>
+
+    <h3 style="font-size:16px;margin-top:18px" data-i18n="set_devices">Часы и пульсометр</h3>
+    <div class="prof" style="padding:10px 0;gap:13px">
+      <span class="ic" style="font-size:22px">⌚</span>
+      <div class="pinfo">
+        <div class="pname" style="font-size:16px">Датчик пульса (Bluetooth)</div>
+        <div class="pcity" id="hrConnState">подключи пульсометр, пояс или браслет</div>
+      </div>
+    </div>
+    <button class="chip" id="hrConnect" style="width:100%;justify-content:center;margin:2px 0 4px">❤️ Подключить по Bluetooth</button>
+    <p style="margin:0 0 4px">Работает с устройствами, передающими пульс по стандарту Bluetooth (нагрудные пояса, многие браслеты и часы). Полная синхронизация с Garmin / Apple Watch / Mi Band через их экосистемы появится в нативной версии.</p>
+
+    <h3 style="font-size:16px;margin-top:18px" data-i18n="set_voice">Голос ИИ-тренера</h3>
+
+    <div class="prof" style="padding:10px 0;gap:13px">
+      <span class="ic" style="font-size:22px">🎧</span>
+      <div class="pinfo">
+        <div class="pname" style="font-size:16px">Голосовые подсказки</div>
+        <div class="pcity">тренер говорит во время бега и по кнопке «Послушать»</div>
+      </div>
+      <label class="switch"><input type="checkbox" id="voiceToggle"><span class="sl"></span></label>
+    </div>
+
+    <div style="padding:10px 0 4px;display:flex;align-items:center;gap:13px;border-top:1px solid var(--line)">
+      <span class="ic" style="font-size:22px">🗣️</span>
+      <div class="pinfo">
+        <div class="pname" style="font-size:16px">Голос</div>
+        <div class="pcity">выбери голос с телефона (со ⭐ — самые живые) и нажми «Проверить»</div>
+      </div>
+    </div>
+    <select id="voiceSel" style="width:100%;padding:12px;border-radius:10px;border:1px solid var(--line2);background:var(--card);font-family:var(--body);font-weight:700;font-size:14px;margin-bottom:8px">
+      <option value="">Авто — лучший на телефоне</option>
+    </select>
+    <button class="btn-sec" id="voiceTest" style="width:100%;margin:0 0 4px;padding:13px;border-radius:11px;font-family:var(--body);font-weight:700;font-size:15px;cursor:pointer;border:none">🔊 Проверить голос</button>
+    <p style="margin:0 0 4px">Качество голоса зависит от телефона. Самый живой звук на Android даёт движок «Google Синтез речи»: установи приложение Google и выбери его движком (Настройки Android → Спец. возможности → Озвучивание → Google), затем выбери голос со ⭐ здесь.</p>
+
+    <div class="prof" style="padding:10px 0;gap:13px;border-top:1px solid var(--line);margin-top:6px">
+      <span class="ic" style="font-size:22px">❤️</span>
+      <div class="pinfo">
+        <div class="pname" style="font-size:16px">Максимальный пульс</div>
+        <div class="pcity">для пульсовых зон · ориентир 220 минус возраст</div>
+      </div>
+      <input id="maxHrInput" type="number" inputmode="numeric" min="120" max="230" style="width:74px;text-align:center;padding:10px;font-size:16px;font-weight:700">
+    </div>
+
+    <button class="btn-sec" id="introBtn" style="width:100%;margin:14px 0 4px;padding:13px;border-radius:11px;font-family:var(--body);font-weight:700;font-size:15px;cursor:pointer;border:none">▶ Показать вступление снова</button>
+
+    <h3 style="font-size:16px;margin-top:18px">Облачный ИИ и голос <span style="font-size:11px;color:var(--orange)">Premium</span></h3>
+    <p>Подключи свой сервер — и тренер станет «умным» (отвечает на любые вопросы), а голос — живым. Как поднять сервер за 15 минут — в инструкции к архиву сервера. Пусто = офлайн-режим.</p>
+    <input id="serverUrl" type="text" placeholder="https://...onrender.com" autocomplete="off" inputmode="url">
+    <div class="row">
+      <button class="btn-sec" id="serverTest">Проверить</button>
+      <button class="btn-pri" id="serverSave">Сохранить адрес</button>
+    </div>
+    <div class="prof" style="padding:10px 0 0;gap:13px">
+      <span class="ic" style="font-size:22px">🎙️</span>
+      <div class="pinfo"><div class="pname" style="font-size:15px">Голос тренера</div></div>
+      <select id="cloudVoiceSel" style="flex:none;padding:9px 10px;border-radius:10px;border:1px solid var(--line2);background:var(--card);font-family:var(--body);font-weight:700;font-size:14px">
+        <option value="">Авто</option>
+        <option value="alena">Алёна (жен)</option>
+        <option value="jane">Джейн (жен)</option>
+        <option value="omazh">Омаж (жен)</option>
+        <option value="filipp">Филипп (муж)</option>
+        <option value="ermil">Эрмиль (муж)</option>
+        <option value="zahar">Захар (муж)</option>
+      </select>
+    </div>
+
+    <h3 style="font-size:16px;margin-top:18px">Ключ Яндекс.Карт</h3>
+    <p>Ключ уже встроен — карта работает сама. Поле ниже нужно, только если хочешь подставить свой ключ из <a href="https://developer.tech.yandex.ru/services/" target="_blank">кабинета разработчика Яндекса</a>. Оставь пустым, чтобы использовать встроенный.</p>
+    <input id="keyInput" type="text" placeholder="свой ключ (необязательно)" autocomplete="off">
+    <div class="row">
+      <button class="btn-sec" id="keyCancel">Закрыть</button>
+      <button class="btn-pri" id="keySave">Сохранить ключ</button>
+    </div>
+
+    <h3 style="font-size:16px;margin-top:18px" data-i18n="set_lang">Язык / Language</h3>
+    <div class="prof" style="padding:10px 0;gap:13px">
+      <span class="ic" style="font-size:22px">🌐</span>
+      <div class="pinfo"><div class="pname" style="font-size:16px" data-i18n="set_lang">Язык / Language</div></div>
+      <select id="langSel" style="flex:none;padding:9px 10px;border-radius:10px;border:1px solid var(--line2);background:var(--card);font-family:var(--body);font-weight:700;font-size:14px">
+        <option value="ru">Русский</option>
+        <option value="en">English</option>
+        <option value="es">Español</option>
+        <option value="it">Italiano</option>
+      </select>
+    </div>
+
+    <button class="lg-btn" id="premiumBtn" style="margin:14px 0 4px;background:var(--grad);color:#fff">⭐ Skride Premium</button>
+
+    <h3 style="font-size:16px;margin-top:18px" data-i18n="set_about">О разработчике</h3>
+    <div class="card about" style="box-shadow:none;border:1px solid var(--line)">
+      <div class="row2"><span class="ic">⚡</span>
+        <div><div class="t">Si Kei Lab · SECOR Group</div>
+        <div class="d">Skride разработан в Si Kei Lab — IT-лаборатории холдинга SECOR Group. <a href="https://sekor.ae/" target="_blank" style="color:var(--orange);font-weight:700;text-decoration:none">sekor.ae →</a></div></div>
+      </div>
+      <div class="row2"><span class="ic">🏃</span><div><div class="t">Skride</div><div class="d">GPS-трекер бега с голосовым тренером, пульсовыми зонами и сравнением со 100 легендами. Версия 4.3 — диагностика голоса.</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- premium sheet -->
+<div class="modal" id="premiumModal">
+  <div class="sheet">
+    <div style="text-align:center;margin-bottom:6px"><div style="font-size:40px">⭐</div>
+      <h3 style="margin:4px 0" data-i18n="prem_title">Skride Premium</h3>
+      <p data-i18n="prem_sub">Открой все возможности и беги без ограничений.</p>
+    </div>
+    <div class="card" style="box-shadow:none;border:1px solid var(--line);padding:6px 0">
+      <div class="prem-row"><span class="prem-f" data-i18n="prem_f1">GPS-трекинг и маршруты</span><span class="prem-y">✓</span><span class="prem-y">✓</span></div>
+      <div class="prem-row"><span class="prem-f" data-i18n="prem_f2">Ручной ввод и пульсовые зоны</span><span class="prem-y">✓</span><span class="prem-y">✓</span></div>
+      <div class="prem-row"><span class="prem-f" data-i18n="prem_f3">ИИ-тренер — полный анализ и голос</span><span class="prem-n">—</span><span class="prem-y">✓</span></div>
+      <div class="prem-row"><span class="prem-f" data-i18n="prem_f4">100 легенд бега — рейтинг</span><span class="prem-n">—</span><span class="prem-y">✓</span></div>
+      <div class="prem-row"><span class="prem-f" data-i18n="prem_f5">Беговая дорожка и датчики</span><span class="prem-n">—</span><span class="prem-y">✓</span></div>
+      <div class="prem-row prem-head"><span class="prem-f"></span><span data-i18n="prem_free">Free</span><span data-i18n="prem_pro">Premium</span></div>
+    </div>
+    <div id="premiumStatus" style="text-align:center;font-weight:700;font-size:14px;margin:10px 0;color:var(--orange)"></div>
+    <button class="btn-pri" id="premiumActivate" style="width:100%" data-i18n="prem_activate">Оформить Premium — 299 ₽/мес</button>
+    <button class="btn-sec" id="premiumClose" style="width:100%;margin-top:8px" data-i18n="close">Закрыть</button>
+    <p style="margin-top:10px;font-size:11px" data-i18n="prem_note">Реальная оплата подключается через Google Play в нативной версии. Сейчас кнопка активирует Premium в демо-режиме для проверки.</p>
+  </div>
+</div>
+
+<!-- legends sheet -->
+<div class="modal" id="legendsModal">
+  <div class="sheet" style="max-height:86vh;display:flex;flex-direction:column">
+    <h3>100 легенд бега</h3>
+    <p id="legendsPlace" style="flex:none">Список сильнейших и самых известных марафонцев планеты с реальными результатами.</p>
+    <div id="legendsBody" style="overflow-y:auto;flex:1;-webkit-overflow-scrolling:touch;margin:0 -4px"></div>
+    <div class="row" style="flex:none"><button class="btn-pri" id="legendsClose">Закрыть</button></div>
+  </div>
+</div>
+
+<!-- runner level sheet -->
+<div class="modal" id="levelModal">
+  <div class="sheet">
+    <h3>Все уровни бегуна</h3>
+    <p>Уровень считается по твоему лучшему темпу на одной пробежке. Верхняя планка — реальные мировые рекорды марафона: мужчины 1:59:30 (~2:50/км, Сабастиан Саве), женщины 2:09:56 (~3:05/км, Рут Чепнгетич).</p>
+    <div class="lvl-list" id="levelListBody"></div>
+    <div class="row"><button class="btn-pri" id="levelClose">Закрыть</button></div>
+  </div>
+</div>
+
+<!-- goal sheet -->
+<div class="modal" id="goalModal">
+  <div class="sheet">
+    <h3>Цель на неделю</h3>
+    <p>Сколько километров планируешь пробегать за неделю? Кольцо будет показывать прогресс.</p>
+    <input id="goalInput" type="number" inputmode="decimal" step="1" min="1" placeholder="20">
+    <div class="row">
+      <button class="btn-sec" id="goalCancel">Отмена</button>
+      <button class="btn-pri" id="goalSave">Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<!-- edit sheet -->
+<div class="modal" id="editModal">
+  <div class="sheet">
+    <h3>Редактировать пробежку</h3>
+    <div class="form" style="padding:6px 0 0">
+      <div class="f"><label>Дистанция, км</label><input id="eDist" type="number" inputmode="decimal" step="0.01"></div>
+      <div class="f"><label>Дата</label><input id="eDate" type="date"></div>
+      <div class="f full"><label>Время (ч : мин : сек)</label>
+        <div class="time"><input id="eH" type="number" inputmode="numeric" min="0"><input id="eM" type="number" inputmode="numeric" min="0" max="59"><input id="eS" type="number" inputmode="numeric" min="0" max="59"></div>
+      </div>
+      <div class="f full"><label>Название</label><input id="eTitle" type="text"></div>
+      <div class="f full"><label>Заметка</label><textarea id="eNote"></textarea></div>
+    </div>
+    <div class="row">
+      <button class="btn-sec" id="editDelete" style="background:#ffe9e3;color:#d63a14">Удалить</button>
+      <button class="btn-pri" id="editSave">Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<!-- profile sheet -->
+<div class="modal" id="profModal">
+  <div class="sheet">
+    <h3>Профиль</h3>
+    <div class="form" style="padding:6px 0 0">
+      <div class="f full"><label>Имя</label><input id="pNameIn" type="text" placeholder="Как тебя зовут"></div>
+      <div class="f full"><label>Аватар</label>
+        <div class="ava-edit">
+          <div class="ava-prev" id="avaPrev">Я</div>
+          <button type="button" class="chip cam" id="avaPhotoBtn">📷 Загрузить фото</button>
+          <input type="file" id="avaFile" accept="image/*" style="display:none">
+        </div>
+        <div class="emoji-pick" id="emojiPick"></div>
+      </div>
+      <div class="f"><label>Город</label><input id="pCityIn" type="text" placeholder="Москва"></div>
+    </div>
+    <div class="row">
+      <button class="btn-sec" id="profCancel">Отмена</button>
+      <button class="btn-pri" id="profSave">Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const $=id=>document.getElementById(id);
+// Встроенный ключ Яндекс.Карт — карта грузится автоматически.
+// Можно переопределить своим ключом через настройки ⚙.
+const YANDEX_KEY='fb32ecf2-89e6-454a-9b4c-9d46d2252be2';
+let runs=[], pts=[], ymap=null, route=null, placemarks=[], deferredPrompt=null, goal=20, editId=null;
+let routeMode='road';
+let profile={name:'Бегун',ava:'Я',city:''};
+let multiRoute=null;
+// GPS-трекинг
+let tracking=false, watchId=null, gpsPts=[], gpsLine=null, startTime=0, timerInt=null;
+let paused=false, pausedAccum=0, pauseStart=0;
+function elapsedSec(){ let ms=Date.now()-startTime-pausedAccum; if(paused) ms-=(Date.now()-pauseStart); return Math.floor(ms/1000); }
+
+/* ---- storage ---- */
+const RUNS_KEY='stride:runs', YKEY='stride:ykey', GOAL_KEY='stride:goal', PROF_KEY='stride:profile';
+// Хранение через localStorage — надёжно работает и в браузере, и в нативной сборке Capacitor.
+async function sGet(k){ try{return localStorage.getItem(k);}catch(e){return null;} }
+async function sSet(k,v){ try{localStorage.setItem(k,v);}catch(e){} }
+
+/* ---- distance ---- */
+function haversine(a,b){const R=6371,r=x=>x*Math.PI/180;const dLa=r(b[0]-a[0]),dLo=r(b[1]-a[1]);
+  const s=Math.sin(dLa/2)**2+Math.cos(r(a[0]))*Math.cos(r(b[0]))*Math.sin(dLo/2)**2;return R*2*Math.atan2(Math.sqrt(s),Math.sqrt(1-s));}
+function trackDist(arr){let d=0;for(let i=1;i<arr.length;i++)d+=haversine(arr[i-1],arr[i]);return d;}
+
+/* ---- Yandex map ---- */
+function loadYmaps(key){
+  return new Promise((res,rej)=>{
+    if(window.ymaps){return res();}
+    const s=document.createElement('script');
+    s.src='https://api-maps.yandex.ru/2.1/?lang=ru_RU'+(key?'&apikey='+encodeURIComponent(key):'');
+    s.onload=()=>res(); s.onerror=()=>rej();
+    document.head.appendChild(s);
+    setTimeout(()=>{ if(!window.ymaps) rej(); },9000);
+  });
+}
+async function initMap(){
+  const key=(await sGet(YKEY))||YANDEX_KEY;
+  try{
+    await loadYmaps(key);
+    await new Promise(r=>ymaps.ready(r));
+    ymap=new ymaps.Map('map',{center:[55.751,37.618],zoom:12,controls:['zoomControl','geolocationControl']},{suppressMapOpenBlock:true});
+    // мягко центрируем на пользователе при загрузке
+    if(navigator.geolocation){
+      navigator.geolocation.getCurrentPosition(
+        p=>{ const c=[p.coords.latitude,p.coords.longitude]; if(ymap){ ymap.setCenter(c,14); setMyMarker(c,'Вы здесь'); } },
+        ()=>{}, {enableHighAccuracy:true, timeout:12000, maximumAge:60000}
+      );
+    }
+    // тап по карте в ручном режиме — добавляем точку маршрута
+    ymap.events.add('click', e=>{ if(appMode==='manual'){ mPts.push(e.get('coords')); mRedraw(); } });
+  }catch(e){
+    $('map').className='map-fallback';
+    $('map').innerHTML='Карта не загрузилась. Если ты сменил адрес сайта — в кабинете Яндекса добавь новый домен в разрешённые для ключа. Геопозиция и ручной ввод работают и без карты.';
+  }
+}
+// поиск места
+$('searchBtn').onclick=doSearch;
+$('searchInput').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();doSearch();}});
+let myMark=null;
+function setMyMarker(c,label){
+  if(!ymap||!window.ymaps) return;
+  if(myMark) ymap.geoObjects.remove(myMark);
+  myMark=new ymaps.Placemark(c,{balloonContent:label||'Вы здесь'},{preset:'islands#redCircleDotIcon'});
+  ymap.geoObjects.add(myMark);
+}
+function doSearch(){
+  const q=$('searchInput').value.trim();
+  if(!q) return;
+  if(!window.ymaps||!ymap){ toast('Карта ещё грузится — подожди секунду'); return; }
+  toast('Ищу: '+q);
+  const opts={results:1};
+  try{ const b=ymap.getBounds(); if(b) opts.boundedBy=b; }catch(e){}
+  ymaps.geocode(q,opts).then(res=>{
+    const obj=res.geoObjects.get(0);
+    if(!obj){ toast('Ничего не найдено: «'+q+'»'); return; }
+    const c=obj.geometry.getCoordinates();
+    ymap.setCenter(c,15); setMyMarker(c,obj.getAddressLine());
+    $('searchInput').blur();
+  }).catch(()=>toast('Поиск недоступен. В кабинете Яндекса для ключа включи «Геокодер (HTTP)».'));
+}
+/* ===== Режим записи: GPS / ручной ===== */
+let appMode='gps'; const MODE_KEY='stride:mode';
+let mPts=[], mRoute=null, mMarks=[];
+function mDistKm(){ let d=0; for(let i=1;i<mPts.length;i++) d+=haversine(mPts[i-1],mPts[i]); return d; }
+function mRedraw(){
+  if(!ymap||!window.ymaps) return;
+  if(mRoute){ ymap.geoObjects.remove(mRoute); mRoute=null; }
+  mMarks.forEach(p=>ymap.geoObjects.remove(p)); mMarks=[];
+  if(mPts.length){
+    mRoute=new ymaps.Polyline(mPts,{},{strokeColor:'#0fae9e',strokeWidth:5,strokeOpacity:.9});
+    ymap.geoObjects.add(mRoute);
+    const ends = mPts.length>1?[0,mPts.length-1]:[0];
+    ends.forEach((i,k)=>{ const pm=new ymaps.Placemark(mPts[i],{},{preset:k===0?'islands#greenCircleDotIcon':'islands#orangeCircleDotIcon'}); mMarks.push(pm); ymap.geoObjects.add(pm); });
+  }
+  const d=mDistKm(); if(d>0) $('mDist').value=d.toFixed(2);
+}
+function applyMode(){
+  const manual=appMode==='manual';
+  const tp=document.querySelector('.track-panel'); if(tp) tp.style.display=manual?'none':'block';
+  if($('manualPanel')) $('manualPanel').style.display=manual?'block':'none';
+  if($('gpsToggle')) $('gpsToggle').checked=!manual;
+  if($('manualToggle')) $('manualToggle').checked=manual;
+  const note=document.querySelector('#mapSec .sec-h span'); if(note) note.textContent=manual?'ручной ввод — чертишь сам':'автозапись по GPS';
+  if(manual && $('mDate') && !$('mDate').value) $('mDate').value=new Date().toISOString().slice(0,10);
+  if(!manual){ mPts=[]; mRedraw(); }
+}
+async function setMode(m){
+  if(tracking){ toast('Сначала останови запись'); applyMode(); return; }
+  appMode=m; await sSet(MODE_KEY,m); applyMode();
+  toast(m==='manual'?'Ручной ввод включён':'Автозапись по GPS включена');
+}
+$('gpsToggle').onchange=()=>setMode($('gpsToggle').checked?'gps':'manual');
+$('manualToggle').onchange=()=>setMode($('manualToggle').checked?'manual':'gps');
+$('mUndo').onclick=()=>{ mPts.pop(); mRedraw(); if(!mPts.length) $('mDist').value=''; };
+$('mClear').onclick=()=>{ mPts=[]; mRedraw(); $('mDist').value=''; };
+$('mSave').onclick=async()=>{
+  const km=+$('mDist').value;
+  if(!km||km<=0){ toast('Введи дистанцию или начерти маршрут'); return; }
+  const sec=(+$('mH').value||0)*3600+(+$('mM').value||0)*60+(+$('mS').value||0);
+  const run={ id:Date.now(), type:activityType, km:+km.toFixed(2), sec,
+    date:$('mDate').value||new Date().toISOString().slice(0,10),
+    title:$('mTitle').value.trim()||defaultTitle(),
+    track:mPts.slice(), landmarks:[] };
+  if($('mPhoto').dataset.src) run.photo=$('mPhoto').dataset.src;
+  runs.unshift(run); await sSet(RUNS_KEY,JSON.stringify(runs)); render();
+  mPts=[]; mRedraw();
+  $('mDist').value='';$('mH').value='';$('mM').value='';$('mS').value='';$('mTitle').value='';
+  $('mPhoto').style.display='none'; $('mPhoto').removeAttribute('data-src');
+  toast('Пробежка сохранена 🏃'); $('feedSec').scrollIntoView({behavior:'smooth'});
+};
+
+/* ===== Пульс по Bluetooth (часы / пояс / браслет) ===== */
+let hrDevice=null, liveBpm=null, hrSamples=[];
+function updateHrTile(){ const el=$('liveHr'); if(el) el.textContent = liveBpm!=null? liveBpm : '—'; }
+function onHr(ev){
+  const v=ev.target.value; const flags=v.getUint8(0);
+  liveBpm = (flags&1) ? v.getUint16(1,true) : v.getUint8(1);
+  updateHrTile();
+  if(tracking && liveBpm) hrSamples.push(liveBpm);
+}
+async function connectHr(){
+  if(!navigator.bluetooth){ toast('Bluetooth недоступен. Нужен Chrome на Android и доступ по https.'); return; }
+  try{
+    toast('Поиск устройства...');
+    const dev=await navigator.bluetooth.requestDevice({ filters:[{services:['heart_rate']}] });
+    const srv=await dev.gatt.connect();
+    const s=await srv.getPrimaryService('heart_rate');
+    const ch=await s.getCharacteristic('heart_rate_measurement');
+    await ch.startNotifications();
+    ch.addEventListener('characteristicvaluechanged', onHr);
+    hrDevice=dev;
+    dev.addEventListener('gattserverdisconnected', ()=>{ liveBpm=null; updateHrTile(); if($('hrConnState'))$('hrConnState').textContent='отключено'; toast('Пульсометр отключён'); });
+    if($('hrConnState')) $('hrConnState').textContent='подключено: '+(dev.name||'устройство');
+    toast('Пульсометр подключён ❤️');
+  }catch(e){ toast('Не подключилось (отменено или не поддерживается устройством)'); }
+}
+$('hrConnect').onclick=()=>{ if(!requirePremium()) return; connectHr(); };
+
+/* ===== Беговая дорожка ===== */
+$('treadPhoto').onclick=()=>{ $('treadFile').click(); };
+$('treadFile').onchange=e=>{
+  const f=e.target.files&&e.target.files[0]; if(!f) return;
+  const rd=new FileReader();
+  rd.onload=()=>{ const img=new Image(); img.onload=()=>{
+    const mx=900, sc=Math.min(1,mx/Math.max(img.width,img.height));
+    const cv=document.createElement('canvas'); cv.width=Math.round(img.width*sc); cv.height=Math.round(img.height*sc);
+    cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);
+    let data; try{ data=cv.toDataURL('image/jpeg',0.7);}catch(_){ data=rd.result; }
+    $('mPhoto').src=data; $('mPhoto').dataset.src=data; $('mPhoto').style.display='block';
+    setMode('manual'); $('mTitle').value='Беговая дорожка';
+    toast('Впиши цифры с табло: дистанцию и время');
+    $('manualPanel').scrollIntoView({behavior:'smooth'});
+  }; img.src=rd.result; };
+  rd.readAsDataURL(f); e.target.value='';
+};
+$('treadBt').onclick=async()=>{
+  if(!requirePremium()) return;
+  if(!navigator.bluetooth){ toast('Bluetooth недоступен. Нужен Chrome на Android (https).'); return; }
+  try{
+    toast('Поиск дорожки...');
+    const dev=await navigator.bluetooth.requestDevice({ filters:[{services:['fitness_machine']}] });
+    const srv=await dev.gatt.connect();
+    const s=await srv.getPrimaryService('fitness_machine');
+    const ch=await s.getCharacteristic('treadmill_data');
+    await ch.startNotifications();
+    ch.addEventListener('characteristicvaluechanged', onTread);
+    dev.addEventListener('gattserverdisconnected',()=>{ if($('treadState'))$('treadState').textContent='дорожка отключена'; });
+    if($('treadState')) $('treadState').textContent='подключено: '+(dev.name||'дорожка');
+    toast('Дорожка подключена');
+  }catch(e){ toast('Не подключилось. Нет Bluetooth у дорожки — сфотографируй табло.'); }
+};
+function onTread(ev){
+  try{ const v=ev.target.value; const speed=v.getUint16(2,true)/100;
+    if($('treadState')) $('treadState').textContent='дорожка: '+speed.toFixed(1)+' км/ч — по финишу впиши итог в ручном вводе или сфотографируй табло';
+  }catch(_){}
+}
+
+/* ===== Вид активности: бег / велосипед ===== */
+let activityType='run'; const ACT_KEY='stride:act';
+function actLabel(t){ return t==='bike'?'Велозаезд':'Пробежка'; }
+function actIcon(t){ return t==='bike'?'🚴':'🏃'; }
+function speedKmh(km,sec){ if(!km||!sec) return null; return km/(sec/3600); }
+function metricStr(km,sec,type){ if((type||'run')==='bike'){ const v=speedKmh(km,sec); return v?v.toFixed(1):null; } return paceStr(km,sec); }
+function applyActivity(){
+  document.querySelectorAll('#actPick .act-opt').forEach(b=>b.classList.toggle('on', b.dataset.act===activityType));
+  const bike=activityType==='bike';
+  const pv=$('livePace'); if(pv){ const tu=pv.parentNode.querySelector('.tu'); if(tu) tu.textContent=bike?'скорость км/ч':'темп /км'; }
+  const note=$('trackModeNote'); if(note && typeof appMode!=='undefined' && appMode==='gps') note.textContent=bike?'Автозапись по GPS — нажми «Старт» и поехали':'Автозапись по GPS — нажми «Старт» и беги';
+}
+document.querySelectorAll('#actPick .act-opt').forEach(b=>{
+  b.onclick=async()=>{ if(tracking){ toast('Сначала останови запись'); return; } activityType=b.dataset.act; await sSet(ACT_KEY,activityType); applyActivity(); toast(activityType==='bike'?'Режим: велосипед 🚴':'Режим: бег 🏃'); };
+});
+
+// скриншот маршрута
+function drawRouteCard(){
+  // запасной вариант: схема трека на тёмном фоне (без тайлов карты)
+  const dist=$('mapDist').textContent;
+  const W=1080,H=1080,c=document.createElement('canvas');c.width=W;c.height=H;
+  const x=c.getContext('2d');
+  x.fillStyle='#0d1117';x.fillRect(0,0,W,H);
+  x.fillStyle='#0fae9e';x.font='800 64px sans-serif';x.fillText('Skride',60,110);
+  x.fillStyle='#8a96a3';x.font='600 30px sans-serif';x.fillText((profile.name||'Бегун')+' · '+new Date().toLocaleDateString('ru-RU'),60,160);
+  const lats=pts.map(p=>p[0]),lngs=pts.map(p=>p[1]);
+  const minLa=Math.min(...lats),maxLa=Math.max(...lats),minLo=Math.min(...lngs),maxLo=Math.max(...lngs);
+  const pad=160,sx=(maxLo-minLo)||1e-6,sy=(maxLa-minLa)||1e-6;
+  const sc=Math.min((W-pad*2)/sx,(H-380)/sy);
+  const ox=(W-sx*sc)/2,oy=260+((H-380)-sy*sc)/2;
+  const X=lo=>ox+(lo-minLo)*sc,Y=la=>(260+(H-380))-(oy-260+(la-minLa)*sc);
+  x.strokeStyle='#0fae9e';x.lineWidth=10;x.lineJoin='round';x.lineCap='round';x.beginPath();
+  pts.forEach((p,i)=>{const px=X(p[1]),py=Y(p[0]);i?x.lineTo(px,py):x.moveTo(px,py);});x.stroke();
+  x.fillStyle='#2ecc71';x.beginPath();x.arc(X(pts[0][1]),Y(pts[0][0]),16,0,7);x.fill();
+  x.fillStyle='#0fae9e';x.beginPath();x.arc(X(pts.at(-1)[1]),Y(pts.at(-1)[0]),16,0,7);x.fill();
+  x.fillStyle='#fff';x.font='800 140px sans-serif';x.fillText(dist,60,H-120);
+  x.fillStyle='#8a96a3';x.font='700 44px sans-serif';x.fillText('КМ',60+x.measureText(dist).width+30,H-120);
+  const a=document.createElement('a');a.href=c.toDataURL('image/png');a.download='skride-route.png';a.click();
+  toast('Снимок сохранён 📸');
+}
+
+$('shotBtn').onclick=async()=>{
+  if(pts.length<1){toast('Сначала запиши или нарисуй маршрут');return;}
+  toast('Готовлю снимок с картой...');
+  const key=(await sGet(YKEY))||YANDEX_KEY;
+  // прореживаем точки, чтобы URL не был слишком длинным
+  let pp=pts; if(pp.length>48){ const step=Math.ceil(pp.length/48); pp=pts.filter((_,i)=>i%step===0); if(pp[pp.length-1]!==pts[pts.length-1]) pp=pp.concat([pts[pts.length-1]]); }
+  const poly=pp.map(p=>p[1].toFixed(5)+','+p[0].toFixed(5)).join(',');
+  const s=pts[0], e=pts[pts.length-1];
+  const mapUrl='https://static-maps.yandex.ru/v1?apikey='+encodeURIComponent(key)+'&lang=ru_RU&size=650,450'+
+    '&pl='+encodeURIComponent('c:0FAE9EFF,w:5,'+poly)+
+    '&pt='+encodeURIComponent(s[1].toFixed(5)+','+s[0].toFixed(5)+',pm2gnm~'+e[1].toFixed(5)+','+e[0].toFixed(5)+',pm2rdm');
+  const mapImg=new Image(); mapImg.crossOrigin='anonymous';
+  mapImg.onload=()=>{
+    try{
+      const W=1080,H=1080,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
+      x.fillStyle='#0d1117';x.fillRect(0,0,W,H);
+      const mh=Math.round(W*mapImg.height/mapImg.width);
+      x.drawImage(mapImg,0,200,W,mh); // карта-подложка
+      // верхняя плашка
+      x.fillStyle='rgba(13,17,23,.85)';x.fillRect(0,0,W,196);
+      x.fillStyle='#0fae9e';x.font='800 64px sans-serif';x.fillText('Skride',60,96);
+      x.fillStyle='#c9d2db';x.font='600 30px sans-serif';x.fillText((profile.name||'Бегун')+' · '+new Date().toLocaleDateString('ru-RU'),60,148);
+      // нижняя плашка с дистанцией
+      const dist=$('mapDist').textContent;
+      x.fillStyle='rgba(13,17,23,.85)';x.fillRect(0,H-220,W,220);
+      x.fillStyle='#fff';x.font='800 140px sans-serif';x.fillText(dist,60,H-70);
+      x.fillStyle='#8a96a3';x.font='700 44px sans-serif';x.fillText('КМ',60+x.measureText(dist).width+30,H-70);
+      const url=c.toDataURL('image/png'); // может бросить, если карта без CORS
+      const a=document.createElement('a');a.href=url;a.download='skride-route.png';a.click();
+      toast('Снимок с картой сохранён 📸');
+    }catch(err){
+      // canvas «загрязнён» (нет CORS) — отдаём сам снимок карты с маршрутом
+      const a=document.createElement('a');a.href=mapUrl;a.download='skride-route.png';a.target='_blank';a.click();
+      toast('Снимок карты открыт — сохрани долгим нажатием 📸');
+    }
+  };
+  mapImg.onerror=()=>{ try{ drawRouteCard(); }catch(e){ toast('Не удалось сделать снимок'); } };
+  mapImg.src=mapUrl;
+};
+$('locBtn').onclick=()=>{
+  if(!navigator.geolocation){toast('Геолокация недоступна на устройстве');return;}
+  toast('Определяю местоположение...');
+  navigator.geolocation.getCurrentPosition(
+    p=>{ const c=[p.coords.latitude,p.coords.longitude]; if(ymap){ ymap.setCenter(c,16); setMyMarker(c,'Вы здесь'); } toast('Вы здесь'); },
+    err=>{ const m={1:'Доступ к геолокации запрещён. Разреши его для сайта/приложения в настройках.',2:'Местоположение недоступно — включи GPS на телефоне.',3:'GPS долго не отвечает. Попробуй у окна или на улице.'}; toast(m[err.code]||'Не удалось определить место'); },
+    {enableHighAccuracy:true, timeout:15000, maximumAge:0}
+  );
+};
+
+/* ---- GPS-трекинг (автозапись) ---- */
+
+function liveDist(){let d=0;for(let i=1;i<gpsPts.length;i++)d+=haversine(gpsPts[i-1],gpsPts[i]);return d;}
+function fmtClock(sec){const m=Math.floor(sec/60),s=sec%60;return m+':'+String(s).padStart(2,'0');}
+
+// Запущены ли мы внутри нативного приложения Capacitor (а не в обычном браузере)
+const isNative = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+let bgWatcherId = null;
+
+// Единая обработка одной точки GPS — используется и в вебе, и в нативном фоновом режиме
+/* ---- голосовой тренер (TTS) ---- */
+let voiceCoach=false; const VOICE_KEY='stride:voice';
+let voiceGender='female'; const VOICE_GENDER_KEY='stride:voicegender';
+let voiceURI=''; const VOICE_URI_KEY='stride:voiceuri';
+let lastSpokenKm=0, voicePrimed=false;
+
+// Список голосов браузера (грузится асинхронно)
+let _voices=[];
+function loadVoices(){ try{ _voices = (window.speechSynthesis && window.speechSynthesis.getVoices()) || []; }catch(e){ _voices=[]; } }
+function vName(v){ return (((v&&v.name)||'')+' '+((v&&(v.voiceURI||v.identifier))||'')).toLowerCase(); }
+function isRu(v){ return ((v && (v.lang||v.language))||'').toLowerCase().startsWith('ru'); }
+function rankVoice(v){ const n=vName(v); let s=0;
+  if(/google/.test(n))s+=6; if(/microsoft|майкрософт/.test(n))s+=4; if(/yandex|яндекс/.test(n))s+=5;
+  if(/natural|enhanced|premium|neural|online|network/.test(n))s+=4;
+  if(v && v.localService===false)s+=2;  // онлайн-голоса обычно качественнее
+  return s; }
+const RU_MALE=['pavel','yuri','yury','ermil','zahar','dmitry','dmitri','maxim','male','мужск','павел','юрий','захар','дмитрий','максим'];
+const RU_FEMALE=['milena','irina','alena','alyona','oksana','tatyana','svetlana','katya','alyss','elena','female','женск','ирина','алёна','алена','оксана','татьяна','светлана','катя','елена','дарья'];
+function scoreByGender(v){ const n=vName(v); const want=voiceGender==='male'?RU_MALE:RU_FEMALE; const other=voiceGender==='male'?RU_FEMALE:RU_MALE;
+  if(want.some(k=>n.includes(k)))return 2; if(other.some(k=>n.includes(k)))return -2; return 0; }
+function pickWebVoice(){ if(!_voices.length) loadVoices(); const ru=_voices.filter(isRu); if(!ru.length) return null;
+  return ru.map(v=>({v,s:rankVoice(v)})).sort((a,b)=>b.s-a.s)[0].v; }
+function chosenWebVoice(){ if(voiceURI){ const v=_voices.find(x=>(x.voiceURI||x.name)===voiceURI); if(v) return v; } return pickWebVoice(); }
+function pickNativeIndex(list){ if(!Array.isArray(list)||!list.length) return -1;
+  const ranked=list.map((v,i)=>({i,s:(isRu(v)?3:0)+rankVoice(v)+scoreByGender(v)})).filter(x=>x.s>0).sort((a,b)=>b.s-a.s);
+  return ranked.length?ranked[0].i:-1; }
+function populateVoiceList(){
+  const sel=$('voiceSel'); if(!sel) return;
+  if(!_voices.length) loadVoices();
+  let list=_voices.filter(isRu); if(!list.length) list=_voices.slice();
+  list.sort((a,b)=>rankVoice(b)-rankVoice(a));
+  sel.innerHTML='<option value="">Авто — лучший на телефоне</option>'+list.map(v=>{
+    const star=/(google|yandex|natural|neural|enhanced|online|network)/i.test(vName(v))?' ⭐':'';
+    return '<option value="'+(v.voiceURI||v.name)+'">'+((v.name||v.voiceURI))+star+'</option>';
+  }).join('');
+  sel.value=voiceURI;
+}
+function primeVoice(){ if(voicePrimed||!window.speechSynthesis) return; try{ window.speechSynthesis.resume(); const u=new SpeechSynthesisUtterance(' '); u.volume=0; window.speechSynthesis.speak(u); voicePrimed=true; }catch(e){} }
+if(window.speechSynthesis){ loadVoices(); try{ window.speechSynthesis.onvoiceschanged=()=>{ loadVoices(); populateVoiceList(); }; }catch(e){} }
+
+async function speak(text){ if(!voiceCoach) return; say(text); }
+// Принудительная озвучка (кнопка «Послушать совет») — работает независимо от тумблера
+async function say(text){
+  const pitch = 1.0;
+  if(cloudURL && isPremium){ try{ await cloudTTS(text); return; }catch(e){ toast('Облако-голос не сыграл: '+((e&&e.message)||'ошибка')); } }
+  else if(cloudURL && !isPremium){ toast('Premium не активен → голос телефона'); }
+  try{
+    if(isNative && window.Capacitor.Plugins && window.Capacitor.Plugins.TextToSpeech){
+      const tts=window.Capacitor.Plugins.TextToSpeech;
+      const opts={ text, lang:'ru-RU', rate:0.92, pitch, volume:1.0 };
+      try{ const vs=await tts.getSupportedVoices(); const idx=pickNativeIndex((vs&&vs.voices)||vs||[]); if(idx>=0) opts.voice=idx; }catch(_){}
+      await tts.speak(opts);
+    } else if(window.speechSynthesis){
+      primeVoice();
+      window.speechSynthesis.cancel();
+      const v=chosenWebVoice();
+      // говорим короткими фразами с паузами — звучит живее, чем одной строкой
+      const parts=String(text).split(/(?<=[.!?…])\s+|\s—\s|:\s+/).map(s=>s.trim()).filter(Boolean);
+      (parts.length?parts:[String(text)]).forEach(p=>{
+        const u=new SpeechSynthesisUtterance(p); u.lang='ru-RU';
+        if(v) u.voice=v; u.rate=0.92; u.pitch=pitch; u.volume=1.0;
+        window.speechSynthesis.speak(u);
+      });
+    }
+  }catch(e){}
+}
+function kmWord(n){ const a=n%10,b=n%100; if(a===1&&b!==11)return 'километр'; if(a>=2&&a<=4&&(b<10||b>=20))return 'километра'; return 'километров'; }
+// Зарезервировано под Часть 2 (пульс через Health Connect): когда появится источник пульса,
+// сюда будут приходить значения ЧСС и озвучиваться подсказки вроде «остынь, пульс на максимуме».
+function coachOnHeartRate(hr, hrMax){
+  if(!voiceCoach || !hr) return;
+  if(hrMax && hr >= hrMax*0.95) speak('Остынь, приятель, пульс на максимуме');
+}
+
+function onGpsPoint(lat,lng,acc){
+  const c=[lat,lng];
+  // фильтр точности: отбрасываем слишком неточную самую первую точку
+  if(acc && acc>50 && gpsPts.length===0){
+    $('gpsStatus').innerHTML='<span class="gps-dot"></span>Уточняю сигнал ('+Math.round(acc)+'м)...'; return;
+  }
+  gpsPts.push(c);
+  if(gpsLine) gpsLine.geometry.setCoordinates(gpsPts);
+  if(ymap) ymap.setCenter(c);
+  const d=liveDist(); $('liveDist').textContent=d.toFixed(2);
+  const sec=elapsedSec();
+  const p=metricStr(d,sec,activityType); $('livePace').textContent=p||'—';
+  $('gpsStatus').innerHTML='<span class="gps-dot"></span>Запись идёт · точность '+Math.round(acc||0)+'м';
+  // голосовая отсечка на каждом целом километре
+  if(voiceCoach && Math.floor(d) > lastSpokenKm){
+    lastSpokenKm=Math.floor(d);
+    if(activityType==='bike'){ const v=speedKmh(d,sec); speak(lastSpokenKm+' '+kmWord(lastSpokenKm)+(v?', скорость '+v.toFixed(0)+' километров в час':'')); }
+    else speak(lastSpokenKm+' '+kmWord(lastSpokenKm)+(p?', темп '+p.replace(':',' ')+' на километр':''));
+  }
+}
+
+// Запуск слежения за позицией: нативный фоновый GPS, либо обычный watchPosition в браузере
+async function startWatcher(){
+  if(isNative && window.Capacitor.Plugins && window.Capacitor.Plugins.BackgroundGeolocation){
+    const BG = window.Capacitor.Plugins.BackgroundGeolocation;
+    try{
+      bgWatcherId = await BG.addWatcher({
+        backgroundMessage:'Маршрут записывается даже с выключенным экраном',
+        backgroundTitle:'Skride · идёт запись пробежки',
+        requestPermissions:true,
+        stale:false,
+        distanceFilter:5
+      }, (location, error)=>{
+        if(error){
+          $('gpsStatus').textContent='Ошибка GPS: '+(error.code==='NOT_AUTHORIZED'?'нет доступа к геолокации':(error.message||'сигнал не найден'));
+          return;
+        }
+        if(location) onGpsPoint(location.latitude, location.longitude, location.accuracy);
+      });
+    }catch(e){ $('gpsStatus').textContent='Не удалось запустить фоновый GPS'; }
+  } else {
+    // веб-режим (браузер или тест без сборки): обычная геолокация, без фона
+    if(!navigator.geolocation){ toast('GPS недоступен на устройстве'); return; }
+    watchId=navigator.geolocation.watchPosition(
+      pos=>onGpsPoint(pos.coords.latitude,pos.coords.longitude,pos.coords.accuracy),
+      err=>{ $('gpsStatus').textContent='Ошибка GPS: '+(err.code===1?'нет доступа к геолокации':'сигнал не найден'); },
+      {enableHighAccuracy:true, maximumAge:1000, timeout:15000}
+    );
+  }
+}
+
+// Остановка слежения в любом режиме
+async function stopWatcher(){
+  if(isNative && bgWatcherId && window.Capacitor.Plugins.BackgroundGeolocation){
+    try{ await window.Capacitor.Plugins.BackgroundGeolocation.removeWatcher({id:bgWatcherId}); }catch(e){}
+    bgWatcherId=null;
+  }
+  if(watchId!==null){ navigator.geolocation.clearWatch(watchId); watchId=null; }
+}
+
+function setPauseLabel(){
+  $('pauseBtn').innerHTML = paused
+    ? '<svg viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>Продолжить'
+    : '<svg viewBox="0 0 24 24" fill="#fff"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>Пауза';
+}
+
+$('startBtn').onclick=async()=>{
+  tracking=true; paused=false; pausedAccum=0; gpsPts=[]; startTime=Date.now(); lastSpokenKm=0; actLandmarks=[]; renderLmThumbs();
+  $('startBtn').classList.add('hide'); $('pauseBtn').classList.add('on'); $('stopBtn').classList.add('on');
+  $('lmRunBtn').style.display='inline-flex'; $('lmRunBtn').textContent='📷 Отметить место';
+  setPauseLabel();
+  $('trackLive').classList.add('on');
+  $('liveDist').textContent='0.00'; $('liveTime').textContent='0:00'; $('livePace').textContent='—';
+  $('gpsStatus').innerHTML='<span class="gps-dot"></span>Жди сигнал GPS...';
+  if(ymap){ if(gpsLine) ymap.geoObjects.remove(gpsLine); gpsLine=new ymaps.Polyline([],{},{strokeColor:'#0fae9e',strokeWidth:5,strokeOpacity:0.9}); ymap.geoObjects.add(gpsLine); }
+  timerInt=setInterval(()=>{ if(!paused) $('liveTime').textContent=fmtClock(elapsedSec()); },1000);
+  await startWatcher();
+  speak('Поехали!');
+  toast('Запись началась 🏃');
+};
+
+$('pauseBtn').onclick=async()=>{
+  if(!tracking) return;
+  if(!paused){
+    paused=true; pauseStart=Date.now();
+    await stopWatcher();
+    setPauseLabel();
+    $('gpsStatus').innerHTML='⏸ Пауза — запись приостановлена';
+    speak('Пауза');
+  } else {
+    paused=false; pausedAccum += Date.now()-pauseStart;
+    setPauseLabel();
+    $('gpsStatus').innerHTML='<span class="gps-dot"></span>Продолжаем запись...';
+    await startWatcher();
+    speak('Продолжаем');
+  }
+};
+
+$('stopBtn').onclick=async()=>{
+  if(!tracking) return;
+  tracking=false; paused=false;
+  await stopWatcher();
+  if(timerInt){clearInterval(timerInt); timerInt=null;}
+  $('startBtn').classList.remove('hide'); $('pauseBtn').classList.remove('on'); $('stopBtn').classList.remove('on');
+  $('lmRunBtn').style.display='none';
+  const d=liveDist(); const sec=elapsedSec();
+  $('gpsStatus').textContent=''; $('trackLive').classList.remove('on');
+  if(d<0.01){ toast('Маршрут не записался — мало точек GPS'); actLandmarks=[]; return; }
+  // автоматическая запись пробежки сразу после остановки
+  pts=gpsPts.slice();
+  $('mapDist').textContent=d.toFixed(2);
+  const run={id:Date.now(), type:activityType, km:+d.toFixed(2), sec:sec, date:new Date().toISOString().slice(0,10),
+    title:defaultTitle(), note:'', track:pts.slice(), landmarks:actLandmarks.slice()};
+  runs.unshift(run); await sSet(RUNS_KEY,JSON.stringify(runs)); render();
+  actLandmarks=[]; renderLmThumbs();
+  speak('Стоп. Дистанция '+d.toFixed(1).replace('.',' и ')+' '+kmWord(Math.round(d)));
+  toast('Пробежка сохранена · '+d.toFixed(2)+' км 🏃');
+  $('feedSec').scrollIntoView({behavior:'smooth'});
+};
+
+// отметить достопримечательность во время бега (та же логика фото, что и в форме)
+$('lmRunBtn').onclick=()=>$('lmFile').click();
+
+/* ---- pace ---- */
+function paceStr(km,sec){if(!km||!sec)return null;const p=sec/km,m=Math.floor(p/60),s=Math.round(p%60);return m+':'+String(s).padStart(2,'0');}
+
+function defaultTitle(){const h=new Date().getHours();const tod=h<11?'Утренняя':h<17?'Дневная':'Вечерняя';return tod+(activityType==='bike'?' поездка':' пробежка');}
+
+/* ---- render ---- */
+function fmtDate(s){const d=new Date(s+'T00:00');return isNaN(d)?s:d.toLocaleDateString('ru-RU',{weekday:'short',day:'numeric',month:'long'});}
+function fmtTime(sec){if(!sec)return '—';const h=Math.floor(sec/3600),m=Math.floor(sec%3600/60),s=sec%60;return h?`${h}ч ${m}м`:(m?`${m}:${String(s).padStart(2,'0')}`:`${s}с`);}
+function weekStart(d){const x=new Date(d);const day=(x.getDay()+6)%7;x.setHours(0,0,0,0);x.setDate(x.getDate()-day);return x;}
+
+function render(){
+  // weekly
+  const ws=weekStart(new Date()), we=new Date(ws);we.setDate(we.getDate()+7);
+  const wk=runs.filter(r=>{const d=new Date(r.date+'T00:00');return d>=ws&&d<we;});
+  const wKm=wk.reduce((s,r)=>s+r.km,0), wSec=wk.reduce((s,r)=>s+r.sec,0);
+  $('wKm').innerHTML=(wKm>=100?wKm.toFixed(0):wKm.toFixed(1))+'<small> км</small>';
+  $('wRuns').textContent=wk.length;
+  $('wTime').innerHTML=wSec? (wSec>=3600?Math.floor(wSec/3600)+'<small>ч '+Math.round(wSec%3600/60)+'м</small>':Math.round(wSec/60)+'<small>м</small>') : '0<small>м</small>';
+  const opt={day:'numeric',month:'short'};
+  $('weekRange').textContent=ws.toLocaleDateString('ru-RU',opt)+' – '+new Date(we-86400000).toLocaleDateString('ru-RU',opt);
+  const tot=runs.reduce((s,r)=>s+r.km,0);
+  $('allTime').textContent=runs.length?`всего ${tot.toFixed(tot>=100?0:1)} км`:'';
+
+  // goal ring
+  $('wKm2').textContent = wKm>=100?wKm.toFixed(0):wKm.toFixed(1);
+  $('goalVal').textContent = goal;
+  const pct = goal>0 ? Math.min(100, wKm/goal*100) : 0;
+  const C=2*Math.PI*33; // 207.3
+  $('goalArc').style.strokeDashoffset = C*(1-pct/100);
+  $('goalPc').textContent = Math.round(pct)+'%';
+  const left = goal-wKm;
+  $('goalSub').textContent = left>0 ? `осталось ${left.toFixed(1)} км до цели недели` : `цель выполнена! +${(-left).toFixed(1)} км сверху 🎉`;
+
+  // records (беговые показатели — без велозаездов)
+  $('rTotal').textContent = runs.length;
+  let longest=0, bestPace=null;
+  runs.filter(r=>(r.type||'run')!=='bike').forEach(r=>{ if(r.km>longest) longest=r.km; if(r.sec>0){const p=r.sec/r.km; if(bestPace===null||p<bestPace)bestPace=p;} });
+  $('rLong').textContent = longest>0 ? longest.toFixed(2)+' км' : '—';
+  $('rPace').textContent = bestPace!==null ? (Math.floor(bestPace/60)+':'+String(Math.round(bestPace%60)).padStart(2,'0')) : '—';
+  $('rStreak').textContent = calcStreak();
+  renderLevel(bestPace, longest);
+  renderCoach();
+
+  const f=$('feed');
+  if(!runs.length){f.innerHTML='<div class="card empty"><div class="big">🏃</div>Пока пусто.<br>Нажми «Старт» на карте — пробежка запишется и сохранится сама.</div>';return;}
+  f.innerHTML=runs.map(r=>{
+    const isBike=(r.type||'run')==='bike';
+    const metric=r.sec>0?metricStr(r.km,r.sec,r.type||'run'):'—';
+    return `<div class="act">
+      <div class="act-head">
+        <div class="avatar">${avaInner(profile.ava)}</div>
+        <div><div class="who">${esc(profile.name||'Бегун')}</div><div class="when">${fmtDate(r.date)}</div></div>
+        <button class="menu" data-id="${r.id}">⋯</button>
+      </div>
+      <div class="act-title">${isBike?'🚴':'🏃'} ${esc(r.title||actLabel(r.type))}</div>
+      <div class="act-stats">
+        <div class="s"><div class="sl">Дистанция</div><div class="sv">${r.km.toFixed(2)} <span style="font-size:13px;color:var(--muted)">км</span></div></div>
+        <div class="s"><div class="sl">${isBike?'Скорость':'Темп'}</div><div class="sv">${metric} <span style="font-size:13px;color:var(--muted)">${isBike?'км/ч':'/км'}</span></div></div>
+        <div class="s"><div class="sl">Время</div><div class="sv">${fmtTime(r.sec)}</div></div>
+      </div>
+      ${r.track&&r.track.length>1?`<canvas class="act-map" data-track="${r.id}"></canvas>`:''}
+      ${r.note?`<div class="act-note">${esc(r.note)}</div>`:''}
+      ${r.landmarks&&r.landmarks.length?`<div class="act-lm">${r.landmarks.map(l=>`<div class="lm"><img src="${l.p}"><span>✓ ${esc(l.n)}</span></div>`).join('')}</div>`:''}
+    </div>`;
+  }).join('');
+  f.querySelectorAll('.menu').forEach(b=>b.onclick=()=>openEdit(b.dataset.id));
+  // draw mini routes
+  f.querySelectorAll('canvas[data-track]').forEach(c=>{
+    const r=runs.find(x=>x.id==c.dataset.track); if(r) drawMini(c,r.track);
+  });
+}
+function drawMini(c,track){
+  const dpr=window.devicePixelRatio||1,W=c.clientWidth||300,H=130;
+  c.width=W*dpr;c.height=H*dpr;const ctx=c.getContext('2d');ctx.scale(dpr,dpr);
+  ctx.fillStyle='#eef1f3';ctx.fillRect(0,0,W,H);
+  const lats=track.map(p=>p[0]),lngs=track.map(p=>p[1]);
+  const minLa=Math.min(...lats),maxLa=Math.max(...lats),minLo=Math.min(...lngs),maxLo=Math.max(...lngs);
+  const pad=18,sx=(maxLo-minLo)||1e-6,sy=(maxLa-minLa)||1e-6;
+  const sc=Math.min((W-pad*2)/sx,(H-pad*2)/sy);
+  const ox=(W-sx*sc)/2, oy=(H-sy*sc)/2;
+  const X=lo=>ox+(lo-minLo)*sc, Y=la=>H-(oy+(la-minLa)*sc);
+  ctx.strokeStyle='#0fae9e';ctx.lineWidth=3.5;ctx.lineJoin='round';ctx.lineCap='round';ctx.beginPath();
+  track.forEach((p,i)=>{const x=X(p[1]),y=Y(p[0]);i?ctx.lineTo(x,y):ctx.moveTo(x,y);});ctx.stroke();
+  // start/end dots
+  ctx.fillStyle='#2ecc71';const s=track[0];ctx.beginPath();ctx.arc(X(s[1]),Y(s[0]),5,0,7);ctx.fill();
+  ctx.fillStyle='#0fae9e';const e=track[track.length-1];ctx.beginPath();ctx.arc(X(e[1]),Y(e[0]),5,0,7);ctx.fill();
+}
+function esc(s){return s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
+
+/* ---- streak (последовательные дни с пробежкой) ---- */
+function calcStreak(){
+  if(!runs.length) return 0;
+  const days=new Set(runs.map(r=>r.date));
+  let streak=0; const d=new Date(); d.setHours(0,0,0,0);
+  const iso=x=>x.toISOString().slice(0,10);
+  // если сегодня пробежки нет — начинаем счёт со вчера
+  if(!days.has(iso(d))) d.setDate(d.getDate()-1);
+  while(days.has(iso(d))){ streak++; d.setDate(d.getDate()-1); }
+  return streak;
+}
+
+/* ---- уровень бегуна и сравнение с лучшими планеты ---- */
+// Мировые рекорды марафона (актуальны на 2026). Темп — секунд на километр.
+const WR = {
+  manSec:170,  manLabel:'2:50', manWho:'Сабастиан Саве · 1:59:30',
+  womanSec:185, womanLabel:'3:05', womanWho:'Рут Чепнгетич · 2:09:56'
+};
+// Уровни от новичка к элите. max — самый медленный темп (сек/км), ещё попадающий в уровень.
+const LEVELS = [
+  {emoji:'🌱', name:'Новичок',        max:540,   band:'медленнее 8:00 /км', desc:'Старт положен — главное, что ты уже бежишь.'},
+  {emoji:'👟', name:'Любитель',       max:480,   band:'7:00–8:00 /км',     desc:'Стабильная лёгкая трусца, дыхание ровное.'},
+  {emoji:'🏃', name:'Бегун',          max:420,   band:'6:00–7:00 /км',     desc:'Уверенный любительский темп, можешь говорить на бегу.'},
+  {emoji:'💪', name:'Атлет-любитель', max:360,   band:'5:15–6:00 /км',     desc:'Хорошая форма — как у активных бегунов в парках.'},
+  {emoji:'⚡', name:'Продвинутый',     max:315,   band:'4:40–5:15 /км',     desc:'Темп крепкого клубного бегуна.'},
+  {emoji:'🔥', name:'Соревнующийся',  max:280,   band:'4:10–4:40 /км',     desc:'Уровень сильного полумарафонца-любителя.'},
+  {emoji:'🏅', name:'Полупрофи',      max:250,   band:'3:40–4:10 /км',     desc:'Темп призёров городских забегов.'},
+  {emoji:'🦅', name:'Профи',          max:220,   band:'3:10–3:40 /км',     desc:'Уровень национальных спортсменов.'},
+  {emoji:'👑', name:'Элита планеты',  max:190,   band:'быстрее 3:10 /км',  desc:'Темп мировых рекордсменов на длинных дистанциях.'}
+];
+function levelIndex(paceSec){ let idx=0; for(let i=0;i<LEVELS.length;i++){ if(paceSec<=LEVELS[i].max) idx=i; } return idx; }
+function fmtPace(sec){ if(!sec||sec<0) return '0:00'; const m=Math.floor(sec/60),s=Math.round(sec%60); return m+':'+String(s).padStart(2,'0'); }
+function fmtDur(sec){ sec=Math.round(sec); const h=Math.floor(sec/3600),m=Math.floor(sec%3600/60),s=sec%60; return h? h+'ч '+m+'м' : m+'м '+String(s).padStart(2,'0')+'с'; }
+const AVG = { sec:375, label:'6:15' }; // средний бегун-любитель (ориентир, сек/км)
+
+function renderLevel(bestPace, longest){
+  const card=$('levelCard'); if(!card) return;
+  const has=!!bestPace;
+  const idx = has ? levelIndex(bestPace) : 0;
+  const L=LEVELS[idx], next=LEVELS[idx+1];
+  let barPct=0, nextLine='Уровень определяется по твоему лучшему темпу на пробежке.';
+  if(has){
+    if(next){ const span=L.max-next.max, prog=(L.max-bestPace)/span*100; barPct=Math.max(4,Math.min(100,prog));
+      nextLine='До уровня «'+next.name+'» '+next.emoji+': ускорить лучший темп ещё примерно на '+fmtPace(Math.max(0,bestPace-next.max))+' /км'; }
+    else { barPct=100; nextLine='Максимальный уровень — темп мировой элиты. 👑'; }
+  }
+  const userLabel = has ? fmtPace(bestPace)+' /км' : '—';
+  const pctOfWR = has ? Math.round(WR.manSec/bestPace*100) : null;
+  const vsAvg = has ? Math.round(AVG.sec/bestPace*100) : null;
+  const eliteTime = (has&&longest>0) ? WR.manSec*longest : 0;
+  let othersLine;
+  if(!has) othersLine='Средний бегун-любитель держит около '+AVG.label+' /км, мировая элита — '+WR.manLabel+' /км.';
+  else if(bestPace < AVG.sec) othersLine='Ты быстрее среднего любителя — твоя скорость ≈ '+vsAvg+'% от его темпа.';
+  else if(bestPace > AVG.sec) othersLine='Средний любитель пока чуть быстрее — у тебя ≈ '+vsAvg+'% от его скорости.';
+  else othersLine='Ты ровно на уровне среднего бегуна-любителя.';
+
+  card.innerHTML=
+    '<div class="lvl-top"><div class="lvl-emoji">'+L.emoji+'</div>'+
+      '<div><div class="lvl-name">'+(has?L.name:'Твой уровень')+'</div>'+
+      '<div class="lvl-band">'+(has?L.band:'появится после первой записи времени')+'</div>'+
+      '<div class="lvl-desc">'+(has?L.desc:'Ниже — сравнение со средним бегуном и с лучшими планеты.')+'</div></div></div>'+
+    '<div class="lvl-bar"><i style="width:'+barPct.toFixed(0)+'%"></i></div>'+
+    '<div class="lvl-next">'+nextLine+'</div>'+
+    '<div class="lvl-cmp">'+
+      (has?'<div class="lvl-pct">'+pctOfWR+'%<small>ТВОЯ СКОРОСТЬ ОТ ТЕМПА РЕКОРДСМЕНА МИРА</small></div>':'')+
+      '<div class="lvl-fun" style="border-top:none;margin-top:0;padding-top:2px;color:var(--ink2)">'+othersLine+'</div>'+
+      '<div class="r"><span>Твой лучший темп</span><b class="hl">'+userLabel+'</b></div>'+
+      '<div class="r"><span>Средний бегун-любитель</span><b>'+AVG.label+' /км</b></div>'+
+      '<div class="r"><span>Рекорд мира · мужчины</span><b>'+WR.manLabel+' /км</b></div>'+
+      '<div class="r"><span>Рекорд мира · женщины</span><b>'+WR.womanLabel+' /км</b></div>'+
+      (eliteTime? '<div class="lvl-fun">Твою максимальную дистанцию '+longest.toFixed(1)+' км Сабастиан Саве (рекорд мира) пробежал бы примерно за '+fmtDur(eliteTime)+'.</div>':'')+
+    '</div>';
+}
+
+function buildLevelList(){
+  let best=null; runs.forEach(r=>{ if(r.sec>0){const p=r.sec/r.km; if(best===null||p<best)best=p;} });
+  const cur = best!==null ? levelIndex(best) : -1;
+  $('levelListBody').innerHTML = LEVELS.map((L,i)=>
+    '<div class="li'+(i===cur?' cur':'')+'"><div class="e">'+L.emoji+'</div>'+
+    '<div><div class="n">'+L.name+(i===cur?' — ты здесь':'')+'</div>'+
+    '<div class="b">'+L.band+' · '+L.desc+'</div></div></div>'
+  ).reverse().join('');
+}
+$('levelMore').onclick=()=>{ buildLevelList(); $('levelModal').classList.add('show'); };
+$('levelClose').onclick=()=>$('levelModal').classList.remove('show');
+$('levelModal').onclick=e=>{if(e.target===$('levelModal'))$('levelModal').classList.remove('show');};
+
+/* ---- 100 легенд бега (реальные времена марафона) ---- */
+const LEGENDS=[
+ {n:'Sabastian Sawe',f:'🇰🇪',t:'1:59:30'},{n:'Yomif Kejelcha',f:'🇪🇹',t:'1:59:41'},{n:'Jacob Kiplimo',f:'🇺🇬',t:'2:00:28'},
+ {n:'Kelvin Kiptum',f:'🇰🇪',t:'2:00:35'},{n:'Eliud Kipchoge',f:'🇰🇪',t:'2:01:09'},{n:'Amos Kipruto',f:'🇰🇪',t:'2:01:39'},
+ {n:'Kenenisa Bekele',f:'🇪🇹',t:'2:01:41'},{n:'Sisay Lemma',f:'🇪🇹',t:'2:01:48'},{n:'John Kipkosgei',f:'🇰🇪',t:'2:01:52'},
+ {n:'Benson Kipruto',f:'🇰🇪',t:'2:02:16'},{n:'Deresa Geleta',f:'🇪🇹',t:'2:02:38'},{n:'Mohamed Esa',f:'🇪🇹',t:'2:02:43'},
+ {n:'Alphonce Simbu',f:'🇹🇿',t:'2:02:47'},{n:'Birhanu Legese',f:'🇪🇹',t:'2:02:48'},{n:'Mosinet Geremew',f:'🇪🇹',t:'2:02:55'},
+ {n:'Timothy Kiplagat',f:'🇰🇪',t:'2:02:55'},{n:'Dennis Kimetto',f:'🇰🇪',t:'2:02:57'},{n:'Titus Ekiru',f:'🇰🇪',t:'2:02:57'},
+ {n:'Tamirat Tola',f:'🇪🇹',t:'2:02:59'},{n:'Evans Chebet',f:'🇰🇪',t:'2:03:00'},{n:'Gabriel Geay',f:'🇹🇿',t:'2:03:00'},
+ {n:'Geoffrey Mutai',f:'🇰🇪',t:'2:03:02'},{n:'Lawrence Cherono',f:'🇰🇪',t:'2:03:04'},{n:'Moses Mosop',f:'🇰🇪',t:'2:03:06'},
+ {n:'Alexander Mutiso',f:'🇰🇪',t:'2:03:11'},{n:'Emmanuel Mutai',f:'🇰🇪',t:'2:03:13'},{n:'Wilson Kipsang',f:'🇰🇪',t:'2:03:13'},
+ {n:'Vincent Kipkemoi',f:'🇰🇪',t:'2:03:13'},{n:'Mule Wasihun',f:'🇪🇹',t:'2:03:16'},{n:'Milkesa Mengesha',f:'🇪🇹',t:'2:03:17'},
+ {n:'Cyprian Kotut',f:'🇰🇪',t:'2:03:22'},{n:'Tadese Takele',f:'🇪🇹',t:'2:03:23'},{n:'Getaneh Molla',f:'🇪🇹',t:'2:03:34'},
+ {n:'Bashir Abdi',f:'🇧🇪',t:'2:03:36'},{n:'Patrick Makau',f:'🇰🇪',t:'2:03:38'},{n:'Haile Gebrselassie',f:'🇪🇹',t:'2:03:59'},
+ {n:'Lelisa Desisa',f:'🇪🇹',t:'2:04:45'},{n:'Paul Tergat',f:'🇰🇪',t:'2:04:55'},{n:'Ryan Hall',f:'🇺🇸',t:'2:04:58'},
+ {n:'Samuel Wanjiru',f:'🇰🇪',t:'2:05:10'},{n:'Mo Farah',f:'🇬🇧',t:'2:05:11'},{n:'Khalid Khannouchi',f:'🇺🇸',t:'2:05:38'},
+ {n:'Ronaldo da Costa',f:'🇧🇷',t:'2:06:05'},{n:'Galen Rupp',f:'🇺🇸',t:'2:06:07'},{n:'Antonio Pinto',f:'🇵🇹',t:'2:06:36'},
+ {n:'Carlos Lopes',f:'🇵🇹',t:'2:07:12'},{n:'Steve Jones',f:'🇬🇧',t:'2:07:13'},{n:'Stefano Baldini',f:'🇮🇹',t:'2:07:22'},
+ {n:'Yuki Kawauchi',f:'🇯🇵',t:'2:07:27'},{n:'Rob de Castella',f:'🇦🇺',t:'2:07:51'},{n:'Gezahegne Abera',f:'🇪🇹',t:'2:07:54'},
+ {n:'Frank Shorter',f:'🇺🇸',t:'2:10:30'},{n:'Abebe Bikila',f:'🇪🇹',t:'2:12:11'},
+ {n:'Ruth Chepngetich',f:'🇰🇪',t:'2:09:56'},{n:'Fotyen Tesfay',f:'🇪🇹',t:'2:10:51'},{n:'Tigist Assefa',f:'🇪🇹',t:'2:11:53'},
+ {n:'Sifan Hassan',f:'🇳🇱',t:'2:13:44'},{n:'Joyciline Jepkosgei',f:'🇰🇪',t:'2:14:00'},{n:'Brigid Kosgei',f:'🇰🇪',t:'2:14:04'},
+ {n:'Peres Jepchirchir',f:'🇰🇪',t:'2:14:43'},{n:'Hawi Feysa',f:'🇪🇹',t:'2:14:57'},{n:'Amane Beriso',f:'🇪🇹',t:'2:14:58'},
+ {n:'Paula Radcliffe',f:'🇬🇧',t:'2:15:25'},{n:'Worknesh Degefa',f:'🇪🇹',t:'2:15:51'},{n:'Helen Obiri',f:'🇰🇪',t:'2:15:53'},
+ {n:'Sutume Asefa',f:'🇪🇹',t:'2:15:55'},{n:'Tigist Ketema',f:'🇪🇹',t:'2:16:07'},{n:'Rosemary Wanjiru',f:'🇰🇪',t:'2:16:14'},
+ {n:'Almaz Ayana',f:'🇪🇹',t:'2:16:22'},{n:'Megertu Kebede',f:'🇪🇹',t:'2:16:34'},{n:'Bertukan Welde',f:'🇪🇹',t:'2:16:36'},
+ {n:'Letesenbet Gidey',f:'🇪🇹',t:'2:16:49'},{n:'Alemu Megertu',f:'🇪🇹',t:'2:16:49'},{n:'Yalemzerf Yehualaw',f:'🇪🇹',t:'2:16:52'},
+ {n:'Tsehay Gemechu',f:'🇪🇹',t:'2:16:56'},{n:'Winfridah Moraa',f:'🇰🇪',t:'2:16:56'},{n:'Mary Keitany',f:'🇰🇪',t:'2:17:01'},
+ {n:'Sharon Lokedi',f:'🇰🇪',t:'2:17:22'},{n:'Sheila Chepkirui',f:'🇰🇪',t:'2:17:29'},{n:'Tadu Teshome',f:'🇪🇹',t:'2:17:36'},
+ {n:'Lonah Salpeter',f:'🇮🇱',t:'2:17:45'},{n:'Tirunesh Dibaba',f:'🇪🇹',t:'2:17:56'},{n:'Gladys Cherono',f:'🇰🇪',t:'2:18:11'},
+ {n:'Emily Sisson',f:'🇺🇸',t:'2:18:29'},{n:'Vivian Cheruiyot',f:'🇰🇪',t:'2:18:31'},{n:'Catherine Ndereba',f:'🇰🇪',t:'2:18:47'},
+ {n:'Tiki Gelana',f:'🇪🇹',t:'2:18:58'},{n:'Mizuki Noguchi',f:'🇯🇵',t:'2:19:12'},{n:'Keira DAmato',f:'🇺🇸',t:'2:19:12'},
+ {n:'Deena Kastor',f:'🇺🇸',t:'2:19:36'},{n:'Florence Kiplagat',f:'🇰🇪',t:'2:19:44'},{n:'Naoko Takahashi',f:'🇯🇵',t:'2:19:46'},
+ {n:'Edna Kiplagat',f:'🇰🇪',t:'2:19:50'},{n:'Sara Hall',f:'🇺🇸',t:'2:20:32'},{n:'Tegla Loroupe',f:'🇰🇪',t:'2:20:43'},
+ {n:'Ingrid Kristiansen',f:'🇳🇴',t:'2:21:06'},{n:'Shalane Flanagan',f:'🇺🇸',t:'2:21:14'},{n:'Joan Benoit',f:'🇺🇸',t:'2:21:21'},
+ {n:'Rosa Mota',f:'🇵🇹',t:'2:23:29'},{n:'Grete Waitz',f:'🇳🇴',t:'2:24:54'}
+];
+function parseT(t){const a=t.split(':').map(Number); return a.length===3? a[0]*3600+a[1]*60+a[2] : a[0]*60+a[1];}
+function legPace(t){ return parseT(t)/42.195; }
+function fmtPace2(sec){ const m=Math.floor(sec/60),s=Math.round(sec%60); return m+':'+String(s).padStart(2,'0'); }
+function lgInitials(n){ const w=n.replace(/[^A-Za-zА-Яа-я ]/g,'').trim().split(/\s+/); return (((w[0]||'')[0]||'')+((w[1]||'')[0]||'')).toUpperCase(); }
+function lgHue(s){ let h=0; for(let i=0;i<s.length;i++) h=(h*31+s.charCodeAt(i))%360; return h; }
+function userBestPace(){ let b=null; runs.forEach(r=>{ if(r.sec>0){const p=r.sec/r.km; if(b===null||p<b)b=p;} }); return b; }
+
+function buildLegends(){
+  const best=userBestPace();
+  const arr=LEGENDS.map(L=>({...L,p:legPace(L.t)})).sort((a,b)=>a.p-b.p);
+  const place = best!==null ? arr.filter(L=>L.p<best).length+1 : null;
+  $('legendsPlace').innerHTML = best!==null
+    ? 'Если держать твой лучший темп <b>'+fmtPace2(best)+'/км</b> на марафоне, ты был бы <b style="color:var(--orange)">'+place+'-м</b> из '+(arr.length+1)+'. Времена настоящие — из официальных all-time списков.'
+    : 'Список 100 сильнейших и известнейших марафонцев планеты с реальными временами.';
+  function youRow(){ return '<div class="lg you"><div class="rk">'+place+'</div><div class="lg-av" style="background:var(--orange)">Я</div><div class="lg-i"><div class="lg-n">ТЫ · твой лучший темп</div><div class="lg-b">'+fmtPace2(best)+' /км</div></div></div>'; }
+  let html='', placed=false, rank=0;
+  arr.forEach(L=>{
+    if(best!==null && !placed && best<=L.p){ html+=youRow(); placed=true; }
+    rank++;
+    const av = L.img
+      ? '<div class="lg-av" style="background:#eee;overflow:hidden;padding:0"><img src="'+L.img+'" style="width:100%;height:100%;object-fit:cover"></div>'
+      : '<div class="lg-av" style="background:hsl('+lgHue(L.n)+',58%,52%)">'+lgInitials(L.n)+'</div>';
+    html+='<div class="lg"><div class="rk">'+rank+'</div>'+av+
+      '<div class="lg-i"><div class="lg-n">'+L.f+' '+L.n+'</div><div class="lg-b">'+L.t+' · '+fmtPace2(L.p)+' /км</div></div></div>';
+  });
+  if(best!==null && !placed) html+=youRow();
+  $('legendsBody').innerHTML=html;
+}
+$('legendsBtn').onclick=()=>{ if(!requirePremium()) return; buildLegends(); $('legendsModal').classList.add('show'); };
+$('legendsClose').onclick=()=>$('legendsModal').classList.remove('show');
+$('legendsModal').onclick=e=>{if(e.target===$('legendsModal'))$('legendsModal').classList.remove('show');};
+
+/* ---- кнопка «+» ведёт к записи на карте ---- */
+$('addBtn').onclick=()=>$('mapSec').scrollIntoView({behavior:'smooth'});
+
+/* ---- достопримечательности: чек-ин по фото ---- */
+let actLandmarks=[];
+function renderLmThumbs(){
+  const box=$('lmThumbs'); if(!box) return;
+  box.innerHTML = actLandmarks.map((l,i)=>
+    '<div class="lm-t"><img src="'+l.p+'"><button class="x" data-i="'+i+'">×</button><div class="cap">✓ '+esc(l.n)+'</div></div>'
+  ).join('');
+  box.querySelectorAll('.x').forEach(b=>b.onclick=()=>{ actLandmarks.splice(+b.dataset.i,1); renderLmThumbs(); });
+}
+$('lmFile').onchange=e=>{
+  const f=e.target.files&&e.target.files[0]; if(!f){return;}
+  const rd=new FileReader();
+  rd.onload=()=>{
+    const img=new Image();
+    img.onload=()=>{
+      const mx=360, sc=Math.min(1,mx/Math.max(img.width,img.height));
+      const cw=Math.max(1,Math.round(img.width*sc)), ch=Math.max(1,Math.round(img.height*sc));
+      const cv=document.createElement('canvas'); cv.width=cw; cv.height=ch;
+      cv.getContext('2d').drawImage(img,0,0,cw,ch);
+      let data; try{ data=cv.toDataURL('image/jpeg',0.55); }catch(_){ data=rd.result; }
+      let name=''; try{ name=window.prompt('Что это за место? Например: Парк Горького')||''; }catch(_){}
+      const lm={n:(name.trim()||'Достопримечательность'), p:data};
+      if(tracking && gpsPts.length){ lm.lat=gpsPts[gpsPts.length-1][0]; lm.lng=gpsPts[gpsPts.length-1][1]; }
+      actLandmarks.push(lm);
+      renderLmThumbs();
+      if(tracking){ $('lmRunBtn').textContent='📷 Отмечено мест: '+actLandmarks.length; }
+      toast('Место отмечено 📍');
+    };
+    img.onerror=()=>toast('Не удалось обработать фото');
+    img.src=rd.result;
+  };
+  rd.readAsDataURL(f);
+  e.target.value='';
+};
+
+/* ---- profile ---- */
+function isImgAva(a){ return typeof a==='string' && a.indexOf('data:')===0; }
+function avaInner(a){ a=a||'Я'; return isImgAva(a) ? '<img class="ava-img" src="'+a+'" alt="">' : esc(a); }
+function renderProfile(){
+  $('pAva').innerHTML=avaInner(profile.ava);
+  $('pName').textContent=profile.name||'Бегун';
+  $('pCity').textContent=profile.city||'Укажи город в профиле';
+  $('pGoal').textContent=goal;
+}
+
+const AVA_EMOJI=['🏃','🏃‍♀️','🏃‍♂️','🤸','🦿','🚀','🔥','😎','🤪','😅','🥵','🐆','🦘','🐢','🦄','🐕','🥇','💨','⚡','🎽'];
+let pendingAva='Я';
+function renderAvaPrev(){ $('avaPrev').innerHTML=avaInner(pendingAva); document.querySelectorAll('#emojiPick button').forEach(b=>b.classList.toggle('on', b.dataset.e===pendingAva && !isImgAva(pendingAva))); }
+function buildEmojiPick(){
+  $('emojiPick').innerHTML=AVA_EMOJI.map(e=>'<button type="button" data-e="'+e+'">'+e+'</button>').join('');
+  $('emojiPick').querySelectorAll('button').forEach(b=>b.onclick=()=>{ pendingAva=b.dataset.e; renderAvaPrev(); });
+}
+$('profGoalEdit').onclick=()=>{$('goalInput').value=goal;$('goalModal').classList.add('show');};
+$('profEdit').onclick=()=>{
+  $('pNameIn').value=profile.name||''; $('pCityIn').value=profile.city||'';
+  pendingAva=profile.ava||'Я';
+  buildEmojiPick(); renderAvaPrev();
+  $('profModal').classList.add('show');
+};
+$('avaPhotoBtn').onclick=()=>$('avaFile').click();
+$('avaFile').onchange=e=>{
+  const f=e.target.files&&e.target.files[0]; if(!f) return;
+  const rd=new FileReader();
+  rd.onload=()=>{ const img=new Image();
+    img.onload=()=>{ const s=Math.min(img.width,img.height); const cv=document.createElement('canvas'); cv.width=256; cv.height=256;
+      const sx=(img.width-s)/2, sy=(img.height-s)/2;
+      cv.getContext('2d').drawImage(img, sx, sy, s, s, 0, 0, 256, 256);
+      let data; try{ data=cv.toDataURL('image/jpeg',0.78); }catch(_){ data=rd.result; }
+      pendingAva=data; renderAvaPrev(); toast('Фото добавлено');
+    };
+    img.onerror=()=>toast('Не удалось обработать фото');
+    img.src=rd.result;
+  };
+  rd.readAsDataURL(f); e.target.value='';
+};
+$('profCancel').onclick=()=>$('profModal').classList.remove('show');
+$('profModal').onclick=e=>{if(e.target===$('profModal'))$('profModal').classList.remove('show');};
+$('profSave').onclick=async()=>{
+  profile.name=$('pNameIn').value.trim()||'Бегун';
+  profile.ava=pendingAva||'Я';
+  profile.city=$('pCityIn').value.trim();
+  await sSet(PROF_KEY,JSON.stringify(profile));
+  $('profModal').classList.remove('show'); renderProfile(); render(); toast('Профиль сохранён');
+};
+
+/* ---- goal ---- */
+$('goalCancel').onclick=()=>$('goalModal').classList.remove('show');
+$('goalModal').onclick=e=>{if(e.target===$('goalModal'))$('goalModal').classList.remove('show');};
+$('goalSave').onclick=async()=>{
+  const g=+$('goalInput').value; if(!g||g<=0){toast('Введи число больше 0');return;}
+  goal=g; await sSet(GOAL_KEY,String(g)); $('goalModal').classList.remove('show'); renderProfile(); render(); toast('Цель обновлена');
+};
+
+/* ---- edit run ---- */
+function openEdit(id){
+  const r=runs.find(x=>x.id==id); if(!r) return; editId=r.id;
+  $('eDist').value=r.km; $('eDate').value=r.date;
+  $('eH').value=Math.floor(r.sec/3600)||''; $('eM').value=Math.floor(r.sec%3600/60)||''; $('eS').value=r.sec%60||'';
+  $('eTitle').value=r.title||''; $('eNote').value=r.note||'';
+  $('editModal').classList.add('show');
+}
+$('editModal').onclick=e=>{if(e.target===$('editModal'))$('editModal').classList.remove('show');};
+$('editSave').onclick=async()=>{
+  const r=runs.find(x=>x.id==editId); if(!r) return;
+  const km=+$('eDist').value; if(!km||km<=0){toast('Введи дистанцию');return;}
+  r.km=+km.toFixed(2);
+  r.sec=(+$('eH').value||0)*3600+(+$('eM').value||0)*60+(+$('eS').value||0);
+  r.date=$('eDate').value||r.date; r.title=$('eTitle').value.trim()||r.title; r.note=$('eNote').value.trim();
+  await sSet(RUNS_KEY,JSON.stringify(runs)); $('editModal').classList.remove('show'); render(); toast('Сохранено');
+};
+$('editDelete').onclick=async()=>{
+  if(!confirm('Удалить эту пробежку?')) return;
+  runs=runs.filter(x=>x.id!=editId); await sSet(RUNS_KEY,JSON.stringify(runs));
+  $('editModal').classList.remove('show'); render(); toast('Удалено');
+};
+
+/* ---- nav ---- */
+document.querySelectorAll('.nav-a[data-go]').forEach(b=>b.onclick=()=>$(b.dataset.go).scrollIntoView({behavior:'smooth'}));
+
+/* ---- settings ---- */
+async function openSettings(){$('keyInput').value=(await sGet(YKEY))||'';$('setModal').classList.add('show');}
+$('settingsBtn').onclick=openSettings;
+$('keyCancel').onclick=()=>$('setModal').classList.remove('show');
+$('setModal').onclick=e=>{if(e.target===$('setModal'))$('setModal').classList.remove('show');};
+$('keySave').onclick=async()=>{await sSet(YKEY,$('keyInput').value.trim());$('setModal').classList.remove('show');toast('Ключ сохранён, обновляю...');setTimeout(()=>location.reload(),700);};
+
+/* ---- голосовой тренер: переключатель в настройках + кнопка на панели ---- */
+function syncVoiceUI(){
+  const b=$('voiceBtn');
+  if(b){ b.textContent='🎧 Голос ИИ-тренера: '+(voiceCoach?'вкл':'выкл'); b.style.borderColor=voiceCoach?'var(--orange)':'var(--line2)'; b.style.color=voiceCoach?'var(--orange)':'var(--ink2)'; }
+  if($('voiceToggle')) $('voiceToggle').checked=voiceCoach;
+}
+async function setVoice(v, announce){
+  if(v && !isPremium){ requirePremium(); syncVoiceUI(); return; }
+  voiceCoach=v; await sSet(VOICE_KEY, v?'1':'0'); syncVoiceUI(); renderCoach();
+  if(v && announce) speak('Голосовой тренер включён');
+  toast(v?'Тренер включён 🎧':'Тренер выключен');
+}
+$('voiceToggle').onchange=()=>setVoice($('voiceToggle').checked,true);
+$('voiceBtn').onclick=()=>setVoice(!voiceCoach,true);
+$('voiceSel').onchange=async()=>{ voiceURI=$('voiceSel').value; await sSet(VOICE_URI_KEY,voiceURI); say('Привет! Я твой тренер. Побежали — держи ровный темп, у тебя отлично получается.'); };
+$('voiceTest').onclick=()=>say('Отличный темп! Дыши ровно, плечи расслаблены. Ты молодец — так держать.');
+
+/* ---- пульсовые зоны ---- */
+const HR_KEY='stride:maxhr'; let maxHr=190;
+const HR_ZONES=[
+  {z:'Z1', n:'Восстановление', lo:0.50, hi:0.60, c:'#9bd5ff'},
+  {z:'Z2', n:'Лёгкая · жиросжигание', lo:0.60, hi:0.70, c:'#7ed957'},
+  {z:'Z3', n:'Аэробная · выносливость', lo:0.70, hi:0.80, c:'#ffd23f'},
+  {z:'Z4', n:'Анаэробная · темповая', lo:0.80, hi:0.90, c:'#ff8a3d'},
+  {z:'Z5', n:'Максимальная', lo:0.90, hi:1.00, c:'#ff4d4d'}
+];
+function renderHr(){
+  const card=$('hrCard'); if(!card) return;
+  const heights=[44,58,72,86,100]; // визуальный рост нагрузки по зонам
+  const bars=HR_ZONES.map((Z,i)=>{ const lo=Math.round(maxHr*Z.lo), hi=Math.round(maxHr*Z.hi);
+      return '<div class="hr-bar">'+
+        '<div class="col" style="height:'+heights[i]+'%;background:'+Z.c+'"></div>'+
+        '<div class="zl" style="color:'+Z.c+'">'+Z.z+'</div>'+
+        '<div class="rng">'+lo+'–'+hi+'</div>'+
+        '<div class="zn">'+Z.n+'</div></div>';
+    }).join('');
+  card.innerHTML='<div class="hr-head">Максимальный пульс: <b>'+maxHr+'</b> уд/мин. Диапазоны зон (уд/мин) — тренируйся в нужной. <span style="color:var(--muted)">Живой пульс на графике появится после подключения датчика (Часть 2).</span></div>'+
+    '<div class="hr-graph"><div class="hr-bars">'+bars+'</div></div>';
+}
+$('hrEdit').onclick=()=>{ $('maxHrInput').value=maxHr; $('setModal').classList.add('show'); };
+$('maxHrInput').onchange=async()=>{ const v=+$('maxHrInput').value; if(v>=120&&v<=230){ maxHr=v; await sSet(HR_KEY,String(v)); renderHr(); toast('Максимальный пульс: '+v); } };
+
+/* ---- ИИ-тренер: анализ пробежек на основе принципов беговой подготовки ---- */
+const TRAIN_TIPS=[
+  'Перед быстрым бегом всегда делай разминку 8–10 минут лёгкого бега и суставную гимнастику — холодные мышцы хуже работают и легче травмируются.',
+  'Сначала строй базу общей выносливости спокойным длительным бегом, и только потом добавляй скоростную работу — фундамент важнее скорости.',
+  'Раз в неделю можно добавить интервалы (отрезки быстрее с лёгким бегом между ними) — это развивает скорость и специальную выносливость.',
+  'Чередуй тяжёлые и лёгкие дни: после интенсивной тренировки телу нужен восстановительный или совсем лёгкий день.',
+  'Объём и интенсивность повышай постепенно, шаг за шагом — резкий скачок чаще приводит к перетренированности, чем к прогрессу.',
+  'Равномерный бег в одном спокойном темпе на длинной дистанции хорошо развивает выносливость — это основа подготовки на средние и длинные дистанции.'
+];
+const TECH_TIPS=[
+  'Держи каденс около 170–180 шагов в минуту: частый короткий шаг мягче для суставов, чем редкий длинный.',
+  'Приземляйся на среднюю часть стопы под центром тяжести, а не на пятку далеко впереди — так гасится удар и бережётся колено.',
+  'Беги с прямой спиной и лёгким наклоном всего тела вперёд от голеностопа (не от пояса) — так движение даётся легче.',
+  'Не «перешагивай»: стопа должна касаться земли под тобой, а не выноситься вперёд — это убирает торможение на каждом шаге.',
+  'Плечи и кисти расслаблены, руки идут вдоль корпуса, локоть около 90° — лишнее напряжение только утомляет.',
+  'Меняешь технику — делай это постепенно: добавляй понемногу, иначе непривычная нагрузка на стопы и икры даст боль.',
+  'Укрепляй стопы и голени (мягкие прыжки, ходьба босиком по безопасной поверхности) — сильная стопа сама работает амортизатором.',
+  'Дыши ровно и в ритм шагам; на лёгком беге ты должен мочь говорить полными фразами — это признак правильной интенсивности.'
+];
+function coachAdvice(){
+  if(!runs.length){
+    return { head:'Жду твою первую пробежку', tips:[
+      'Начни с лёгкой пробежки 20–30 минут в комфортном темпе — таком, чтобы можно было свободно говорить на бегу. Это фундамент, на котором строится вся беговая форма.'
+    ]};
+  }
+  const tips=[];
+  const ws=weekStart(new Date()); const we=new Date(ws); we.setDate(we.getDate()+7);
+  const lastWs=new Date(ws); lastWs.setDate(lastWs.getDate()-7);
+  const thisWk=runs.filter(r=>{const d=new Date(r.date+'T00:00');return d>=ws&&d<we;});
+  const lastWk=runs.filter(r=>{const d=new Date(r.date+'T00:00');return d>=lastWs&&d<ws;});
+  const wKm=thisWk.reduce((s,r)=>s+r.km,0), lwKm=lastWk.reduce((s,r)=>s+r.km,0);
+  const paces=runs.filter(r=>r.sec>0 && r.km>0).map(r=>r.sec/r.km);
+  const avg=paces.length? paces.reduce((a,b)=>a+b,0)/paces.length : 0;
+  const pmin=paces.length?Math.min(...paces):0, pmax=paces.length?Math.max(...paces):0;
+  const longest=Math.max(...runs.map(r=>r.km));
+  const last=new Date(runs[0].date+'T00:00');
+  const daysSince=Math.floor((Date.now()-last.getTime())/86400000);
+
+  if(daysSince>10) tips.push('Перерыв больше десяти дней. Вернись мягко: 2–3 коротких лёгких пробежки, не гонись за прежним темпом — тело должно вспомнить нагрузку.');
+  if(lwKm>0 && wKm>lwKm*1.1) tips.push('Недельный объём вырос с '+lwKm.toFixed(0)+' до '+wKm.toFixed(0)+' км — это больше +10%. Правило 10% советует наращивать плавнее, иначе резко растёт риск перегрузки и травм.');
+  if(paces.length>=3 && pmin>0 && (pmax-pmin)/pmin<0.12) tips.push('Почти все пробежки идут в одном темпе. Принцип 80/20: около 80% времени беги легко (чтобы говорить на ходу) и лишь 20% — быстро. Добавь медленные восстановительные пробежки — так прогресс быстрее, а усталость меньше.');
+  if(runs.length>=3 && longest<5) tips.push('Длинной пробежки пока нет. Раз в неделю делай одну подлиннее в спокойном темпе — именно она лучше всего развивает выносливость.');
+  if(thisWk.length>0 && thisWk.length<2) tips.push('На этой неделе мало выходов. Для прогресса регулярность важнее разовых усилий — ориентир 3 пробежки в неделю.');
+  if(!tips.length) tips.push('Баланс хороший: бегаешь регулярно и разнообразно. Следующий шаг — добавь одну темповую пробежку в неделю (несколько отрезков чуть быстрее целевого темпа), чтобы поднять потолок скорости.');
+
+  const head='Разобрал твои '+runs.length+' пробеж'+(runs.length%10===1&&runs.length%100!==11?'ку':'ек')+' · средний темп '+fmtPace(avg)+' /км';
+  return { head, tips: tips.slice(0,3) };
+}
+function renderCoach(){
+  const c=$('coachCard'); if(!c) return;
+  const AVA='<svg class="coach-ava" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'+
+    '<defs><linearGradient id="cg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3ec9c0"/><stop offset="1" stop-color="#0a8a7e"/></linearGradient></defs>'+
+    '<circle cx="32" cy="32" r="32" fill="url(#cg)"/>'+
+    '<path d="M13 64 a19 19 0 0 1 38 0 z" fill="#2ec06b"/>'+
+    '<circle cx="32" cy="34" r="14" fill="#ffd8b4"/>'+
+    '<circle cx="18.6" cy="34" r="2.6" fill="#ffd8b4"/><circle cx="45.4" cy="34" r="2.6" fill="#ffd8b4"/>'+
+    '<path d="M19 28 a13 13 0 0 1 26 0 z" fill="#1c1c1e"/>'+
+    '<path d="M31 28 h17 a3 3 0 0 1 0 4 h-17 z" fill="#000"/>'+
+    '<circle cx="32" cy="17.5" r="2" fill="#0fae9e"/>'+
+    '<rect x="15.4" y="32" width="4" height="7" rx="2" fill="#1c1c1e"/><rect x="44.6" y="32" width="4" height="7" rx="2" fill="#1c1c1e"/>'+
+    '<path d="M17.4 38 q-3 4.5 7 6.5" fill="none" stroke="#1c1c1e" stroke-width="2" stroke-linecap="round"/>'+
+    '<circle cx="27" cy="34" r="1.7" fill="#1c1c1e"/><circle cx="37" cy="34" r="1.7" fill="#1c1c1e"/>'+
+    '<path d="M26.5 39 q5.5 4.5 11 0" fill="none" stroke="#1c1c1e" stroke-width="2" stroke-linecap="round"/></svg>';
+
+  if(!voiceCoach){
+    c.innerHTML='<div class="coach-intro">'+AVA+
+      '<div><div style="font-family:var(--num);font-weight:800;font-size:16px">Привет! Я твой ИИ-тренер</div>'+
+      '<div style="font-size:12.5px;color:var(--muted);font-weight:600;margin-top:3px">включи режим тренера — и я начну давать советы</div></div></div>'+
+      '<div class="coach-tip">Я разбираю твои пробежки и подсказываю по тренировкам и технике бега — на основе принципов беговых книг. Советами можно пользоваться молча или слушать их голосом.</div>'+
+      '<button class="lg-btn" id="coachEnable" style="margin:12px 0 0">Включить ИИ-тренера</button>';
+    $('coachEnable').onclick=()=>setVoice(true,true);
+    return;
+  }
+
+  const a=coachAdvice();
+  const tech=TECH_TIPS[(runs.length + new Date().getDate()) % TECH_TIPS.length];
+  const train=TRAIN_TIPS[(runs.length + new Date().getDate()) % TRAIN_TIPS.length];
+  c.innerHTML='<div class="coach-intro">'+AVA+
+    '<div style="font-family:var(--num);font-weight:800;font-size:15px;line-height:1.2">'+esc(a.head)+'</div></div>'+
+    a.tips.map(t=>'<div class="coach-tip">'+esc(t)+'</div>').join('')+
+    '<div class="coach-tip"><b style="color:var(--orange)">Тренировка:</b> '+esc(train)+'</div>'+
+    '<div class="coach-tip"><b style="color:var(--orange)">Техника бега:</b> '+esc(tech)+'</div>'+
+    '<button class="lg-btn" id="coachSpeak" style="margin:12px 0 0">🔊 Послушать совет</button>'+
+    '<div class="coach-note">Советы — на основе принципов беговой подготовки («Natural Running», методические пособия по лёгкой атлетике) и анализа твоих данных. Не заменяют врача или личного тренера.</div>';
+  const speakText=a.tips[0]+'. По тренировкам: '+train+' По технике: '+tech;
+  $('coachSpeak').onclick=()=>{ say(speakText); toast('Озвучиваю совет 🔊'); };
+}
+
+/* ===== Диалог с тренером (офлайн-помощник на основе книг + твоих данных) ===== */
+function _wk(){ const ws=weekStart(new Date()), we=new Date(ws); we.setDate(we.getDate()+7);
+  const wk=runs.filter(r=>{const d=new Date(r.date+'T00:00');return d>=ws&&d<we;}); return {km:wk.reduce((s,r)=>s+r.km,0), n:wk.length}; }
+function _bestPace(){ let b=null; runs.filter(r=>(r.type||'run')!=='bike').forEach(r=>{ if(r.sec>0){const p=r.sec/r.km; if(b===null||p<b)b=p;} }); return b; }
+function greetText(){ return 'Привет! Я твой тренер. Спрашивай про тренировки, пульс, восстановление, травмы, питание, технику бега или велосипед — напиши вопрос или нажми кнопку ниже.'; }
+
+function coachAnswer(q){
+  const s=' '+String(q).toLowerCase().replace(/ё/g,'е')+' ';
+  const has=(...a)=>a.some(k=>s.includes(k));
+  const wk=_wk(), bp=_bestPace(), n=runs.length;
+
+  if(has('привет','здравств','хай','добрый ')) return greetText();
+  if(has('что ты умеешь','помощь','помоги','о чем','можешь')) return 'Я подскажу по: плану тренировок и объёму, пульсовым зонам, восстановлению и сну, травмам (колено, голень, стопа), растяжке, питанию и воде, технике бега, велосипеду — и разберу твои данные. Просто спроси своими словами.';
+
+  if(has('прогресс','как я','мои результат','статистик','как успехи','как дела с бег')){
+    if(!n) return 'Пока нет ни одной записи. Сделай первую тренировку — лёгкие 20–30 минут в комфортном темпе, и я начну отслеживать прогресс.';
+    let r='За эту неделю: '+wk.km.toFixed(1)+' км за '+wk.n+' трен. Всего записей — '+n+'.';
+    if(bp) r+=' Лучший темп: '+fmtPace(bp)+' /км.';
+    return r+' Прогресс любит постепенность: прибавляй недельный объём не больше чем на ~10%.';
+  }
+  if(has('что мне улучшить','что улучшить','совет','с чего начать','что делать','план')){
+    if(!n) return 'Старт простой: 3 коротких пробежки в неделю по 20–30 минут в лёгком темпе (чтобы мог говорить на бегу). Через 2–3 недели добавь одну чуть длиннее. Не гонись за скоростью — сначала привычка и объём.';
+    return 'Судя по записям, держи 80% бега в лёгком темпе и лишь 20% — быстрого. Раз в неделю делай длительную пробежку (на 20–30% длиннее обычной), а объём наращивай плавно, ~10% в неделю.';
+  }
+  if(has('сколько раз','как часто','сколько бегать','сколько тренир','частот')) return 'Для роста формы обычно хватает 3–4 пробежек в неделю. Новичку — 3 раза через день, чтобы тело восстанавливалось. Один день в неделю — полный отдых.';
+  if(has('10%','увеличивать','прибавлять','наращивать','объем','километраж')) return 'Главное правило: наращивай недельный объём не больше чем на ~10%. Резкие скачки — частая причина травм. Раз в 3–4 недели делай «разгрузочную» неделю чуть полегче.';
+  if(has('длинн','длительн','лонг')) return 'Длительная пробежка — основа выносливости. Делай её раз в неделю в спокойном темпе, на 20–30% длиннее обычной. Если тяжело — переходи на шаг, это нормально.';
+  if(has('интервал','скоростн','темпов','ускорен','быстрее бегать','быстрее побежать')) return 'Скорость добавляют, когда есть база из лёгкого бега. Простой вариант: после разминки 6–8 ускорений по 1 мин в бодром темпе с 2 мин лёгкого бега между ними. Не чаще 1–2 раз в неделю.';
+  if(has('разминк','разогрев','заминк','перед бегом размя')) return 'Перед бегом — 5–10 минут лёгкой ходьбы/трусцы и суставная гимнастика. После — несколько минут спокойного бега и мягкая растяжка. Это снижает риск травм.';
+  if(has('техник','каденс','приземл','стопа','правильно бежать','как бежать')) return 'Беги расслабленно: корпус чуть вперёд от щиколоток, плечи опущены, руки работают вдоль тела. Стопу ставь под себя, а не далеко впереди, шаги частые и лёгкие (примерно 170–180 в минуту). Не «втыкайся» в пятку с прямой ноги.';
+  if(has('дыхан','дышать')) return 'Дыши животом и ритмично, под шаги (например, на 3 шага вдох, на 2 — выдох). Если сбивается дыхание — сбавь темп: на лёгком беге ты должен мочь говорить фразами.';
+
+  if(has('пульс','чсс','зона','сердц')){
+    const mhr=maxHr||190;
+    return 'Ориентир максимального пульса ≈ '+mhr+' уд/мин (220 минус возраст). Большую часть бега держи в «зелёной» зоне 60–75% от макс (примерно '+Math.round(mhr*0.6)+'–'+Math.round(mhr*0.75)+'), это развивает выносливость без перегруза. Высокий пульс 80–90% — только в коротких скоростных отрезках.';
+  }
+  if(has('восстанов','перетрен','устал','нет сил','тяжело восстан','переутом')) return 'Восстановление — это часть тренировки, мышцы крепнут именно в отдыхе. Чередуй тяжёлые и лёгкие дни, спи 7–9 часов, пей воду и ешь белок. Постоянная усталость, плохой сон и нежелание тренироваться — сигнал снизить нагрузку.';
+  if(has('крепатур','болят мышц','болит после','ломит','мышцы боля')) return 'Лёгкая боль в мышцах через день после нагрузки (крепатура) — это норма. Помогают спокойная разминка-трусца, мягкая растяжка, тепло и сон. Если боль резкая, точечная или в суставе — это уже не крепатура, дай отдых.';
+  if(has('колен')) return 'Боль в колене у бегунов часто связана со слишком быстрым ростом нагрузки или слабыми мышцами бёдер и таза. Сбавь объём, добавь упражнения на ягодицы и квадрицепс, проверь обувь. Если боль острая, есть отёк или щелчки с болью — покажись врачу.';
+  if(has('голень','шин','надкостниц')) return 'Боль в передней части голени часто бывает от резкого увеличения нагрузки и жёсткого приземления. Снизь объём, беги мягче и чаще шагами, по мягкому покрытию, и дай 1–2 недели отдыха. Если не проходит — к врачу.';
+  if(has('ахилл','сухожил','пятк','стопе','стопа боли')) return 'Боль в ахилле/стопе требует осторожности: уменьши нагрузку, исключи бег по твёрдому, делай мягкую растяжку икр и укрепляй стопу. Резкая боль или хромота — повод обратиться к специалисту, не «добегивай через боль».';
+  if(has('травм','болит нога','повредил','растяжение связ')) return 'При свежей травме работает принцип покоя: нагрузку убрать, в первые сутки — холод и приподнятое положение, без «прогревания через боль». Возвращайся к бегу постепенно, когда боль ушла. При сильной или долгой боли — к врачу.';
+  if(has('растяж','стретч','гибкост','ролик','размять мышц')) return 'Тянись мягко и без рывков, удерживая каждое положение 20–30 секунд, лучше после тренировки на тёплые мышцы. Хорошо работают растяжка икр, бёдер, ягодиц. Массажный ролик помогает снять забитость.';
+  if(has('массаж')) return 'Лёгкий самомассаж и массажный ролик после нагрузки улучшают кровоток и снимают забитость мышц. Двигайся от стопы вверх, без сильной боли. Это ускоряет восстановление между тренировками.';
+  if(has('сон','спать','выспат')) return 'Сон — лучший восстановитель: 7–9 часов. Именно во сне идёт восстановление мышц и нервной системы. Недосып бьёт по форме сильнее, чем пропущенная тренировка.';
+  if(has('питан','еда','есть перед','что съесть','углевод','белок','рацион')) return 'Перед бегом за 1–2 часа — лёгкие углеводы (банан, овсянка, тост), не наедайся плотно. После тренировки в течение часа — белок и углеводы для восстановления. Базовый принцип: разнообразно, достаточно белка, без жёстких голодовок.';
+  if(has('вода','пить','гидрат','обезвож')) return 'Пей в течение дня, не только на тренировке. На пробежках до часа обычно хватает воды до и после; на длинных и в жару — бери воду с собой и пей понемногу. Ориентир — светлый цвет мочи.';
+  if(has('похуд','вес','жир','сбросить')) return 'Бег помогает худеть в связке с питанием: создавай небольшой дефицит калорий и больше двигайся, без жёстких диет. Лёгкий длительный бег + контроль еды работают лучше, чем изматывающие короткие забеги. Вес уходит постепенно — это нормально.';
+  if(has('кроссовк','обувь','в чем бегать')) return 'Бери кроссовки именно для бега, по размеру с запасом примерно полразмера, удобные сразу в магазине. Меняй их примерно каждые 600–800 км. Не гонись за «максимальной амортизацией» — важнее, чтобы было комфортно и стабильно.';
+  if(has('лень','мотивац','не хочу','бросить','заставить себя','скучно')) return 'Не жди вдохновения — договорись с собой о минимуме: «выйду на 10 минут». Чаще всего после старта хочется продолжить. Помогают расписание, лёгкие цели и фиксация прогресса — он у тебя в ленте активностей.';
+  if(has('марафон','42','полумарафон','21 км')) return 'К марафону/полумарафону готовятся месяцами: основа — лёгкий объём и одна длительная в неделю, которую плавно удлиняешь. За 2–3 недели до старта снижай объём (подводка). Без базовых регулярных пробежек на дистанцию идти рискованно.';
+  if(has('5 км','10 км','забег','подготов к старт','first run','первый забег')) return 'Для первого забега на 5 км достаточно 6–8 недель: 3 пробежки в неделю, постепенно увеличивая время бега и сокращая шаг. Раз в неделю — чуть длиннее. К старту приходи отдохнувшим, последние пару дней — легко.';
+  if(has('начать','новичок','с нуля','никогда не бегал','первый раз')) return 'Начни с чередования бега и шага: например 1 мин бег / 2 мин шаг, всего 20–25 минут, 3 раза в неделю. Каждую неделю чуть увеличивай долю бега. Темп — чтобы мог разговаривать. Через 6–8 недель будешь бежать непрерывно.';
+
+  if(has('велосипед','вело','педал','седло','каденс на вел','шоссейник')) return 'На велосипеде держи каденс 80–90 оборотов в минуту — крути легче, а не «втыкай» тяжёлую передачу, так бережёшь колени. Настрой высоту седла, чтобы нога в нижней точке была почти прямой. Чередуй спокойные длинные поездки и редкие интенсивные — как и в беге, 80/20.';
+
+  return 'Я отвечаю на темы про бег и велосипед: план и объём тренировок, пульс, восстановление и сон, травмы (колено, голень, стопа), растяжку и массаж, питание, технику. Спроси иначе или нажми кнопку ниже. Свободный диалог на любые темы появится, когда подключим облачный ИИ (Premium).';
+}
+
+const CHAT_KEY='stride:chat';
+let chatMsgs=[];
+function renderChat(){ const t=$('coachThread'); if(!t) return; t.innerHTML=chatMsgs.map(m=>'<div class="cb '+(m.who==='me'?'me':'coach')+'">'+esc(m.text)+'</div>').join(''); t.scrollTop=t.scrollHeight; }
+function chatPush(who,text,save){ chatMsgs.push({who,text}); if(chatMsgs.length>60) chatMsgs=chatMsgs.slice(-60); renderChat(); if(save!==false){ try{ sSet(CHAT_KEY,JSON.stringify(chatMsgs)); }catch(e){} } }
+/* ===== Облако: умный тренер + живой голос (через свой сервер) ===== */
+let cloudURL=''; const SERVER_KEY='stride:server';
+let ttsVoice=''; const TTS_VOICE_KEY='stride:ttsvoice';
+function coachContext(){ const wk=_wk(), bp=_bestPace(); let c='всего тренировок '+runs.length+', за неделю '+wk.km.toFixed(1)+' км ('+wk.n+' трен)'; if(bp) c+=', лучший темп '+fmtPace(bp)+'/км'; c+=', ориентир макс пульса '+(maxHr||190)+', сейчас вид активности: '+(activityType==='bike'?'велосипед':'бег'); return c; }
+async function cloudCoach(){
+  const hist=chatMsgs.filter(m=>m.text!=='…').slice(-12).map(m=>({role:m.who==='me'?'user':'assistant',content:m.text}));
+  const r=await fetch(cloudURL.replace(/\/+$/,'')+'/api/coach',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:hist,context:coachContext()})});
+  if(!r.ok) throw new Error('coach '+r.status); const d=await r.json(); if(d.error) throw new Error(d.error); return d.reply;
+}
+let _cloudAudio=null, _audioUnlocked=false;
+const _SILENT='data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=';
+function ensureAudio(){ if(!_cloudAudio){ _cloudAudio=new Audio(); _cloudAudio.preload='auto'; } return _cloudAudio; }
+function unlockAudio(){ const a=ensureAudio(); if(_audioUnlocked) return; try{ a.src=_SILENT; const p=a.play(); if(p&&p.then) p.then(()=>{ try{a.pause();}catch(e){} _audioUnlocked=true; }).catch(()=>{}); }catch(e){} }
+document.addEventListener('touchend', unlockAudio, {once:true});
+document.addEventListener('click', unlockAudio, {once:true});
+async function cloudTTS(text){
+  const r=await fetch(cloudURL.replace(/\/+$/,'')+'/api/tts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text, voice: ttsVoice||undefined})});
+  if(!r.ok) throw new Error('tts '+r.status);
+  const blob=await r.blob(); const url=URL.createObjectURL(blob);
+  const a=ensureAudio(); try{a.pause();}catch(e){}
+  a.src=url; a.onended=()=>{ try{URL.revokeObjectURL(url);}catch(e){} }; await a.play();
+}
+function coachSendText(q){
+  q=(q||'').trim(); if(!q) return; chatPush('me',q); if($('coachQ'))$('coachQ').value='';
+  if(cloudURL && isPremium){
+    chatPush('coach','…',false);
+    cloudCoach().then(ans=>{ if(chatMsgs.length&&chatMsgs[chatMsgs.length-1].text==='…')chatMsgs.pop(); chatPush('coach',ans); if(voiceCoach) say(ans); })
+      .catch(()=>{ if(chatMsgs.length&&chatMsgs[chatMsgs.length-1].text==='…')chatMsgs.pop(); const ans=coachAnswer(q); chatPush('coach',ans); if(voiceCoach) say(ans); });
+  } else {
+    const ans=coachAnswer(q); setTimeout(()=>{ chatPush('coach',ans); if(voiceCoach) say(ans); },180);
+  }
+}
+const CHAT_CHIPS=['Сколько раз в неделю бегать?','Как мой прогресс?','Болит колено','Какой у меня пульс?','Что есть перед бегом?','Как бегать правильно?','Совет по велосипеду'];
+function initChat(){
+  const c=$('coachChips'); if(c){ c.innerHTML=''; CHAT_CHIPS.forEach(t=>{ const b=document.createElement('button'); b.type='button'; b.textContent=t; b.onclick=()=>coachSendText(t); c.appendChild(b); }); }
+  if(chatMsgs.length) renderChat(); else chatPush('coach',greetText(),false);
+}
+if($('coachSend')) $('coachSend').onclick=()=>{ unlockAudio(); coachSendText($('coachQ').value); };
+if($('coachQ')) $('coachQ').addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); unlockAudio(); coachSendText($('coachQ').value); } });
+$('serverSave').onclick=async()=>{ cloudURL=$('serverUrl').value.trim(); await sSet(SERVER_KEY,cloudURL); toast(cloudURL?'Сервер сохранён ✓':'Адрес очищен — офлайн-режим'); };
+$('serverTest').onclick=async()=>{ const u=$('serverUrl').value.trim(); if(!u){ toast('Вставь адрес сервера'); return; } toast('Проверяю сервер...'); try{ const r=await fetch(u.replace(/\/+$/,'')+'/'); const d=await r.json(); toast(d&&d.ok?('Сервер на связи ✓ · мозг: '+d.llm+', голос: '+d.voice):'Ответ получен, но формат неожиданный'); }catch(e){ toast('Сервер не отвечает — проверь адрес и что он развёрнут'); } };
+if($('cloudVoiceSel')) $('cloudVoiceSel').onchange=async(e)=>{ unlockAudio(); ttsVoice=e.target.value; await sSet(TTS_VOICE_KEY,ttsVoice); if(cloudURL&&isPremium){ say('Привет! Так звучит выбранный голос.'); } toast('Голос сохранён'); };
+
+/* ---- голосовой ввод: говоришь вопрос — тренер отвечает (как с Алисой) ---- */
+const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recog=null, recOn=false;
+function startVoiceAsk(){
+  if(!SpeechRec){ toast('Голосовой ввод не поддерживается этим браузером'); return; }
+  if(recOn){ try{recog.stop();}catch(e){} return; }
+  try{
+    recog=new SpeechRec(); recog.lang='ru-RU'; recog.interimResults=false; recog.maxAlternatives=1;
+    recog.onstart=()=>{ recOn=true; const b=$('coachMic'); if(b)b.classList.add('rec'); toast('Слушаю... говори'); };
+    recog.onresult=(ev)=>{ const t=ev.results[0][0].transcript; if(t){ coachSendText(t); } };
+    recog.onerror=(ev)=>{ toast(ev.error==='not-allowed'?'Разреши доступ к микрофону':'Не расслышал, попробуй ещё'); };
+    recog.onend=()=>{ recOn=false; const b=$('coachMic'); if(b)b.classList.remove('rec'); };
+    recog.start();
+  }catch(e){ toast('Не удалось запустить микрофон'); }
+}
+if($('coachMic')) $('coachMic').onclick=()=>{ unlockAudio(); startVoiceAsk(); };
+
+/* ---- вступление (онбординг при первом запуске) ---- */
+const ONB_KEY='stride:onboarded6';
+let obIdx=0, obTimer=null;
+function obCount(){ return document.querySelectorAll('.ob-slide').length; }
+function obGo(i){
+  const n=obCount(); if(!n) return;
+  obIdx=(i%n+n)%n;
+  $('obTrack').style.transform='translateX(-'+(obIdx*100)+'%)';
+  $('obDots').querySelectorAll('i').forEach((d,k)=>d.classList.toggle('on',k===obIdx));
+  $('obNext').textContent = obIdx===n-1 ? t('obstart') : t('obnext');
+}
+function obAuto(){ clearInterval(obTimer); obTimer=setInterval(()=>obGo(obIdx+1),4000); }
+async function obFinish(){
+  clearInterval(obTimer);
+  $('onboarding').style.display='none';
+  await sSet(ONB_KEY,'1');
+}
+function obSlideFallback(s){ if(s.dataset.grad) s.style.background=s.dataset.grad; }
+function obLoadImages(){
+  document.querySelectorAll('.ob-slide').forEach(s=>{
+    const src=s.dataset.img;
+    if(!src){ obSlideFallback(s); return; }
+    const im=new Image();
+    im.onload=()=>{ s.style.backgroundImage="url('"+src+"')"; if(s.dataset.cover==='1') s.classList.add('cover'); };
+    im.onerror=()=>{ obSlideFallback(s); };
+    im.src=src;
+  });
+}
+function obStart(){
+  const slides=document.querySelectorAll('.ob-slide'); if(!slides.length) return;
+  obLoadImages();
+  $('obDots').innerHTML=Array.from(slides).map((_,k)=> '<i data-k="'+k+'"></i>').join('');
+  $('obDots').querySelectorAll('i').forEach(d=>d.onclick=()=>{ obGo(+d.dataset.k); obAuto(); });
+  obIdx=0;
+  $('onboarding').style.display='flex';
+  obGo(0); obAuto();
+}
+$('obNext').onclick=()=>{ const n=obCount(); if(obIdx>=n-1) obFinish(); else { obGo(obIdx+1); obAuto(); } };
+$('obSkip').onclick=()=>obFinish();
+$('introBtn').onclick=()=>{ $('setModal').classList.remove('show'); obStart(); };
+// свайп пальцем
+(function(){ let x0=null; const v=$('onboarding');
+  v.addEventListener('touchstart',e=>{ x0=e.touches[0].clientX; },{passive:true});
+  v.addEventListener('touchend',e=>{ if(x0===null)return; const dx=e.changedTouches[0].clientX-x0; if(Math.abs(dx)>45){ obGo(obIdx+(dx<0?1:-1)); obAuto(); } x0=null; },{passive:true});
+})();
+
+/* ---- install (PWA) ---- */
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;$('installBtn').style.display='inline-flex';});
+$('installBtn').onclick=async()=>{
+  if(!deferredPrompt){toast('Меню Chrome → «Установить приложение»');return;}
+  deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;$('installBtn').style.display='none';
+};
+window.addEventListener('appinstalled',()=>{$('installBtn').style.display='none';toast('Skride установлен 🎉');});
+
+/* ---- utils ---- */
+let tt;function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1900);}
+function setDate(){const el=$('fDate'); if(el) el.value=new Date().toISOString().slice(0,10);}
+
+/* ===== Языки (RU / EN / ES / IT) ===== */
+let curLang='ru'; const LANG_KEY='stride:lang';
+const I18N={
+ ru:{sec_route:'Маршрут',sec_hr:'Пульс и зоны',sec_week:'Эта неделя',sec_records:'Рекорды',sec_level:'Уровень бегуна',sec_coach:'ИИ-тренер',sec_feed:'Активности',sec_tread:'Беговая дорожка',
+   ob1_d:'Беговой трекер, который делает тебя быстрее: запись по GPS, ИИ-тренер и сравнение с легендами.',ob2_t:'Беги за лучшими бегунами планеты',ob2_d:'Сравни свой темп со 100 легендами мирового бега и поднимайся в рейтинге.',
+   obskip:'Пропустить',obnext:'Далее',obstart:'Начать 🏃',
+   set_title:'Настройки',set_mode:'Режим записи',set_devices:'Часы и пульсометр',set_voice:'Голос ИИ-тренера',set_lang:'Язык / Language',set_about:'О разработчике',
+   prem_title:'Skride Premium',prem_sub:'Открой все возможности и беги без ограничений.',prem_f1:'GPS-трекинг и маршруты',prem_f2:'Ручной ввод и пульсовые зоны',prem_f3:'ИИ-тренер — полный анализ и голос',prem_f4:'100 легенд бега — рейтинг',prem_f5:'Беговая дорожка и датчики',prem_free:'Free',prem_pro:'Premium',prem_activate:'Оформить Premium — 299 ₽/мес',close:'Закрыть',prem_note:'Реальная оплата подключается через Google Play в нативной версии. Сейчас кнопка активирует Premium в демо-режиме для проверки.',
+   prem_on:'Premium активен ⭐',prem_off:'Бесплатный план',prem_activated:'Premium активирован ⭐',prem_locked:'Это функция Premium'},
+ en:{sec_route:'Route',sec_hr:'Heart rate & zones',sec_week:'This week',sec_records:'Records',sec_level:'Runner level',sec_coach:'AI coach',sec_feed:'Activities',sec_tread:'Treadmill',
+   ob1_d:'A running tracker that makes you faster: GPS recording, an AI coach and comparison with legends.',ob2_t:'Run with the best runners on the planet',ob2_d:'Compare your pace with 100 running legends and climb the ranking.',
+   obskip:'Skip',obnext:'Next',obstart:'Start 🏃',
+   set_title:'Settings',set_mode:'Recording mode',set_devices:'Watch & heart rate',set_voice:'AI coach voice',set_lang:'Language',set_about:'About the developer',
+   prem_title:'Skride Premium',prem_sub:'Unlock everything and run without limits.',prem_f1:'GPS tracking & routes',prem_f2:'Manual entry & heart-rate zones',prem_f3:'AI coach — full analysis & voice',prem_f4:'100 running legends — ranking',prem_f5:'Treadmill & sensors',prem_free:'Free',prem_pro:'Premium',prem_activate:'Get Premium — $3.99/mo',close:'Close',prem_note:'Real payments are handled via Google Play in the native version. For now this button activates Premium in demo mode for testing.',
+   prem_on:'Premium active ⭐',prem_off:'Free plan',prem_activated:'Premium activated ⭐',prem_locked:'This is a Premium feature'},
+ es:{sec_route:'Ruta',sec_hr:'Pulso y zonas',sec_week:'Esta semana',sec_records:'Récords',sec_level:'Nivel de corredor',sec_coach:'Entrenador IA',sec_feed:'Actividades',sec_tread:'Cinta de correr',
+   ob1_d:'Un rastreador de carrera que te hace más rápido: registro por GPS, entrenador con IA y comparación con leyendas.',ob2_t:'Corre con los mejores del planeta',ob2_d:'Compara tu ritmo con 100 leyendas del running y sube en la clasificación.',
+   obskip:'Saltar',obnext:'Siguiente',obstart:'Empezar 🏃',
+   set_title:'Ajustes',set_mode:'Modo de registro',set_devices:'Reloj y pulso',set_voice:'Voz del entrenador IA',set_lang:'Idioma',set_about:'Sobre el desarrollador',
+   prem_title:'Skride Premium',prem_sub:'Desbloquea todo y corre sin límites.',prem_f1:'Seguimiento GPS y rutas',prem_f2:'Entrada manual y zonas de pulso',prem_f3:'Entrenador IA — análisis completo y voz',prem_f4:'100 leyendas del running — ranking',prem_f5:'Cinta de correr y sensores',prem_free:'Free',prem_pro:'Premium',prem_activate:'Obtener Premium — 3,99 €/mes',close:'Cerrar',prem_note:'Los pagos reales se gestionan por Google Play en la versión nativa. Por ahora este botón activa Premium en modo demo para probar.',
+   prem_on:'Premium activo ⭐',prem_off:'Plan gratuito',prem_activated:'Premium activado ⭐',prem_locked:'Función Premium'},
+ it:{sec_route:'Percorso',sec_hr:'Frequenza e zone',sec_week:'Questa settimana',sec_records:'Record',sec_level:'Livello del corridore',sec_coach:'Coach IA',sec_feed:'Attività',sec_tread:'Tapis roulant',
+   ob1_d:'Un tracker di corsa che ti rende più veloce: registrazione GPS, coach IA e confronto con le leggende.',ob2_t:'Corri con i migliori del pianeta',ob2_d:'Confronta il tuo ritmo con 100 leggende della corsa e sali in classifica.',
+   obskip:'Salta',obnext:'Avanti',obstart:'Inizia 🏃',
+   set_title:'Impostazioni',set_mode:'Modalità di registrazione',set_devices:'Orologio e battito',set_voice:'Voce del coach IA',set_lang:'Lingua',set_about:'Sullo sviluppatore',
+   prem_title:'Skride Premium',prem_sub:'Sblocca tutto e corri senza limiti.',prem_f1:'Tracciamento GPS e percorsi',prem_f2:'Inserimento manuale e zone di battito',prem_f3:'Coach IA — analisi completa e voce',prem_f4:'100 leggende della corsa — classifica',prem_f5:'Tapis roulant e sensori',prem_free:'Free',prem_pro:'Premium',prem_activate:'Attiva Premium — 3,99 €/mese',close:'Chiudi',prem_note:'I pagamenti reali avvengono tramite Google Play nella versione nativa. Per ora questo pulsante attiva Premium in modalità demo per la prova.',
+   prem_on:'Premium attivo ⭐',prem_off:'Piano gratuito',prem_activated:'Premium attivato ⭐',prem_locked:'Funzione Premium'}
+};
+function t(k){ return (I18N[curLang]&&I18N[curLang][k]) || (I18N.ru&&I18N.ru[k]) || k; }
+function applyLang(lang){
+  if(!I18N[lang]) lang='ru';
+  curLang=lang;
+  document.querySelectorAll('[data-i18n]').forEach(el=>{ const s=I18N[lang][el.dataset.i18n]; if(s!=null) el.textContent=s; });
+  if($('langSel')) $('langSel').value=lang;
+  document.documentElement.lang=lang;
+  if(typeof updatePremiumUI==='function') updatePremiumUI();
+  if($('onboarding') && $('onboarding').style.display!=='none') obGo(obIdx);
+}
+$('langSel').onchange=async()=>{ await sSet(LANG_KEY,$('langSel').value); applyLang($('langSel').value); };
+
+/* ===== Premium (бесплатно / платно) ===== */
+let isPremium=false; const PREMIUM_KEY='stride:premium';
+function updatePremiumUI(){
+  if($('premiumStatus')) $('premiumStatus').textContent = isPremium? t('prem_on'): t('prem_off');
+  if($('premiumActivate')) $('premiumActivate').style.display = isPremium?'none':'block';
+  if($('premiumBtn')) $('premiumBtn').textContent = isPremium? '⭐ Premium' : '⭐ Skride Premium';
+}
+function openPremium(){ updatePremiumUI(); $('premiumModal').classList.add('show'); }
+function requirePremium(){ if(isPremium) return true; toast(t('prem_locked')); openPremium(); return false; }
+$('premiumBtn').onclick=openPremium;
+$('premiumClose').onclick=()=>$('premiumModal').classList.remove('show');
+$('premiumModal').onclick=e=>{ if(e.target===$('premiumModal')) $('premiumModal').classList.remove('show'); };
+$('premiumActivate').onclick=async()=>{ isPremium=true; await sSet(PREMIUM_KEY,'1'); updatePremiumUI(); toast(t('prem_activated')); };
+
+/* ---- boot ---- */
+async function boot(){
+  const raw=await sGet(RUNS_KEY); runs=raw?JSON.parse(raw):[];
+  const g=await sGet(GOAL_KEY); if(g) goal=+g;
+  const pr=await sGet(PROF_KEY); if(pr){ try{profile=JSON.parse(pr);}catch(e){} }
+  const vc=await sGet(VOICE_KEY); voiceCoach = vc==='1';
+  const vg=await sGet(VOICE_GENDER_KEY); if(vg) voiceGender=vg;
+  const vu=await sGet(VOICE_URI_KEY); if(vu) voiceURI=vu;
+  populateVoiceList();
+  const mh=await sGet(HR_KEY); if(mh) maxHr=+mh;
+  const md=await sGet(MODE_KEY); if(md==='manual'||md==='gps') appMode=md;
+  const ac=await sGet(ACT_KEY); if(ac==='bike'||ac==='run') activityType=ac;
+  const chRaw=await sGet(CHAT_KEY); if(chRaw){ try{ chatMsgs=JSON.parse(chRaw)||[]; }catch(e){ chatMsgs=[]; } }
+  const sv=await sGet(SERVER_KEY); if(sv){ cloudURL=sv; if($('serverUrl')) $('serverUrl').value=sv; }
+  const tv=await sGet(TTS_VOICE_KEY); if(tv){ ttsVoice=tv; if($('cloudVoiceSel')) $('cloudVoiceSel').value=tv; }
+  const lg=await sGet(LANG_KEY); if(lg) curLang=lg;
+  const pm=await sGet(PREMIUM_KEY); isPremium = pm==='1';
+  applyLang(curLang); updatePremiumUI();
+  syncVoiceUI(); renderHr();
+  renderProfile();
+  render(); initMap();
+  applyMode(); applyActivity(); initChat();
+  const seen=await sGet(ONB_KEY); if(seen!=='1') obStart();
+  if('serviceWorker' in navigator && location.protocol.startsWith('http')){
+    let _refreshing=false;
+    navigator.serviceWorker.addEventListener('controllerchange',()=>{ if(_refreshing)return; _refreshing=true; location.reload(); });
+    navigator.serviceWorker.register('sw.js').then(reg=>{ try{ reg.update(); }catch(e){} }).catch(()=>{});
+  }
+}
+boot();
+window.addEventListener('resize',()=>render());
+</script>
+</body>
+</html>
