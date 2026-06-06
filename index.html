@@ -17,16 +17,16 @@
 <style>
   :root{
     --orange:#15bd6b; --orange-d:#0e9c55;
-    --grad:linear-gradient(135deg,#0fb85f 0%,#42cf69 46%,#c7e85a 100%);
-    --grad-soft:linear-gradient(135deg,#e8f9ec,#f5f8e2);
+    --grad:linear-gradient(135deg,#13c46e 0%,#0a9c52 100%);
+    --grad-soft:linear-gradient(135deg,#e9f9ee,#dbf3e3);
     --bg:#eef6ea; --card:#ffffff; --ink:#12281b; --ink2:#33483a;
-    --muted:#7d947f; --line:#e6efe0; --line2:#d7e7d0; --accent:#ffcf3f;
+    --muted:#7d947f; --line:#e6efe0; --line2:#d7e7d0; --accent:#0fb85f;
     --body:'Barlow',-apple-system,BlinkMacSystemFont,sans-serif;
     --num:'Barlow Semi Condensed','Barlow',sans-serif;
-    --shadow:0 1px 2px rgba(16,80,40,.05),0 6px 20px rgba(20,150,80,.10);
+    --shadow:0 1px 2px rgba(16,80,40,.04),0 8px 26px rgba(20,150,80,.09);
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  html,body{margin:0;padding:0}
+  html,body{margin:0;padding:0;-webkit-text-size-adjust:100%;text-size-adjust:100%;overflow-x:hidden}
   body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;    -webkit-font-smoothing:antialiased;padding-bottom:env(safe-area-inset-bottom)}
   .wrap{max-width:540px;margin:0 auto;padding:0 0 78px}
     body.has-player{padding-top:calc(120px + env(safe-area-inset-top))}
@@ -361,7 +361,7 @@
   .lvl-fun{color:var(--muted);font-size:12px;font-weight:600;border-top:1px solid var(--line);margin-top:6px;padding-top:9px;line-height:1.45}
   .lvl-list .li{display:flex;align-items:center;gap:12px;padding:11px 6px;border-top:1px solid var(--line)}
   .lvl-list .li:first-child{border-top:none}
-  .lvl-list .li.cur{background:#fff5f0;border-radius:12px;border-top-color:transparent}
+  .lvl-list .li.cur{background:#e9f9ef;border-radius:12px;border-top-color:transparent}
   .lvl-list .li .e{font-size:24px;width:34px;text-align:center;flex:none}
   .lvl-list .li .n{font-weight:700;font-size:14px}
   .lvl-list .li .b{color:var(--muted);font-size:11.5px;font-weight:600;margin-top:1px;line-height:1.35}
@@ -372,7 +372,7 @@
   .lg-btn:active{background:#f6f6f9}
   .lg{display:flex;align-items:center;gap:11px;padding:8px 6px;border-top:1px solid var(--line)}
   .lg:first-child{border-top:none}
-  .lg.you{background:#fff5f0;border-radius:12px;border-top-color:transparent}
+  .lg.you{background:#e9f9ef;border-radius:12px;border-top-color:transparent}
   .lg .rk{width:24px;text-align:center;font-family:var(--num);font-weight:800;font-size:13px;color:var(--muted);flex:none}
   .lg-av{width:38px;height:38px;border-radius:50%;flex:none;display:grid;place-items:center;color:#fff;font-family:var(--num);font-weight:800;font-size:13px;text-transform:uppercase}
   .lg-i{flex:1;min-width:0}
@@ -412,9 +412,9 @@
   .track-btns svg{width:18px;height:18px}
   .btn-start{background:var(--orange);color:#fff}
   .btn-start svg{stroke:#fff;fill:#fff}
-  .btn-pause{background:#48484a;color:#fff;display:none}
+  .btn-pause{background:#1f9d5f;color:#fff;display:none}
   .btn-pause.on{display:flex}
-  .btn-stop{background:#d63a14;color:#fff;display:none}
+  .btn-stop{background:#0b6e42;color:#fff;display:none}
   .btn-stop.on{display:flex}
   .btn-start.hide{display:none}
   .gps-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#2ecc71;margin-right:6px;animation:pulse 1.5s infinite}
@@ -589,7 +589,8 @@
       <!-- ручной ввод (показывается в режиме ручного ввода) -->
       <div class="manual-panel" id="manualPanel" style="display:none">
         <div class="mp-tools">
-          <span class="mp-hint">✏️ Тапай по карте — начертится маршрут. Время и дату впиши ниже.</span>
+          <span class="mp-hint">✏️ Тапай по карте — маршрут проложится по дорогам, дистанция посчитается сама. Время и дату впиши ниже.</span>
+          <span class="mp-hint" id="mSnapHint" style="display:none;color:var(--orange)">⏳ Прокладываю по дорогам…</span>
           <div style="display:flex;gap:8px">
             <button class="chip" id="mUndo">↩ Точку назад</button>
             <button class="chip" id="mClear">Очистить</button>
@@ -597,6 +598,7 @@
         </div>
         <div class="mp-form">
           <div class="mp-f"><label>Дистанция, км</label><input id="mDist" type="text" inputmode="decimal" autocomplete="off" placeholder="0.00"></div>
+          <div class="mp-f"><label>Скорость, км/ч</label><input id="mSpeed" type="text" inputmode="decimal" autocomplete="off" placeholder="0.0"></div>
           <div class="mp-f"><label>Дата <span id="mDow" style="color:var(--orange);font-weight:700"></span></label><input id="mDate" type="date"></div>
           <div class="mp-f full"><label>Время (Ч : М : С)</label>
             <div class="mp-time"><input id="mH" type="number" inputmode="numeric" min="0" placeholder="0"><input id="mM" type="number" inputmode="numeric" min="0" max="59" placeholder="00"><input id="mS" type="number" inputmode="numeric" min="0" max="59" placeholder="00"></div>
@@ -626,7 +628,7 @@
         <button class="chip" id="treadBt" style="width:100%">🔗 Подключить по Bluetooth</button>
         <input type="file" id="treadFile" accept="image/*" capture="environment" style="display:none">
       </div>
-      <p style="font-size:12px;color:var(--muted);line-height:1.5;margin:8px 2px 0">Сфоткай дисплей тренажёра — дистанция и время распознаются и заполнятся сами.</p>
+      <p style="font-size:12px;color:var(--muted);line-height:1.5;margin:8px 2px 0">Сфоткай дисплей тренажёра — скорость, время и дистанция распознаются и заполнятся сами.</p>
     </div>
     <div class="dev-card">
       <div class="dev-row"><div class="dev-ic">⌚</div><div class="dev-info"><div class="dev-n">Умные часы</div><div class="dev-s" id="watchState">не подключены</div></div></div>
@@ -1124,7 +1126,7 @@ function initOSM(){
     const LocateCtl=L.Control.extend({ onAdd:function(){ const b=L.DomUtil.create('button','lf-locate'); b.type='button'; b.innerHTML='📍'; b.title='Моё место'; L.DomEvent.disableClickPropagation(b); L.DomEvent.on(b,'click',function(ev){ L.DomEvent.stop(ev); toast('Определяю местоположение…'); centerOnUser(16, true); }); return b; } });
     new LocateCtl({position:'topright'}).addTo(lmap);
     setTimeout(()=>{ try{lmap.invalidateSize();}catch(e){} },300);
-    lmap.on('click', e=>{ if(appMode==='manual'){ mPts.push([e.latlng.lat,e.latlng.lng]); mRedraw(); } });
+    lmap.on('click', e=>{ if(appMode==='manual'){ mAddPoint([e.latlng.lat,e.latlng.lng]); } });
     centerOnUser(14);
   }catch(e){ mapFail(); }
 }
@@ -1137,7 +1139,7 @@ async function initYandex(){
       await new Promise(r=>ymaps.ready(r));
       $('map').className=''; $('map').innerHTML='';
       ymap=new ymaps.Map('map',{center:[55.751,37.618],zoom:12,controls:['zoomControl','geolocationControl']},{suppressMapOpenBlock:true});
-      ymap.events.add('click', e=>{ if(appMode==='manual'){ mPts.push(e.get('coords')); mRedraw(); } });
+      ymap.events.add('click', e=>{ if(appMode==='manual'){ mAddPoint(e.get('coords')); } });
       centerOnUser(14);
       return;
     }catch(e){
@@ -1213,16 +1215,51 @@ function doSearch(){
 }
 /* ===== Режим записи: GPS / ручной ===== */
 let appMode='gps'; const MODE_KEY='stride:mode';
-let mPts=[], mRoute=null, mMarks=[];
-function mDistKm(){ let d=0; for(let i=1;i<mPts.length;i++) d+=haversine(mPts[i-1],mPts[i]); return d; }
+let mPts=[], mLegs=[], mRoute=null, mMarks=[], mSnapBusy=0;
+function mFullPath(){
+  if(!mPts.length) return [];
+  let path=[mPts[0]];
+  for(let i=0;i<mLegs.length;i++){
+    const c=mLegs[i]&&mLegs[i].coords;
+    if(c&&c.length){ path=path.concat(c.slice(1)); }
+    else if(mPts[i+1]){ path.push(mPts[i+1]); }
+  }
+  return path;
+}
+function mTotalKm(){ let d=0; for(let i=0;i<mLegs.length;i++) d+=(mLegs[i]&&mLegs[i].km)||0; return d; }
+async function snapLeg(a,b){
+  /* прокладка по дорогам через бесплатный OSRM OpenStreetMap; профиль по виду активности */
+  const prof = (activityType==='bike') ? 'bike' : 'foot';
+  const url = 'https://routing.openstreetmap.de/routed-'+prof+'/route/v1/driving/'+a[1]+','+a[0]+';'+b[1]+','+b[0]+'?overview=full&geometries=geojson';
+  try{
+    const r=await fetch(url); const j=await r.json();
+    if(j&&j.routes&&j.routes[0]&&j.routes[0].geometry){
+      const coords=j.routes[0].geometry.coordinates.map(c=>[c[1],c[0]]);
+      if(coords.length>=2) return { coords, km:(j.routes[0].distance||0)/1000, snapped:true };
+    }
+  }catch(e){}
+  return { coords:[a,b], km:haversine(a,b), snapped:false }; /* запасной вариант — прямая */
+}
+async function mAddPoint(latlng){
+  mPts.push(latlng);
+  if(mPts.length>=2){
+    const idx=mPts.length-2, a=mPts[idx], b=mPts[idx+1];
+    mLegs[idx]={ coords:[a,b], km:haversine(a,b), snapped:false }; /* сразу прямая — мгновенный отклик */
+    mRedraw();
+    mSnapBusy++; if($('mSnapHint')) $('mSnapHint').style.display='block';
+    const leg=await snapLeg(a,b);
+    mLegs[idx]=leg; mRedraw();
+    mSnapBusy--; if(mSnapBusy<=0 && $('mSnapHint')) $('mSnapHint').style.display='none';
+  } else { mRedraw(); }
+}
 function mRedraw(){
-  const line = (smoothRoute && mPts.length>=3) ? smoothPath(mPts) : mPts;
+  const path=mFullPath();
   if(mapProvider==='yandex'){
     if(!ymap||!window.ymaps) return;
     if(mRoute){ ymap.geoObjects.remove(mRoute); mRoute=null; }
     mMarks.forEach(p=>ymap.geoObjects.remove(p)); mMarks=[];
-    if(mPts.length){
-      mRoute=new ymaps.Polyline(line,{},{strokeColor:'#0fb85f',strokeWidth:5,strokeOpacity:.9}); ymap.geoObjects.add(mRoute);
+    if(path.length){
+      mRoute=new ymaps.Polyline(path,{},{strokeColor:'#0fb85f',strokeWidth:5,strokeOpacity:.9}); ymap.geoObjects.add(mRoute);
       const ends=mPts.length>1?[0,mPts.length-1]:[0];
       ends.forEach((i,k)=>{ const pm=new ymaps.Placemark(mPts[i],{},{preset:k===0?'islands#greenCircleDotIcon':'islands#orangeCircleDotIcon'}); mMarks.push(pm); ymap.geoObjects.add(pm); });
     }
@@ -1230,13 +1267,13 @@ function mRedraw(){
     if(!lmap) return;
     if(mRoute){ lmap.removeLayer(mRoute); mRoute=null; }
     mMarks.forEach(p=>lmap.removeLayer(p)); mMarks=[];
-    if(mPts.length){
-      mRoute=L.polyline(line,{color:'#0fb85f',weight:5,opacity:.9}).addTo(lmap);
+    if(path.length){
+      mRoute=L.polyline(path,{color:'#0fb85f',weight:5,opacity:.9}).addTo(lmap);
       const ends=mPts.length>1?[0,mPts.length-1]:[0];
-      ends.forEach((i,k)=>{ const pm=L.circleMarker(mPts[i],{radius:7,color:'#fff',weight:2,fillColor:(k===0?'#16b86a':'#ff9f1a'),fillOpacity:1}).addTo(lmap); mMarks.push(pm); });
+      ends.forEach((i,k)=>{ const pm=L.circleMarker(mPts[i],{radius:7,color:'#fff',weight:2,fillColor:(k===0?'#16b86a':'#0a7d44'),fillOpacity:1}).addTo(lmap); mMarks.push(pm); });
     }
   }
-  const d=mDistKm(); if(d>0) $('mDist').value=d.toFixed(2);
+  const d=mTotalKm(); if(d>0 && $('mDist')) $('mDist').value=d.toFixed(2);
 }
 function applyMode(){
   const manual=appMode==='manual';
@@ -1257,8 +1294,8 @@ async function setMode(m){
 const numv=el=>{ const v=((el&&el.value)||'').toString().replace(',','.').trim(); const n=parseFloat(v); return isFinite(n)?n:0; };
 if($('gpsToggle')) $('gpsToggle').onchange=()=>setMode($('gpsToggle').checked?'gps':'manual');
 if($('manualToggle')) $('manualToggle').onchange=()=>setMode($('manualToggle').checked?'manual':'gps');
-if($('mUndo')) $('mUndo').onclick=()=>{ mPts.pop(); mRedraw(); if(!mPts.length && $('mDist')) $('mDist').value=''; };
-if($('mClear')) $('mClear').onclick=()=>{ mPts=[]; mRedraw(); if($('mDist')) $('mDist').value=''; };
+if($('mUndo')) $('mUndo').onclick=()=>{ mPts.pop(); mLegs.length=Math.max(0,mPts.length-1); mRedraw(); if(!mPts.length && $('mDist')) $('mDist').value=''; };
+if($('mClear')) $('mClear').onclick=()=>{ mPts=[]; mLegs=[]; mRedraw(); if($('mDist')) $('mDist').value=''; };
 if($('mSave')) $('mSave').onclick=async()=>{
   try{
     const km=numv($('mDist'));
@@ -1267,12 +1304,12 @@ if($('mSave')) $('mSave').onclick=async()=>{
     const run={ id:Date.now(), type:activityType, km:+km.toFixed(2), sec,
       date:($('mDate')&&$('mDate').value)||new Date().toISOString().slice(0,10),
       title:($('mTitle')&&$('mTitle').value.trim())||defaultTitle(),
-      track:mPts.slice(), landmarks:[] };
+      track:mFullPath(), landmarks:[] };
     if($('mPhoto')&&$('mPhoto').dataset.src) run.photo=$('mPhoto').dataset.src;
     runs.unshift(run); await persistRuns();
     try{ render(); }catch(e){ console.error('render',e); }
-    mPts=[]; try{ mRedraw(); }catch(e){}
-    if($('mDist'))$('mDist').value=''; if($('mH'))$('mH').value=''; if($('mM'))$('mM').value=''; if($('mS'))$('mS').value=''; if($('mTitle'))$('mTitle').value='';
+    mPts=[]; mLegs=[]; try{ mRedraw(); }catch(e){}
+    if($('mDist'))$('mDist').value=''; if($('mSpeed'))$('mSpeed').value=''; if($('mH'))$('mH').value=''; if($('mM'))$('mM').value=''; if($('mS'))$('mS').value=''; if($('mTitle'))$('mTitle').value='';
     if($('mPhoto')){ $('mPhoto').style.display='none'; $('mPhoto').removeAttribute('data-src'); }
     toast('Тренировка сохранена 🏃'); if($('feedSec')) $('feedSec').scrollIntoView({behavior:'smooth'});
   }catch(e){ console.error('mSave',e); toast('Не удалось сохранить — проверь поля'); }
@@ -1317,9 +1354,13 @@ async function recognizeBoard(dataURL){
     if(!r.ok) throw new Error('no-ocr');
     const j=await r.json();
     let any=false;
+    const spd = j ? (+(j.kmh||j.speed||j.kmph||0)) : 0;
+    if(spd>0){ if($('mSpeed')) $('mSpeed').value=spd.toFixed(1); any=true; }
     if(j && j.km>0){ if($('mDist')) $('mDist').value=(+j.km).toFixed(2); any=true; }
     if(j && j.sec>0){ const h=Math.floor(j.sec/3600), m=Math.floor((j.sec%3600)/60), sec=Math.floor(j.sec%60);
       if($('mH'))$('mH').value=h||''; if($('mM'))$('mM').value=m||''; if($('mS'))$('mS').value=sec||''; any=true; }
+    // дистанции на табло нет, но есть скорость и время — посчитать самим
+    if((!j||!(j.km>0)) && spd>0 && j && j.sec>0 && $('mDist')) $('mDist').value=(spd*j.sec/3600).toFixed(2);
     toast(any?'Распознал! Проверь цифры и сохрани ✓':'Не разобрал табло — впиши вручную');
   }catch(e){ toast('Распознавание пока недоступно — впиши цифры с табло вручную'); }
 }
@@ -1339,6 +1380,13 @@ $('treadFile').onchange=e=>{
   }; img.src=rd.result; };
   rd.readAsDataURL(f); e.target.value='';
 };
+// скорость + время → дистанция считается сама (для дорожки/тренажёра)
+function mSpeedToDist(){
+  const v=numv($('mSpeed')); if(!(v>0)) return;
+  const sec=(+($('mH').value||0))*3600+(+($('mM').value||0))*60+(+($('mS').value||0));
+  if(sec>0 && $('mDist')) $('mDist').value=(v*sec/3600).toFixed(2);
+}
+['mSpeed','mH','mM','mS'].forEach(id=>{ const el=$(id); if(el) el.addEventListener('input', mSpeedToDist); });
 $('treadBt').onclick=async()=>{
   if(!requirePremium()) return;
   if(!navigator.bluetooth){ toast('Bluetooth недоступен. Нужен Chrome на Android (https).'); return; }
@@ -2751,7 +2799,15 @@ function showPerm(kind){
   _permKind=kind; const isMic=(kind==='mic');
   if($('permIcon')) $('permIcon').textContent=isMic?'🎤':'📍';
   if($('permTitle')) $('permTitle').textContent=isMic?'Доступ к микрофону':'Доступ к геолокации';
-  if($('permText')) $('permText').innerHTML=(isMic?'Чтобы говорить с тренером голосом, разреши доступ к микрофону.':'Чтобы показать тебя на карте, разреши доступ к геолокации.')+'<br><br>Нажми «Разрешить» ниже. Если окно не появилось — доступ заблокирован, открой:<br><b>значок слева от адреса → Настройки сайта → '+(isMic?'Микрофон':'Местоположение')+' → Разрешить</b>, затем вернись и нажми «Разрешить» ещё раз.';
+  if($('permText')){
+    const standalone = !!(window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || (document.referrer||'').startsWith('android-app://');
+    const perm = isMic ? 'Микрофон' : 'Местоположение';
+    const base = isMic ? 'Чтобы говорить с тренером голосом, разреши доступ к микрофону.' : 'Чтобы показать тебя на карте, разреши доступ к геолокации.';
+    const help = standalone
+      ? ('Нажми «Разрешить» — появится системное окно, выбери в нём «Разрешить». Если окно не появляется (доступ был запрещён ранее), открой: <b>Настройки телефона → Приложения → Skride → Разрешения → '+perm+' → Разрешить</b>, затем вернись в приложение.')
+      : ('Нажми «Разрешить» ниже. Если окно не появилось — доступ заблокирован, открой: <b>значок слева от адреса → Настройки сайта → '+perm+' → Разрешить</b>, затем вернись и нажми «Разрешить» ещё раз.');
+    $('permText').innerHTML = base + '<br><br>' + help;
+  }
   if($('permModal')) $('permModal').style.display='flex';
 }
 async function permState(name){ try{ if(navigator.permissions&&navigator.permissions.query){ const r=await navigator.permissions.query({name}); return r.state; } }catch(e){} return 'prompt'; }
