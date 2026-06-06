@@ -589,7 +589,8 @@
       <!-- ручной ввод (показывается в режиме ручного ввода) -->
       <div class="manual-panel" id="manualPanel" style="display:none">
         <div class="mp-tools">
-          <span class="mp-hint">✏️ Тапай по карте — начертится маршрут. Время и дату впиши ниже.</span>
+          <span class="mp-hint">✏️ Тапай по карте — маршрут проложится по дорогам, дистанция посчитается сама. Время и дату впиши ниже.</span>
+          <span class="mp-hint" id="mSnapHint" style="display:none;color:var(--orange)">⏳ Прокладываю по дорогам…</span>
           <div style="display:flex;gap:8px">
             <button class="chip" id="mUndo">↩ Точку назад</button>
             <button class="chip" id="mClear">Очистить</button>
@@ -1124,7 +1125,7 @@ function initOSM(){
     const LocateCtl=L.Control.extend({ onAdd:function(){ const b=L.DomUtil.create('button','lf-locate'); b.type='button'; b.innerHTML='📍'; b.title='Моё место'; L.DomEvent.disableClickPropagation(b); L.DomEvent.on(b,'click',function(ev){ L.DomEvent.stop(ev); toast('Определяю местоположение…'); centerOnUser(16, true); }); return b; } });
     new LocateCtl({position:'topright'}).addTo(lmap);
     setTimeout(()=>{ try{lmap.invalidateSize();}catch(e){} },300);
-    lmap.on('click', e=>{ if(appMode==='manual'){ mPts.push([e.latlng.lat,e.latlng.lng]); mRedraw(); } });
+    lmap.on('click', e=>{ if(appMode==='manual'){ mAddPoint([e.latlng.lat,e.latlng.lng]); } });
     centerOnUser(14);
   }catch(e){ mapFail(); }
 }
@@ -1137,7 +1138,7 @@ async function initYandex(){
       await new Promise(r=>ymaps.ready(r));
       $('map').className=''; $('map').innerHTML='';
       ymap=new ymaps.Map('map',{center:[55.751,37.618],zoom:12,controls:['zoomControl','geolocationControl']},{suppressMapOpenBlock:true});
-      ymap.events.add('click', e=>{ if(appMode==='manual'){ mPts.push(e.get('coords')); mRedraw(); } });
+      ymap.events.add('click', e=>{ if(appMode==='manual'){ mAddPoint(e.get('coords')); } });
       centerOnUser(14);
       return;
     }catch(e){
@@ -1213,16 +1214,51 @@ function doSearch(){
 }
 /* ===== Режим записи: GPS / ручной ===== */
 let appMode='gps'; const MODE_KEY='stride:mode';
-let mPts=[], mRoute=null, mMarks=[];
-function mDistKm(){ let d=0; for(let i=1;i<mPts.length;i++) d+=haversine(mPts[i-1],mPts[i]); return d; }
+let mPts=[], mLegs=[], mRoute=null, mMarks=[], mSnapBusy=0;
+function mFullPath(){
+  if(!mPts.length) return [];
+  let path=[mPts[0]];
+  for(let i=0;i<mLegs.length;i++){
+    const c=mLegs[i]&&mLegs[i].coords;
+    if(c&&c.length){ path=path.concat(c.slice(1)); }
+    else if(mPts[i+1]){ path.push(mPts[i+1]); }
+  }
+  return path;
+}
+function mTotalKm(){ let d=0; for(let i=0;i<mLegs.length;i++) d+=(mLegs[i]&&mLegs[i].km)||0; return d; }
+async function snapLeg(a,b){
+  /* прокладка по дорогам через бесплатный OSRM OpenStreetMap; профиль по виду активности */
+  const prof = (activityType==='bike') ? 'bike' : 'foot';
+  const url = 'https://routing.openstreetmap.de/routed-'+prof+'/route/v1/driving/'+a[1]+','+a[0]+';'+b[1]+','+b[0]+'?overview=full&geometries=geojson';
+  try{
+    const r=await fetch(url); const j=await r.json();
+    if(j&&j.routes&&j.routes[0]&&j.routes[0].geometry){
+      const coords=j.routes[0].geometry.coordinates.map(c=>[c[1],c[0]]);
+      if(coords.length>=2) return { coords, km:(j.routes[0].distance||0)/1000, snapped:true };
+    }
+  }catch(e){}
+  return { coords:[a,b], km:haversine(a,b), snapped:false }; /* запасной вариант — прямая */
+}
+async function mAddPoint(latlng){
+  mPts.push(latlng);
+  if(mPts.length>=2){
+    const idx=mPts.length-2, a=mPts[idx], b=mPts[idx+1];
+    mLegs[idx]={ coords:[a,b], km:haversine(a,b), snapped:false }; /* сразу прямая — мгновенный отклик */
+    mRedraw();
+    mSnapBusy++; if($('mSnapHint')) $('mSnapHint').style.display='block';
+    const leg=await snapLeg(a,b);
+    mLegs[idx]=leg; mRedraw();
+    mSnapBusy--; if(mSnapBusy<=0 && $('mSnapHint')) $('mSnapHint').style.display='none';
+  } else { mRedraw(); }
+}
 function mRedraw(){
-  const line = (smoothRoute && mPts.length>=3) ? smoothPath(mPts) : mPts;
+  const path=mFullPath();
   if(mapProvider==='yandex'){
     if(!ymap||!window.ymaps) return;
     if(mRoute){ ymap.geoObjects.remove(mRoute); mRoute=null; }
     mMarks.forEach(p=>ymap.geoObjects.remove(p)); mMarks=[];
-    if(mPts.length){
-      mRoute=new ymaps.Polyline(line,{},{strokeColor:'#0fb85f',strokeWidth:5,strokeOpacity:.9}); ymap.geoObjects.add(mRoute);
+    if(path.length){
+      mRoute=new ymaps.Polyline(path,{},{strokeColor:'#0fb85f',strokeWidth:5,strokeOpacity:.9}); ymap.geoObjects.add(mRoute);
       const ends=mPts.length>1?[0,mPts.length-1]:[0];
       ends.forEach((i,k)=>{ const pm=new ymaps.Placemark(mPts[i],{},{preset:k===0?'islands#greenCircleDotIcon':'islands#orangeCircleDotIcon'}); mMarks.push(pm); ymap.geoObjects.add(pm); });
     }
@@ -1230,13 +1266,13 @@ function mRedraw(){
     if(!lmap) return;
     if(mRoute){ lmap.removeLayer(mRoute); mRoute=null; }
     mMarks.forEach(p=>lmap.removeLayer(p)); mMarks=[];
-    if(mPts.length){
-      mRoute=L.polyline(line,{color:'#0fb85f',weight:5,opacity:.9}).addTo(lmap);
+    if(path.length){
+      mRoute=L.polyline(path,{color:'#0fb85f',weight:5,opacity:.9}).addTo(lmap);
       const ends=mPts.length>1?[0,mPts.length-1]:[0];
       ends.forEach((i,k)=>{ const pm=L.circleMarker(mPts[i],{radius:7,color:'#fff',weight:2,fillColor:(k===0?'#16b86a':'#ff9f1a'),fillOpacity:1}).addTo(lmap); mMarks.push(pm); });
     }
   }
-  const d=mDistKm(); if(d>0) $('mDist').value=d.toFixed(2);
+  const d=mTotalKm(); if(d>0 && $('mDist')) $('mDist').value=d.toFixed(2);
 }
 function applyMode(){
   const manual=appMode==='manual';
@@ -1257,8 +1293,8 @@ async function setMode(m){
 const numv=el=>{ const v=((el&&el.value)||'').toString().replace(',','.').trim(); const n=parseFloat(v); return isFinite(n)?n:0; };
 if($('gpsToggle')) $('gpsToggle').onchange=()=>setMode($('gpsToggle').checked?'gps':'manual');
 if($('manualToggle')) $('manualToggle').onchange=()=>setMode($('manualToggle').checked?'manual':'gps');
-if($('mUndo')) $('mUndo').onclick=()=>{ mPts.pop(); mRedraw(); if(!mPts.length && $('mDist')) $('mDist').value=''; };
-if($('mClear')) $('mClear').onclick=()=>{ mPts=[]; mRedraw(); if($('mDist')) $('mDist').value=''; };
+if($('mUndo')) $('mUndo').onclick=()=>{ mPts.pop(); mLegs.length=Math.max(0,mPts.length-1); mRedraw(); if(!mPts.length && $('mDist')) $('mDist').value=''; };
+if($('mClear')) $('mClear').onclick=()=>{ mPts=[]; mLegs=[]; mRedraw(); if($('mDist')) $('mDist').value=''; };
 if($('mSave')) $('mSave').onclick=async()=>{
   try{
     const km=numv($('mDist'));
@@ -1267,11 +1303,11 @@ if($('mSave')) $('mSave').onclick=async()=>{
     const run={ id:Date.now(), type:activityType, km:+km.toFixed(2), sec,
       date:($('mDate')&&$('mDate').value)||new Date().toISOString().slice(0,10),
       title:($('mTitle')&&$('mTitle').value.trim())||defaultTitle(),
-      track:mPts.slice(), landmarks:[] };
+      track:mFullPath(), landmarks:[] };
     if($('mPhoto')&&$('mPhoto').dataset.src) run.photo=$('mPhoto').dataset.src;
     runs.unshift(run); await persistRuns();
     try{ render(); }catch(e){ console.error('render',e); }
-    mPts=[]; try{ mRedraw(); }catch(e){}
+    mPts=[]; mLegs=[]; try{ mRedraw(); }catch(e){}
     if($('mDist'))$('mDist').value=''; if($('mH'))$('mH').value=''; if($('mM'))$('mM').value=''; if($('mS'))$('mS').value=''; if($('mTitle'))$('mTitle').value='';
     if($('mPhoto')){ $('mPhoto').style.display='none'; $('mPhoto').removeAttribute('data-src'); }
     toast('Тренировка сохранена 🏃'); if($('feedSec')) $('feedSec').scrollIntoView({behavior:'smooth'});
