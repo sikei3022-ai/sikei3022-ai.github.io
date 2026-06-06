@@ -17,13 +17,13 @@
 <style>
   :root{
     --orange:#15bd6b; --orange-d:#0e9c55;
-    --grad:linear-gradient(135deg,#0fb85f 0%,#42cf69 46%,#c7e85a 100%);
-    --grad-soft:linear-gradient(135deg,#e8f9ec,#f5f8e2);
+    --grad:linear-gradient(135deg,#13c46e 0%,#0a9c52 100%);
+    --grad-soft:linear-gradient(135deg,#e9f9ee,#dbf3e3);
     --bg:#eef6ea; --card:#ffffff; --ink:#12281b; --ink2:#33483a;
-    --muted:#7d947f; --line:#e6efe0; --line2:#d7e7d0; --accent:#ffcf3f;
+    --muted:#7d947f; --line:#e6efe0; --line2:#d7e7d0; --accent:#0fb85f;
     --body:'Barlow',-apple-system,BlinkMacSystemFont,sans-serif;
     --num:'Barlow Semi Condensed','Barlow',sans-serif;
-    --shadow:0 1px 2px rgba(16,80,40,.05),0 6px 20px rgba(20,150,80,.10);
+    --shadow:0 1px 2px rgba(16,80,40,.04),0 8px 26px rgba(20,150,80,.09);
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;padding:0}
@@ -361,7 +361,7 @@
   .lvl-fun{color:var(--muted);font-size:12px;font-weight:600;border-top:1px solid var(--line);margin-top:6px;padding-top:9px;line-height:1.45}
   .lvl-list .li{display:flex;align-items:center;gap:12px;padding:11px 6px;border-top:1px solid var(--line)}
   .lvl-list .li:first-child{border-top:none}
-  .lvl-list .li.cur{background:#fff5f0;border-radius:12px;border-top-color:transparent}
+  .lvl-list .li.cur{background:#e9f9ef;border-radius:12px;border-top-color:transparent}
   .lvl-list .li .e{font-size:24px;width:34px;text-align:center;flex:none}
   .lvl-list .li .n{font-weight:700;font-size:14px}
   .lvl-list .li .b{color:var(--muted);font-size:11.5px;font-weight:600;margin-top:1px;line-height:1.35}
@@ -372,7 +372,7 @@
   .lg-btn:active{background:#f6f6f9}
   .lg{display:flex;align-items:center;gap:11px;padding:8px 6px;border-top:1px solid var(--line)}
   .lg:first-child{border-top:none}
-  .lg.you{background:#fff5f0;border-radius:12px;border-top-color:transparent}
+  .lg.you{background:#e9f9ef;border-radius:12px;border-top-color:transparent}
   .lg .rk{width:24px;text-align:center;font-family:var(--num);font-weight:800;font-size:13px;color:var(--muted);flex:none}
   .lg-av{width:38px;height:38px;border-radius:50%;flex:none;display:grid;place-items:center;color:#fff;font-family:var(--num);font-weight:800;font-size:13px;text-transform:uppercase}
   .lg-i{flex:1;min-width:0}
@@ -412,9 +412,9 @@
   .track-btns svg{width:18px;height:18px}
   .btn-start{background:var(--orange);color:#fff}
   .btn-start svg{stroke:#fff;fill:#fff}
-  .btn-pause{background:#48484a;color:#fff;display:none}
+  .btn-pause{background:#1f9d5f;color:#fff;display:none}
   .btn-pause.on{display:flex}
-  .btn-stop{background:#d63a14;color:#fff;display:none}
+  .btn-stop{background:#0b6e42;color:#fff;display:none}
   .btn-stop.on{display:flex}
   .btn-start.hide{display:none}
   .gps-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#2ecc71;margin-right:6px;animation:pulse 1.5s infinite}
@@ -598,6 +598,7 @@
         </div>
         <div class="mp-form">
           <div class="mp-f"><label>Дистанция, км</label><input id="mDist" type="text" inputmode="decimal" autocomplete="off" placeholder="0.00"></div>
+          <div class="mp-f"><label>Скорость, км/ч</label><input id="mSpeed" type="text" inputmode="decimal" autocomplete="off" placeholder="0.0"></div>
           <div class="mp-f"><label>Дата <span id="mDow" style="color:var(--orange);font-weight:700"></span></label><input id="mDate" type="date"></div>
           <div class="mp-f full"><label>Время (Ч : М : С)</label>
             <div class="mp-time"><input id="mH" type="number" inputmode="numeric" min="0" placeholder="0"><input id="mM" type="number" inputmode="numeric" min="0" max="59" placeholder="00"><input id="mS" type="number" inputmode="numeric" min="0" max="59" placeholder="00"></div>
@@ -627,7 +628,7 @@
         <button class="chip" id="treadBt" style="width:100%">🔗 Подключить по Bluetooth</button>
         <input type="file" id="treadFile" accept="image/*" capture="environment" style="display:none">
       </div>
-      <p style="font-size:12px;color:var(--muted);line-height:1.5;margin:8px 2px 0">Сфоткай дисплей тренажёра — дистанция и время распознаются и заполнятся сами.</p>
+      <p style="font-size:12px;color:var(--muted);line-height:1.5;margin:8px 2px 0">Сфоткай дисплей тренажёра — скорость, время и дистанция распознаются и заполнятся сами.</p>
     </div>
     <div class="dev-card">
       <div class="dev-row"><div class="dev-ic">⌚</div><div class="dev-info"><div class="dev-n">Умные часы</div><div class="dev-s" id="watchState">не подключены</div></div></div>
@@ -1269,7 +1270,7 @@ function mRedraw(){
     if(path.length){
       mRoute=L.polyline(path,{color:'#0fb85f',weight:5,opacity:.9}).addTo(lmap);
       const ends=mPts.length>1?[0,mPts.length-1]:[0];
-      ends.forEach((i,k)=>{ const pm=L.circleMarker(mPts[i],{radius:7,color:'#fff',weight:2,fillColor:(k===0?'#16b86a':'#ff9f1a'),fillOpacity:1}).addTo(lmap); mMarks.push(pm); });
+      ends.forEach((i,k)=>{ const pm=L.circleMarker(mPts[i],{radius:7,color:'#fff',weight:2,fillColor:(k===0?'#16b86a':'#0a7d44'),fillOpacity:1}).addTo(lmap); mMarks.push(pm); });
     }
   }
   const d=mTotalKm(); if(d>0 && $('mDist')) $('mDist').value=d.toFixed(2);
@@ -1308,7 +1309,7 @@ if($('mSave')) $('mSave').onclick=async()=>{
     runs.unshift(run); await persistRuns();
     try{ render(); }catch(e){ console.error('render',e); }
     mPts=[]; mLegs=[]; try{ mRedraw(); }catch(e){}
-    if($('mDist'))$('mDist').value=''; if($('mH'))$('mH').value=''; if($('mM'))$('mM').value=''; if($('mS'))$('mS').value=''; if($('mTitle'))$('mTitle').value='';
+    if($('mDist'))$('mDist').value=''; if($('mSpeed'))$('mSpeed').value=''; if($('mH'))$('mH').value=''; if($('mM'))$('mM').value=''; if($('mS'))$('mS').value=''; if($('mTitle'))$('mTitle').value='';
     if($('mPhoto')){ $('mPhoto').style.display='none'; $('mPhoto').removeAttribute('data-src'); }
     toast('Тренировка сохранена 🏃'); if($('feedSec')) $('feedSec').scrollIntoView({behavior:'smooth'});
   }catch(e){ console.error('mSave',e); toast('Не удалось сохранить — проверь поля'); }
@@ -1353,9 +1354,13 @@ async function recognizeBoard(dataURL){
     if(!r.ok) throw new Error('no-ocr');
     const j=await r.json();
     let any=false;
+    const spd = j ? (+(j.kmh||j.speed||j.kmph||0)) : 0;
+    if(spd>0){ if($('mSpeed')) $('mSpeed').value=spd.toFixed(1); any=true; }
     if(j && j.km>0){ if($('mDist')) $('mDist').value=(+j.km).toFixed(2); any=true; }
     if(j && j.sec>0){ const h=Math.floor(j.sec/3600), m=Math.floor((j.sec%3600)/60), sec=Math.floor(j.sec%60);
       if($('mH'))$('mH').value=h||''; if($('mM'))$('mM').value=m||''; if($('mS'))$('mS').value=sec||''; any=true; }
+    // дистанции на табло нет, но есть скорость и время — посчитать самим
+    if((!j||!(j.km>0)) && spd>0 && j && j.sec>0 && $('mDist')) $('mDist').value=(spd*j.sec/3600).toFixed(2);
     toast(any?'Распознал! Проверь цифры и сохрани ✓':'Не разобрал табло — впиши вручную');
   }catch(e){ toast('Распознавание пока недоступно — впиши цифры с табло вручную'); }
 }
@@ -1375,6 +1380,13 @@ $('treadFile').onchange=e=>{
   }; img.src=rd.result; };
   rd.readAsDataURL(f); e.target.value='';
 };
+// скорость + время → дистанция считается сама (для дорожки/тренажёра)
+function mSpeedToDist(){
+  const v=numv($('mSpeed')); if(!(v>0)) return;
+  const sec=(+($('mH').value||0))*3600+(+($('mM').value||0))*60+(+($('mS').value||0));
+  if(sec>0 && $('mDist')) $('mDist').value=(v*sec/3600).toFixed(2);
+}
+['mSpeed','mH','mM','mS'].forEach(id=>{ const el=$(id); if(el) el.addEventListener('input', mSpeedToDist); });
 $('treadBt').onclick=async()=>{
   if(!requirePremium()) return;
   if(!navigator.bluetooth){ toast('Bluetooth недоступен. Нужен Chrome на Android (https).'); return; }
@@ -2787,7 +2799,15 @@ function showPerm(kind){
   _permKind=kind; const isMic=(kind==='mic');
   if($('permIcon')) $('permIcon').textContent=isMic?'🎤':'📍';
   if($('permTitle')) $('permTitle').textContent=isMic?'Доступ к микрофону':'Доступ к геолокации';
-  if($('permText')) $('permText').innerHTML=(isMic?'Чтобы говорить с тренером голосом, разреши доступ к микрофону.':'Чтобы показать тебя на карте, разреши доступ к геолокации.')+'<br><br>Нажми «Разрешить» ниже. Если окно не появилось — доступ заблокирован, открой:<br><b>значок слева от адреса → Настройки сайта → '+(isMic?'Микрофон':'Местоположение')+' → Разрешить</b>, затем вернись и нажми «Разрешить» ещё раз.';
+  if($('permText')){
+    const standalone = !!(window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || (document.referrer||'').startsWith('android-app://');
+    const perm = isMic ? 'Микрофон' : 'Местоположение';
+    const base = isMic ? 'Чтобы говорить с тренером голосом, разреши доступ к микрофону.' : 'Чтобы показать тебя на карте, разреши доступ к геолокации.';
+    const help = standalone
+      ? ('Нажми «Разрешить» — появится системное окно, выбери в нём «Разрешить». Если окно не появляется (доступ был запрещён ранее), открой: <b>Настройки телефона → Приложения → Skride → Разрешения → '+perm+' → Разрешить</b>, затем вернись в приложение.')
+      : ('Нажми «Разрешить» ниже. Если окно не появилось — доступ заблокирован, открой: <b>значок слева от адреса → Настройки сайта → '+perm+' → Разрешить</b>, затем вернись и нажми «Разрешить» ещё раз.');
+    $('permText').innerHTML = base + '<br><br>' + help;
+  }
   if($('permModal')) $('permModal').style.display='flex';
 }
 async function permState(name){ try{ if(navigator.permissions&&navigator.permissions.query){ const r=await navigator.permissions.query({name}); return r.state; } }catch(e){} return 'prompt'; }
