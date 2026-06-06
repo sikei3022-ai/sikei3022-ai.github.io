@@ -596,7 +596,7 @@
           </div>
         </div>
         <div class="mp-form">
-          <div class="mp-f"><label>Дистанция, км</label><input id="mDist" type="number" inputmode="decimal" step="0.01" placeholder="0.00"></div>
+          <div class="mp-f"><label>Дистанция, км</label><input id="mDist" type="text" inputmode="decimal" autocomplete="off" placeholder="0.00"></div>
           <div class="mp-f"><label>Дата <span id="mDow" style="color:var(--orange);font-weight:700"></span></label><input id="mDate" type="date"></div>
           <div class="mp-f full"><label>Время (Ч : М : С)</label>
             <div class="mp-time"><input id="mH" type="number" inputmode="numeric" min="0" placeholder="0"><input id="mM" type="number" inputmode="numeric" min="0" max="59" placeholder="00"><input id="mS" type="number" inputmode="numeric" min="0" max="59" placeholder="00"></div>
@@ -915,8 +915,8 @@
     <h3 style="font-size:16px;margin-top:18px" data-i18n="set_about">О разработчике</h3>
     <div class="card about" style="box-shadow:none;border:1px solid var(--line)">
       <div class="row2"><span class="ic">⚡</span>
-        <div><div class="t">Si Kei Lab · SECOR Group</div>
-        <div class="d">Skride разработан в Si Kei Lab — IT-лаборатории холдинга SECOR Group. <a href="https://sekor.ae/" target="_blank" style="color:var(--orange);font-weight:700;text-decoration:none">sekor.ae →</a></div></div>
+        <div><div class="t">Си Кей Лаб</div>
+        <div class="d">Skride разработан в IT-лаборатории «Си Кей Лаб».</div></div>
       </div>
       <div class="row2"><span class="ic">🏃</span><div><div class="t">Skride</div><div class="d">GPS-трекер бега с голосовым тренером, пульсовыми зонами и сравнением со 100 легендами. Версия 8.6 — крупные кнопки премиума; убран блок тестирования.</div></div></div>
     </div>
@@ -1254,24 +1254,28 @@ async function setMode(m){
   appMode=m; await sSet(MODE_KEY,m); applyMode();
   toast(m==='manual'?'Ручной ввод включён':'Автозапись по GPS включена');
 }
-$('gpsToggle').onchange=()=>setMode($('gpsToggle').checked?'gps':'manual');
-$('manualToggle').onchange=()=>setMode($('manualToggle').checked?'manual':'gps');
-$('mUndo').onclick=()=>{ mPts.pop(); mRedraw(); if(!mPts.length) $('mDist').value=''; };
-$('mClear').onclick=()=>{ mPts=[]; mRedraw(); $('mDist').value=''; };
-$('mSave').onclick=async()=>{
-  const km=+$('mDist').value;
-  if(!km||km<=0){ toast('Введи дистанцию или начерти маршрут'); return; }
-  const sec=(+$('mH').value||0)*3600+(+$('mM').value||0)*60+(+$('mS').value||0);
-  const run={ id:Date.now(), type:activityType, km:+km.toFixed(2), sec,
-    date:$('mDate').value||new Date().toISOString().slice(0,10),
-    title:$('mTitle').value.trim()||defaultTitle(),
-    track:mPts.slice(), landmarks:[] };
-  if($('mPhoto').dataset.src) run.photo=$('mPhoto').dataset.src;
-  runs.unshift(run); await persistRuns(); render();
-  mPts=[]; mRedraw();
-  $('mDist').value='';$('mH').value='';$('mM').value='';$('mS').value='';$('mTitle').value='';
-  $('mPhoto').style.display='none'; $('mPhoto').removeAttribute('data-src');
-  toast('Пробежка сохранена 🏃'); $('feedSec').scrollIntoView({behavior:'smooth'});
+const numv=el=>{ const v=((el&&el.value)||'').toString().replace(',','.').trim(); const n=parseFloat(v); return isFinite(n)?n:0; };
+if($('gpsToggle')) $('gpsToggle').onchange=()=>setMode($('gpsToggle').checked?'gps':'manual');
+if($('manualToggle')) $('manualToggle').onchange=()=>setMode($('manualToggle').checked?'manual':'gps');
+if($('mUndo')) $('mUndo').onclick=()=>{ mPts.pop(); mRedraw(); if(!mPts.length && $('mDist')) $('mDist').value=''; };
+if($('mClear')) $('mClear').onclick=()=>{ mPts=[]; mRedraw(); if($('mDist')) $('mDist').value=''; };
+if($('mSave')) $('mSave').onclick=async()=>{
+  try{
+    const km=numv($('mDist'));
+    if(!(km>0)){ toast('Введи дистанцию или начерти маршрут'); return; }
+    const sec=numv($('mH'))*3600+numv($('mM'))*60+numv($('mS'));
+    const run={ id:Date.now(), type:activityType, km:+km.toFixed(2), sec,
+      date:($('mDate')&&$('mDate').value)||new Date().toISOString().slice(0,10),
+      title:($('mTitle')&&$('mTitle').value.trim())||defaultTitle(),
+      track:mPts.slice(), landmarks:[] };
+    if($('mPhoto')&&$('mPhoto').dataset.src) run.photo=$('mPhoto').dataset.src;
+    runs.unshift(run); await persistRuns();
+    try{ render(); }catch(e){ console.error('render',e); }
+    mPts=[]; try{ mRedraw(); }catch(e){}
+    if($('mDist'))$('mDist').value=''; if($('mH'))$('mH').value=''; if($('mM'))$('mM').value=''; if($('mS'))$('mS').value=''; if($('mTitle'))$('mTitle').value='';
+    if($('mPhoto')){ $('mPhoto').style.display='none'; $('mPhoto').removeAttribute('data-src'); }
+    toast('Тренировка сохранена 🏃'); if($('feedSec')) $('feedSec').scrollIntoView({behavior:'smooth'});
+  }catch(e){ console.error('mSave',e); toast('Не удалось сохранить — проверь поля'); }
 };
 
 /* ===== Пульс по Bluetooth (часы / пояс / браслет) ===== */
@@ -2041,14 +2045,8 @@ $('addBtn').onclick=()=>$('mapSec').scrollIntoView({behavior:'smooth'});
 const DOW_RU=['вс','пн','вт','ср','чт','пт','сб'];
 function updateDow(){ const el=$('mDate'); if(!el||!$('mDow')) return; if(el.value){ const d=new Date(el.value+'T00:00'); $('mDow').textContent='· '+DOW_RU[d.getDay()]; } else $('mDow').textContent=''; }
 if($('mDate')) $('mDate').addEventListener('input', updateDow);
-function genDemo(){
-  const today=Date.now(); const arr=[]; let id=today;
-  const S=[{d:1,t:'run',km:5.2,m:28},{d:3,t:'run',km:8.0,m:43},{d:4,t:'bike',km:22,m:55},{d:6,t:'run',km:10.5,m:54},{d:8,t:'bike',km:35,m:80},{d:9,t:'run',km:3.1,m:16},{d:11,t:'run',km:15,m:78},{d:13,t:'bike',km:18,m:42},{d:15,t:'run',km:6.4,m:33},{d:18,t:'bike',km:42,m:96},{d:21,t:'run',km:21.1,m:115},{d:25,t:'run',km:7.0,m:36}];
-  S.forEach(s=>{ const dt=new Date(today-s.d*86400000); arr.push({ id:id++, date:dt.toISOString().slice(0,10), km:s.km, sec:s.m*60, type:s.t, title:(s.t==='bike'?'Заезд':'Пробежка') }); });
-  return arr;
-}
-if($('demoLoad')) $('demoLoad').onclick=async()=>{ runs=mergeRuns(genDemo(), runs); await persistRuns(); render(); $('setModal').classList.remove('show'); toast('Загружены тестовые данные 🧪'); };
-if($('demoClear')) $('demoClear').onclick=async()=>{ if(!confirm('Удалить ВСЕ тренировки? Это нельзя отменить.')) return; runs=[]; await persistRuns(); render(); toast('Все данные очищены'); };
+/* тестовая сценарная часть удалена */
+
 
 /* ===== Фраза дня (мотивирующие цитаты + озвучка ИИ) ===== */
 const QUOTE_KEY='stride:quoteday';
