@@ -2,7 +2,35 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=412, viewport-fit=cover">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script>
+/* Авто-масштаб: если телефон отдаёт слишком широкую CSS-раскладку, ужимаем макет
+   до телефонной ширины (TARGET) и увеличиваем всё пропорционально.
+   + временная диагностическая метка с реальными числами устройства. */
+(function(){
+  var TARGET=412;
+  function fit(){
+    var d=document.documentElement;
+    var real=window.innerWidth||d.clientWidth||TARGET;
+    if(real>TARGET+30){ d.style.zoom=String((real/TARGET).toFixed(4)); }
+    else { d.style.zoom=''; }
+  }
+  function badge(){
+    if(!document.body) return;
+    var real=window.innerWidth, dpr=window.devicePixelRatio, z=document.documentElement.style.zoom||'нет';
+    var b=document.getElementById('__dbg');
+    if(!b){ b=document.createElement('div'); b.id='__dbg'; document.body.appendChild(b); }
+    b.style.cssText='position:fixed;top:0;left:0;z-index:99999;background:#b00020;color:#fff;font:bold 13px monospace;padding:5px 9px;border-radius:0 0 10px 0;pointer-events:none';
+    b.textContent='iw='+real+' dpr='+dpr+' zoom='+z+' [DBG1]';
+  }
+  fit();
+  window.addEventListener('load',function(){ fit(); badge(); });
+  window.addEventListener('orientationchange',function(){ setTimeout(function(){ fit(); badge(); },250); });
+})();
+</script>
 <meta name="theme-color" content="#0fb85f">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
