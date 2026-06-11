@@ -38,14 +38,14 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
   :root{
-    --orange:#15bd6b; --orange-d:#0e9c55;
-    --grad:linear-gradient(135deg,#13c46e 0%,#0a9c52 100%);
-    --grad-soft:linear-gradient(135deg,#e9f9ee,#dbf3e3);
-    --bg:#eef6ea; --card:#ffffff; --ink:#12281b; --ink2:#33483a;
-    --muted:#7d947f; --line:#e6efe0; --line2:#d7e7d0; --accent:#0fb85f;
+    --orange:#2eaf6d; --orange-d:#259158;
+    --grad:linear-gradient(135deg,#33b87a 0%,#229058 100%);
+    --grad-soft:linear-gradient(135deg,#e8f5ec,#e8f5ec);
+    --bg:#ffffff; --card:#ffffff; --ink:#1e1e1e; --ink2:#374151;
+    --muted:#6b7280; --line:#e5e7eb; --line2:#e5e7eb; --accent:#2eaf6d;
     --body:'Barlow',-apple-system,BlinkMacSystemFont,sans-serif;
     --num:'Barlow Semi Condensed','Barlow',sans-serif;
-    --shadow:0 1px 2px rgba(16,80,40,.04),0 8px 26px rgba(20,150,80,.09);
+    --shadow:0 1px 2px rgba(16,24,40,.04),0 4px 16px rgba(16,24,40,.06);
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;padding:0;-webkit-text-size-adjust:100%;text-size-adjust:100%;overflow-x:hidden}
@@ -146,7 +146,7 @@
   .map-search button svg{width:18px;height:18px;stroke:#fff}
   .map-bar{display:flex;align-items:center;gap:8px;padding:11px 12px;border-top:1px solid var(--line);flex-wrap:wrap}
   .mode-row{display:flex;gap:7px;padding:9px 12px 0}
-  .mode-row .seg{flex:1;display:flex;background:#f0f0f3;border-radius:10px;padding:3px}
+  .mode-row .seg{flex:1;display:flex;background:#f1f6f3;border-radius:10px;padding:3px}
   .mode-row .seg button{flex:1;border:none;background:none;border-radius:8px;padding:8px;font-family:var(--body);
     font-weight:700;font-size:12.5px;color:var(--muted);cursor:pointer}
   .mode-row .seg button.on{background:#fff;color:var(--orange);box-shadow:0 1px 3px rgba(0,0,0,.1)}
@@ -248,7 +248,7 @@
   .sheet p a{color:var(--orange);font-weight:700}
   .sheet .row{display:flex;gap:10px;margin-top:14px}
   .sheet .row button{flex:1;padding:13px;border-radius:11px;font-family:var(--body);font-weight:700;font-size:15px;cursor:pointer;border:none}
-  .btn-pri{background:var(--grad);color:#fff;box-shadow:0 6px 18px rgba(20,170,90,.35);letter-spacing:.3px}.btn-sec{background:#eef3ec;color:var(--ink2)}
+  .btn-pri{background:var(--grad);color:#fff;box-shadow:0 6px 18px rgba(34,150,90,.28);letter-spacing:.3px}.btn-sec{background:#fff;color:var(--orange);border:1.5px solid var(--orange)}
 
   /* goal ring */
   .goal{display:flex;align-items:center;gap:16px;padding:16px}
@@ -320,10 +320,12 @@
   /* coach chat */
   .coach-chat{padding:14px 16px}
   .coach-chat-h{font-family:var(--num);font-weight:800;font-size:18px;margin-bottom:10px}
-  .coach-ctrls{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px}
-  .coach-ctrls button{padding:8px 12px;border:1px solid var(--line2);background:var(--card);border-radius:14px;font-family:var(--body);font-weight:700;font-size:12.5px;color:var(--ink2);cursor:pointer}
-  .coach-ctrls #coachConvo.on{background:var(--grad);color:#fff;border-color:transparent;box-shadow:0 3px 12px rgba(20,180,90,.35)}
-  .coach-ctrls #coachStop{color:#e23b3b;border-color:#f3c4c4}
+  .coach-ctrls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+  .coach-ctrls button{flex:1;min-width:92px;padding:11px 10px;border:1.5px solid var(--line2);background:var(--card);border-radius:14px;font-family:var(--body);font-weight:700;font-size:13.5px;color:var(--ink2);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:5px;transition:transform .12s,background .15s}
+  .coach-ctrls button:active{transform:scale(.97)}
+  .coach-ctrls #coachConvo{background:var(--grad);color:#fff;border-color:transparent;box-shadow:0 3px 12px rgba(20,180,90,.28)}
+  .coach-ctrls #coachConvo.on{background:#0b6e42;color:#fff;border-color:transparent;box-shadow:none}
+  .coach-ctrls #coachStop{color:#0b6e42;border-color:#bfe6cf}
   .coach-thread{display:flex;flex-direction:column;gap:8px;max-height:340px;overflow-y:auto;padding:2px}
   .cb{max-width:84%;padding:10px 13px;border-radius:15px;font-size:14px;line-height:1.45;white-space:pre-wrap;word-wrap:break-word}
   .cb.coach{align-self:flex-start;background:var(--grad-soft);color:var(--ink);border-bottom-left-radius:5px}
@@ -913,7 +915,7 @@
         <option value="omazh">Омаж (жен)</option>
         <option value="filipp">Филипп (муж)</option>
         <option value="ermil">Эрмиль (муж)</option>
-        <option value="zahar">Захар (муж)</option>
+        <option value="zahar" selected>Захар (муж)</option>
       </select>
     </div>
 
@@ -1341,31 +1343,71 @@ if($('mSave')) $('mSave').onclick=async()=>{
   }catch(e){ console.error('mSave',e); toast('Не удалось сохранить — проверь поля'); }
 };
 
-/* ===== Пульс по Bluetooth (часы / пояс / браслет) ===== */
-let hrDevice=null, liveBpm=null, hrSamples=[];
+/* ===== Пульс по Bluetooth — нативный плагин (0x180D) + Web Bluetooth fallback ===== */
+let hrDevice=null, hrDeviceId=null, liveBpm=null, hrSamples=[], bleInited=false;
+const HR_SVC='0000180d-0000-1000-8000-00805f9b34fb';
+const HR_CHR='00002a37-0000-1000-8000-00805f9b34fb';
+const BLE=(window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.BluetoothLe) || null;
+
 function updateHrTile(){ const el=$('liveHr'); if(el) el.textContent = liveBpm!=null? liveBpm : '—'; }
-function onHr(ev){
-  const v=ev.target.value; const flags=v.getUint8(0);
-  liveBpm = (flags&1) ? v.getUint16(1,true) : v.getUint8(1);
-  updateHrTile();
-  if(tracking && liveBpm) hrSamples.push(liveBpm);
+function hrSetState(stateId,text,on){ const el=$(stateId); if(el){ el.textContent=text; el.classList.toggle('on',!!on); } }
+function pushHr(bpm){ liveBpm=bpm; updateHrTile(); if(typeof tracking!=='undefined' && tracking && bpm) hrSamples.push(bpm); }
+function hrFromBytes(b){ if(!b||!b.length) return null; const flags=b[0]; return (flags&1)? (b[1]|(b[2]<<8)) : b[1]; }
+/* разбор значения уведомления плагина: массив / DataView / hex-строка / base64 */
+function bleBytes(value){
+  if(value==null) return [];
+  if(Array.isArray(value)) return value;
+  if(value instanceof DataView){ const a=[]; for(let i=0;i<value.byteLength;i++) a.push(value.getUint8(i)); return a; }
+  if(typeof value==='string'){
+    const s=value.trim();
+    if(/\s/.test(s)) return s.split(/\s+/).map(h=>parseInt(h,16));
+    if(/^[0-9a-fA-F]+$/.test(s) && s.length%2===0){ const a=[]; for(let i=0;i<s.length;i+=2) a.push(parseInt(s.substr(i,2),16)); return a; }
+    try{ const bin=atob(s); const a=[]; for(let i=0;i<bin.length;i++) a.push(bin.charCodeAt(i)); return a; }catch(e){}
+  }
+  return [];
 }
+function onHrWeb(ev){ const v=ev.target.value; const a=[]; for(let i=0;i<v.byteLength;i++) a.push(v.getUint8(i)); const bpm=hrFromBytes(a); if(bpm!=null) pushHr(bpm); }
+
 async function connectHr(stateId, label){
   stateId=stateId||'hrConnState'; label=label||'устройство';
-  if(!navigator.bluetooth){ toast('Bluetooth недоступен. Нужен Chrome на Android и доступ по https.'); return; }
+  if(BLE){ /* ---- нативное приложение Skride ---- */
+    try{
+      hrSetState(stateId,'включаю Bluetooth…',false);
+      if(!bleInited){ await BLE.initialize({ androidNeverForLocation:true }); bleInited=true; }
+      hrSetState(stateId,'выбор устройства…',false);
+      const dev=await BLE.requestDevice({ services:[HR_SVC], optionalServices:[HR_SVC] });
+      const id=dev.deviceId, name=dev.name||label;
+      hrSetState(stateId,'подключаюсь к '+name+'…',false);
+      await BLE.connect({ deviceId:id });
+      const keys=new Set(['notification|'+id+'|'+HR_SVC+'|'+HR_CHR, ('notification|'+id+'|'+HR_SVC+'|'+HR_CHR).toLowerCase()]);
+      keys.forEach(k=>{ BLE.addListener(k,(e)=>{ const bpm=hrFromBytes(bleBytes(e&&e.value)); if(bpm!=null) pushHr(bpm); }); });
+      await BLE.startNotifications({ deviceId:id, service:HR_SVC, characteristic:HR_CHR });
+      hrDeviceId=id;
+      hrSetState(stateId,'подключено: '+name+' · пульс идёт',true);
+      toast(label+' подключено ❤️');
+    }catch(e){
+      liveBpm=null; updateHrTile();
+      const msg=((e&&(e.message||e.errorMessage))||e)+'';
+      hrSetState(stateId,'не подключилось: '+msg,false);
+      toast('Не подключилось: '+msg);
+    }
+    return;
+  }
+  /* ---- браузер / PWA: Web Bluetooth ---- */
+  if(!navigator.bluetooth){ hrSetState(stateId,'Bluetooth доступен в приложении Skride или в Chrome (https)',false); toast('Bluetooth доступен в приложении Skride или Chrome (https).'); return; }
   try{
-    toast('Поиск устройства...');
+    hrSetState(stateId,'поиск устройства…',false);
     const dev=await navigator.bluetooth.requestDevice({ filters:[{services:['heart_rate']}] });
     const srv=await dev.gatt.connect();
     const s=await srv.getPrimaryService('heart_rate');
     const ch=await s.getCharacteristic('heart_rate_measurement');
     await ch.startNotifications();
-    ch.addEventListener('characteristicvaluechanged', onHr);
+    ch.addEventListener('characteristicvaluechanged', onHrWeb);
     hrDevice=dev;
-    dev.addEventListener('gattserverdisconnected', ()=>{ liveBpm=null; updateHrTile(); const el=$(stateId); if(el){el.textContent='отключено'; el.classList.remove('on');} toast(label+': отключено'); });
-    const el=$(stateId); if(el){ el.textContent='подключено: '+(dev.name||label)+' · пульс идёт'; el.classList.add('on'); }
+    dev.addEventListener('gattserverdisconnected', ()=>{ liveBpm=null; updateHrTile(); hrSetState(stateId,'отключено',false); toast(label+': отключено'); });
+    hrSetState(stateId,'подключено: '+(dev.name||label)+' · пульс идёт',true);
     toast(label+' подключено ❤️');
-  }catch(e){ toast('Не подключилось (отменено или не поддерживается устройством)'); }
+  }catch(e){ hrSetState(stateId,'не подключилось (отменено или не поддерживается)',false); toast('Не подключилось (отменено или не поддерживается устройством)'); }
 }
 $('hrConnect').onclick=()=>{ if(!requirePremium()) return; connectHr('hrConnState','Датчик пульса'); };
 if($('watchBt')) $('watchBt').onclick=()=>{ if(!requirePremium()) return; connectHr('watchState','Часы'); };
@@ -1504,39 +1546,61 @@ function drawRouteCard(){
   toast('Снимок сохранён 📸');
 }
 
+async function buildRouteImage(track){
+  const W=1080,H=1080, mapTop=200, mapBottom=H-220, mapH=mapBottom-mapTop, mapW=W;
+  let minLat=90,maxLat=-90,minLng=180,maxLng=-180;
+  track.forEach(p=>{ minLat=Math.min(minLat,p[0]);maxLat=Math.max(maxLat,p[0]);minLng=Math.min(minLng,p[1]);maxLng=Math.max(maxLng,p[1]); });
+  const padLat=(maxLat-minLat)*0.18||0.0015, padLng=(maxLng-minLng)*0.18||0.0015;
+  minLat-=padLat;maxLat+=padLat;minLng-=padLng;maxLng+=padLng;
+  const lon2x=(lon,z)=>(lon+180)/360*Math.pow(2,z);
+  const lat2y=(lat,z)=>{ const r=lat*Math.PI/180; return (1-Math.log(Math.tan(r)+1/Math.cos(r))/Math.PI)/2*Math.pow(2,z); };
+  let z=18;
+  for(z=18;z>=1;z--){ const pxW=(lon2x(maxLng,z)-lon2x(minLng,z))*256, pxH=(lat2y(minLat,z)-lat2y(maxLat,z))*256; if(pxW<=mapW&&pxH<=mapH) break; }
+  const cx=lon2x((minLng+maxLng)/2,z)*256, cy=lat2y((minLat+maxLat)/2,z)*256;
+  const project=(lat,lng)=>[ mapW/2+(lon2x(lng,z)*256-cx), mapTop+mapH/2+(lat2y(lat,z)*256-cy) ];
+  const c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
+  x.fillStyle='#0d2417';x.fillRect(0,0,W,H);
+  const maxT=Math.pow(2,z);
+  const tx0=Math.floor((cx-mapW/2)/256), tx1=Math.floor((cx+mapW/2)/256);
+  const ty0=Math.floor((cy-mapH/2)/256), ty1=Math.floor((cy+mapH/2)/256);
+  const loads=[];
+  for(let tx=tx0;tx<=tx1;tx++) for(let ty=ty0;ty<=ty1;ty++){
+    if(ty<0||ty>=maxT) continue;
+    const txn=((tx%maxT)+maxT)%maxT;
+    const dx=mapW/2+(tx*256-cx), dy=mapTop+mapH/2+(ty*256-cy);
+    loads.push(new Promise(res=>{ const im=new Image(); im.crossOrigin='anonymous';
+      im.onload=()=>{ try{x.drawImage(im,dx,dy);}catch(_){} res(); }; im.onerror=()=>res();
+      im.src='https://tile.openstreetmap.org/'+z+'/'+txn+'/'+ty+'.png'; }));
+  }
+  await Promise.all(loads);
+  x.save();x.beginPath();x.rect(0,mapTop,W,mapH);x.clip();
+  x.strokeStyle='#0fb85f';x.lineWidth=7;x.lineJoin='round';x.lineCap='round';x.beginPath();
+  track.forEach((p,i)=>{ const q=project(p[0],p[1]); i?x.lineTo(q[0],q[1]):x.moveTo(q[0],q[1]); });
+  x.stroke();
+  const s=project(track[0][0],track[0][1]), e=project(track[track.length-1][0],track[track.length-1][1]);
+  x.fillStyle='#16b86a';x.beginPath();x.arc(s[0],s[1],13,0,7);x.fill();
+  x.fillStyle='#0a7d44';x.beginPath();x.arc(e[0],e[1],13,0,7);x.fill();
+  x.restore();
+  x.fillStyle='rgba(13,36,23,.85)';x.fillRect(0,0,W,196);
+  x.fillStyle='#0fb85f';x.font='800 64px sans-serif';x.fillText('Skride',60,96);
+  x.fillStyle='#c9d2db';x.font='600 30px sans-serif';x.fillText((profile.name||'Бегун')+' · '+new Date().toLocaleDateString('ru-RU'),60,148);
+  const dist=$('mapDist').textContent;
+  x.fillStyle='rgba(13,36,23,.85)';x.fillRect(0,H-220,W,220);
+  x.fillStyle='#fff';x.font='800 140px sans-serif';x.fillText(dist,60,H-70);
+  x.fillStyle='#8a96a3';x.font='700 44px sans-serif';x.fillText('КМ',60+x.measureText(dist).width+30,H-70);
+  return c.toDataURL('image/png');
+}
 $('shotBtn').onclick=async()=>{
   if(pts.length<1){toast('Сначала запиши или нарисуй маршрут');return;}
   toast('Готовлю снимок с картой...');
-  let pp=pts; if(pp.length>40){ const step=Math.ceil(pp.length/40); pp=pts.filter((_,i)=>i%step===0); if(pp[pp.length-1]!==pts[pts.length-1]) pp=pp.concat([pts[pts.length-1]]); }
-  const path=pp.map(p=>p[0].toFixed(5)+','+p[1].toFixed(5)).join('|');
-  const s=pts[0], e=pts[pts.length-1];
-  const mapUrl='https://staticmap.openstreetmap.de/staticmap.php?size=600x450&maptype=mapnik'
-    +'&path=color:0x0fb85fff|weight:5|'+path
-    +'&markers='+s[0].toFixed(5)+','+s[1].toFixed(5)+',lightgreen|'+e[0].toFixed(5)+','+e[1].toFixed(5)+',red';
-  const mapImg=new Image(); mapImg.crossOrigin='anonymous';
-  mapImg.onload=()=>{
-    try{
-      const W=1080,H=1080,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
-      x.fillStyle='#0d2417';x.fillRect(0,0,W,H);
-      const mh=Math.round(W*mapImg.height/mapImg.width);
-      x.drawImage(mapImg,0,200,W,mh);
-      x.fillStyle='rgba(13,36,23,.85)';x.fillRect(0,0,W,196);
-      x.fillStyle='#0fb85f';x.font='800 64px sans-serif';x.fillText('Skride',60,96);
-      x.fillStyle='#c9d2db';x.font='600 30px sans-serif';x.fillText((profile.name||'Бегун')+' · '+new Date().toLocaleDateString('ru-RU'),60,148);
-      const dist=$('mapDist').textContent;
-      x.fillStyle='rgba(13,36,23,.85)';x.fillRect(0,H-220,W,220);
-      x.fillStyle='#fff';x.font='800 140px sans-serif';x.fillText(dist,60,H-70);
-      x.fillStyle='#8a96a3';x.font='700 44px sans-serif';x.fillText('КМ',60+x.measureText(dist).width+30,H-70);
-      const url=c.toDataURL('image/png');
-      const a=document.createElement('a');a.href=url;a.download='skride-route.png';a.click();
-      toast('Снимок с картой сохранён 📸');
-    }catch(err){
-      const a=document.createElement('a');a.href=mapUrl;a.download='skride-route.png';a.target='_blank';a.click();
-      toast('Снимок карты открыт — сохрани долгим нажатием 📸');
-    }
-  };
-  mapImg.onerror=()=>{ toast('Карта-подложка недоступна — сохраняю векторную карточку'); try{ drawRouteCard(); }catch(e){ toast('Не удалось сделать снимок'); } };
-  mapImg.src=mapUrl;
+  try{
+    const url=await buildRouteImage(pts);
+    const a=document.createElement('a');a.href=url;a.download='skride-route.png';a.click();
+    toast('Снимок с картой сохранён 📸');
+  }catch(err){
+    toast('Карта-подложка недоступна — сохраняю векторную карточку');
+    try{ drawRouteCard(); }catch(e){ toast('Не удалось сделать снимок'); }
+  }
 };
 $('locBtn').onclick=()=>{
   if(!navigator.geolocation){ toast('Геолокация недоступна на устройстве'); return; }
@@ -1556,7 +1620,7 @@ let bgWatcherId = null;
 // Единая обработка одной точки GPS — используется и в вебе, и в нативном фоновом режиме
 /* ---- голосовой тренер (TTS) ---- */
 let voiceCoach=false; const VOICE_KEY='stride:voice';
-let voiceGender='female'; const VOICE_GENDER_KEY='stride:voicegender';
+let voiceGender='male'; const VOICE_GENDER_KEY='stride:voicegender';
 let voiceURI=''; const VOICE_URI_KEY='stride:voiceuri';
 let lastSpokenKm=0, voicePrimed=false;
 
@@ -1575,7 +1639,7 @@ const RU_FEMALE=['milena','irina','alena','alyona','oksana','tatyana','svetlana'
 function scoreByGender(v){ const n=vName(v); const want=voiceGender==='male'?RU_MALE:RU_FEMALE; const other=voiceGender==='male'?RU_FEMALE:RU_MALE;
   if(want.some(k=>n.includes(k)))return 2; if(other.some(k=>n.includes(k)))return -2; return 0; }
 function pickWebVoice(){ if(!_voices.length) loadVoices(); const ru=_voices.filter(isRu); if(!ru.length) return null;
-  return ru.map(v=>({v,s:rankVoice(v)})).sort((a,b)=>b.s-a.s)[0].v; }
+  return ru.map(v=>({v,s:rankVoice(v)+scoreByGender(v)})).sort((a,b)=>b.s-a.s)[0].v; }
 function chosenWebVoice(){ if(voiceURI){ const v=_voices.find(x=>(x.voiceURI||x.name)===voiceURI); if(v) return v; } return pickWebVoice(); }
 function pickNativeIndex(list){ if(!Array.isArray(list)||!list.length) return -1;
   const ranked=list.map((v,i)=>({i,s:(isRu(v)?3:0)+rankVoice(v)+scoreByGender(v)})).filter(x=>x.s>0).sort((a,b)=>b.s-a.s);
@@ -2762,7 +2826,7 @@ if($('authRegBtn')) $('authRegBtn').onclick=()=>doAuth('/api/register');
 if($('authLogout')) $('authLogout').onclick=doLogout;
 if($('authSync')) $('authSync').onclick=cloudSyncInitial;
 if($('authYandexBtn')) $('authYandexBtn').onclick=()=>toast('Вход через Яндекс ID подключим следующим шагом');
-let ttsVoice=''; const TTS_VOICE_KEY='stride:ttsvoice';
+let ttsVoice='zahar'; const TTS_VOICE_KEY='stride:ttsvoice';
 let bikeType=''; const BIKE_KEY='stride:biketype';
 function coachContext(){ const wk=_wk(), bp=_bestPace(); let c='всего тренировок '+runs.length+', за неделю '+wk.km.toFixed(1)+' км ('+wk.n+' трен)'; if(bp) c+=', лучший темп '+fmtPace(bp)+'/км'; c+=', ориентир макс пульса '+(maxHr||190)+', сейчас вид активности: '+(activityType==='bike'?'велосипед':'бег'); if(activityType==='bike'&&bikeType) c+=' ('+bikeType+')'; return c; }
 async function cloudCoach(){
