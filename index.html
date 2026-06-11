@@ -905,7 +905,7 @@
 
     <h3 style="font-size:16px;margin-top:18px">Облачный ИИ и голос <span style="font-size:11px;color:var(--orange)">Premium</span></h3>
     <p>Подключи свой сервер — и тренер станет «умным» (отвечает на любые вопросы), а голос — живым. Как поднять сервер за 15 минут — в инструкции к архиву сервера. Пусто = офлайн-режим.</p>
-    <input id="serverUrl" type="text" placeholder="https://...onrender.com" autocomplete="off" inputmode="url">
+    <input id="serverUrl" type="text" placeholder="https://api.skride.ru" autocomplete="off" inputmode="url">
     <div class="row">
       <button class="btn-sec" id="serverTest">Проверить</button>
       <button class="btn-pri" id="serverSave">Сохранить адрес</button>
@@ -2806,7 +2806,7 @@ let chatMsgs=[];
 function renderChat(){ const t=$('coachThread'); if(!t) return; t.innerHTML=chatMsgs.map(m=>'<div class="cb '+(m.who==='me'?'me':'coach')+'">'+esc(m.text)+'</div>').join(''); t.scrollTop=t.scrollHeight; }
 function chatPush(who,text,save){ chatMsgs.push({who,text}); if(chatMsgs.length>60) chatMsgs=chatMsgs.slice(-60); renderChat(); if(save!==false){ try{ sSet(CHAT_KEY,JSON.stringify(chatMsgs)); }catch(e){} } }
 /* ===== Облако: умный тренер + живой голос (через свой сервер) ===== */
-let cloudURL=''; const SERVER_KEY='stride:server'; const DEFAULT_SERVER='https://skride-server.onrender.com';
+let cloudURL=''; const SERVER_KEY='stride:server'; const DEFAULT_SERVER='https://api.skride.ru';
 let authToken='', authUser=null; const AUTH_KEY='stride:auth';
 let storeMode='local'; const STORE_KEY='stride:store';
 async function saveAuth(){ await sSet(AUTH_KEY, JSON.stringify({token:authToken,user:authUser})); }
