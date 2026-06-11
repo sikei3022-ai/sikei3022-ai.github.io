@@ -2884,7 +2884,36 @@ $('serverTest').onclick=async()=>{ const u=$('serverUrl').value.trim(); if(!u){ 
 if($('cloudVoiceSel')) $('cloudVoiceSel').onchange=async(e)=>{ unlockAudio(); ttsVoice=e.target.value; await sSet(TTS_VOICE_KEY,ttsVoice); if(cloudURL){ say('Привет! Так звучит выбранный голос.'); } toast('Голос сохранён'); };
 
 /* ---- голосовой ввод: говоришь вопрос — тренер отвечает (как с Алисой) ---- */
-const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+/* ---- нативное распознавание речи (Android-приложение) как «переходник» к Web Speech API ---- */
+const NATIVE_SR=(window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.SpeechRecognition) || null;
+class NativeSpeechRec{
+  constructor(){ this.lang='ru-RU'; this.interimResults=false; this.maxAlternatives=1; this.onstart=this.onresult=this.onerror=this.onend=null; }
+  async _perm(SR){
+    try{
+      if(SR.checkPermissions){ let p=await SR.checkPermissions(); if(p&&p.speechRecognition==='granted') return true; p=await SR.requestPermissions(); return !!(p&&p.speechRecognition==='granted'); }
+      if(SR.hasPermission){ let h=await SR.hasPermission(); if(h&&(h.permission===true||h.permission==='granted')) return true; await SR.requestPermission(); h=await SR.hasPermission(); return !!(h&&(h.permission===true||h.permission==='granted')); }
+    }catch(e){}
+    return true;
+  }
+  async start(){
+    const SR=window.Capacitor.Plugins.SpeechRecognition;
+    try{
+      if(!(await this._perm(SR))){ this.onerror&&this.onerror({error:'not-allowed'}); this.onend&&this.onend(); return; }
+      this.onstart&&this.onstart();
+      const res=await SR.start({ language:this.lang||'ru-RU', maxResults:1, partialResults:false, popup:false });
+      const t=(res&&res.matches&&res.matches[0])||'';
+      if(t) this.onresult&&this.onresult({ results:[[{transcript:t}]] });
+      else this.onerror&&this.onerror({error:'no-speech'});
+      this.onend&&this.onend();
+    }catch(e){
+      const msg=((e&&(e.message||e.errorMessage))||e)+'';
+      this.onerror&&this.onerror({ error:/denied|permission|not-allowed/i.test(msg)?'not-allowed':'error', message:msg });
+      this.onend&&this.onend();
+    }
+  }
+  stop(){ try{ window.Capacitor.Plugins.SpeechRecognition.stop(); }catch(e){} }
+}
+const SpeechRec = NATIVE_SR ? NativeSpeechRec : (window.SpeechRecognition || window.webkitSpeechRecognition);
 let _permKind=null;
 function showPerm(kind){
   _permKind=kind; const isMic=(kind==='mic');
