@@ -25,7 +25,7 @@
   window.addEventListener('orientationchange',function(){ setTimeout(fit,250); });
 })();
 </script>
-<meta name="theme-color" content="#0fb85f">
+<meta name="theme-color" content="#36A96B">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Skride">
@@ -38,14 +38,14 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
   :root{
-    --orange:#2eaf6d; --orange-d:#259158;
-    --grad:linear-gradient(135deg,#33b87a 0%,#229058 100%);
-    --grad-soft:linear-gradient(135deg,#e8f5ec,#e8f5ec);
-    --bg:#ffffff; --card:#ffffff; --ink:#1e1e1e; --ink2:#374151;
-    --muted:#6b7280; --line:#e5e7eb; --line2:#e5e7eb; --accent:#2eaf6d;
+    --orange:#36A96B; --orange-d:#258654;
+    --grad:linear-gradient(135deg,#36A96B 0%,#258654 100%);
+    --grad-soft:linear-gradient(135deg,#E8F5EC,#E8F5EC);
+    --bg:#ffffff; --card:#ffffff; --surface:#F8FAF8; --ink:#1e1e1e; --ink2:#374151;
+    --muted:#6b7280; --line:#e5e7eb; --line2:#e5e7eb; --accent:#36A96B;
     --body:'Barlow',-apple-system,BlinkMacSystemFont,sans-serif;
     --num:'Barlow Semi Condensed','Barlow',sans-serif;
-    --shadow:0 1px 2px rgba(16,24,40,.04),0 4px 16px rgba(16,24,40,.06);
+    --shadow:0 4px 16px rgba(54,169,107,.10);
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;padding:0;-webkit-text-size-adjust:100%;text-size-adjust:100%;overflow-x:hidden}
@@ -81,7 +81,7 @@
   .lf-locate{width:40px;height:40px;border:none;border-radius:10px;background:#fff;box-shadow:0 1px 5px rgba(0,0,0,.3);font-size:20px;cursor:pointer;line-height:40px;text-align:center}
   .wavy-ic{width:22px;height:10px;vertical-align:middle;margin-right:4px}
   .bq-opt{padding:8px 13px;border:1px solid var(--line2);background:var(--card);border-radius:20px;font-family:var(--body);font-weight:700;font-size:13px;color:var(--ink2);cursor:pointer}
-  .bq-opt.on{background:var(--grad);color:#fff;border-color:transparent;box-shadow:0 3px 10px rgba(20,180,90,.3)}
+  .bq-opt.on{background:var(--grad);color:#fff;border-color:transparent;box-shadow:0 3px 10px rgba(54,169,107,.3)}
   .mach-img{height:176px;display:flex;align-items:center;justify-content:center;background:#fff;border-radius:14px;border:1px solid var(--line);overflow:hidden}
     .mach-photo{width:100%;height:100%;object-fit:contain;padding:8px;box-sizing:border-box}
     .dev-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:13px 15px;margin-bottom:10px;box-shadow:var(--shadow)}
@@ -122,10 +122,10 @@
   .qb-row{display:flex;justify-content:space-between;align-items:center;margin-top:10px;gap:10px}
   .qb-auth{font-size:12.5px;color:var(--orange);font-weight:700}
   .qb-spk{background:var(--bg);border:1px solid var(--line);color:var(--ink);width:34px;height:34px;border-radius:50%;font-size:15px;cursor:pointer;flex:none}
-  .ym-bar{position:fixed;top:0;left:0;right:0;margin:0 auto;max-width:540px;z-index:190;display:flex;align-items:center;gap:9px;background:linear-gradient(135deg,#0e9c55,#16b86a);padding:calc(10px + env(safe-area-inset-top)) 11px 10px;border-radius:0 0 20px 20px;box-shadow:0 8px 24px rgba(14,156,85,.45);transform:translateZ(0);-webkit-transform:translateZ(0);will-change:transform;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+  .ym-bar{position:fixed;top:0;left:0;right:0;margin:0 auto;max-width:540px;z-index:190;display:flex;align-items:center;gap:8px;background:linear-gradient(135deg,#36A96B,#36A96B);padding:calc(6px + env(safe-area-inset-top)) 10px 6px;border-radius:0 0 14px 14px;box-shadow:0 3px 12px rgba(54,169,107,.28);transform:translateZ(0);-webkit-transform:translateZ(0);will-change:transform;backface-visibility:hidden;-webkit-backface-visibility:hidden}
     
-  .ym-bar iframe{flex:1;border:none;height:90px;border-radius:14px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.12)}
-  .ym-bar-x{flex:none;width:30px;height:30px;border:none;border-radius:50%;background:rgba(255,255,255,.22);color:#fff;font-size:14px;cursor:pointer;transition:.15s}
+  .ym-bar iframe{flex:1;border:none;height:66px;border-radius:10px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.10)}
+  .ym-bar-x{flex:none;width:28px;height:28px;border:none;border-radius:50%;background:rgba(255,255,255,.22);color:#fff;font-size:13px;cursor:pointer;transition:.15s}
   .ym-bar-x:active{background:rgba(255,255,255,.4)}
   .ym-eq{flex:none;display:flex;align-items:flex-end;gap:2px;height:22px;padding:0 2px}
   .ym-eq i{width:3px;background:rgba(255,255,255,.9);border-radius:2px;animation:ymeq .9s ease-in-out infinite}
@@ -135,7 +135,7 @@
   .ym-eq i:nth-child(4){height:75%;animation-delay:.12s}
   @keyframes ymeq{0%,100%{transform:scaleY(.5)}50%{transform:scaleY(1)}}
   .map-toggle .mt-opt{padding:7px 12px;border:1px solid var(--line2);background:var(--card);border-radius:20px;font-family:var(--body);font-weight:700;font-size:12.5px;color:var(--ink2);cursor:pointer}
-  .map-toggle .mt-opt.on{background:var(--grad);color:#fff;border-color:transparent;box-shadow:0 3px 10px rgba(20,180,90,.3)}
+  .map-toggle .mt-opt.on{background:var(--grad);color:#fff;border-color:transparent;box-shadow:0 3px 10px rgba(54,169,107,.3)}
   .map-fallback{height:300px;display:grid;place-items:center;text-align:center;color:var(--muted);
     font-weight:600;padding:24px;line-height:1.5;background:linear-gradient(135deg,#fff,#f1f1f4)}
   .map-search{display:flex;gap:8px;padding:11px 12px 0}
@@ -234,7 +234,7 @@
   .nav a{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted);text-decoration:none;
     font-size:10px;font-weight:700;letter-spacing:.4px;background:none;border:none;cursor:pointer;font-family:var(--body)}
   .nav a svg{width:23px;height:23px;stroke:var(--muted)}
-  .nav a.rec{background:var(--grad);width:52px;height:52px;border-radius:50%;justify-content:center;margin-top:-22px;box-shadow:0 6px 18px rgba(20,180,90,.5)}
+  .nav a.rec{background:var(--grad);width:52px;height:52px;border-radius:50%;justify-content:center;margin-top:-22px;box-shadow:0 6px 18px rgba(54,169,107,.5)}
   .nav a.rec svg{width:26px;height:26px;stroke:#fff}
   .nav a.active{color:var(--orange)} .nav a.active svg{stroke:var(--orange)}
 
@@ -275,7 +275,7 @@
   .ob-skip{position:absolute;top:max(14px,env(safe-area-inset-top));right:16px;z-index:2;background:rgba(255,255,255,.25);border:none;color:#fff;font-family:var(--body);font-weight:700;font-size:13px;padding:8px 14px;border-radius:20px;cursor:pointer}
   .ob-view{flex:1;overflow:hidden}
   .ob-track{display:flex;height:100%;transition:transform .45s ease}
-  .ob-slide{position:relative;min-width:100%;height:100%;box-sizing:border-box;display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-start;text-align:left;padding:30px 30px max(46px,calc(env(safe-area-inset-bottom) + 30px));color:#fff;background:#0e9c55 center/cover no-repeat}
+  .ob-slide{position:relative;min-width:100%;height:100%;box-sizing:border-box;display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-start;text-align:left;padding:30px 30px max(46px,calc(env(safe-area-inset-bottom) + 30px));color:#fff;background:#258654 center/cover no-repeat}
   .ob-cover{padding:0;align-items:stretch;justify-content:stretch;background:#06180e}
     .ob-cover::before{display:none}
     .ob-fill{position:absolute;inset:0;background:center/cover no-repeat;filter:blur(26px) brightness(.55);transform:scale(1.25);z-index:0}
@@ -323,9 +323,9 @@
   .coach-ctrls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
   .coach-ctrls button{flex:1;min-width:92px;padding:11px 10px;border:1.5px solid var(--line2);background:var(--card);border-radius:14px;font-family:var(--body);font-weight:700;font-size:13.5px;color:var(--ink2);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:5px;transition:transform .12s,background .15s}
   .coach-ctrls button:active{transform:scale(.97)}
-  .coach-ctrls #coachConvo{background:var(--grad);color:#fff;border-color:transparent;box-shadow:0 3px 12px rgba(20,180,90,.28)}
-  .coach-ctrls #coachConvo.on{background:#0b6e42;color:#fff;border-color:transparent;box-shadow:none}
-  .coach-ctrls #coachStop{color:#0b6e42;border-color:#bfe6cf}
+  .coach-ctrls #coachConvo{background:var(--grad);color:#fff;border-color:transparent;box-shadow:0 3px 12px rgba(54,169,107,.28)}
+  .coach-ctrls #coachConvo.on{background:#258654;color:#fff;border-color:transparent;box-shadow:none}
+  .coach-ctrls #coachStop{color:#258654;border-color:#bfe6cf}
   .coach-thread{display:flex;flex-direction:column;gap:8px;max-height:340px;overflow-y:auto;padding:2px}
   .cb{max-width:84%;padding:10px 13px;border-radius:15px;font-size:14px;line-height:1.45;white-space:pre-wrap;word-wrap:break-word}
   .cb.coach{align-self:flex-start;background:var(--grad-soft);color:var(--ink);border-bottom-left-radius:5px}
@@ -424,7 +424,10 @@
   .track-panel{padding:14px 16px;border-top:1px solid var(--line)}
   .act-pick{display:flex;gap:6px;padding:12px 14px 0}
   .act-opt{flex:1;padding:11px;border:1px solid var(--line2);background:var(--card);border-radius:11px;font-family:var(--body);font-weight:800;font-size:14px;color:var(--ink2);cursor:pointer;transition:.15s}
-  .act-opt.on{background:var(--grad);color:#fff;border-color:transparent;box-shadow:0 4px 14px rgba(20,180,90,.32)}
+  .act-opt.on{background:var(--grad);color:#fff;border-color:transparent;box-shadow:0 4px 14px rgba(54,169,107,.32)}
+  #actPick .act-opt{display:flex;flex-direction:column;align-items:center;gap:5px;padding:12px 6px;border-radius:16px;font-size:13px}
+  #actPick .act-opt .act-ic{width:30px;height:30px;flex:none}
+  #actPick .act-opt.on{background:#E8F5EC;color:#258654;border-color:#36A96B;box-shadow:none}
   .track-live{display:none;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border-radius:12px;overflow:hidden;margin-bottom:12px}
   .track-live.on{display:grid}
   .tl{background:#fff;padding:14px 8px;text-align:center}
@@ -439,7 +442,7 @@
   .btn-start svg{stroke:#fff;fill:#fff}
   .btn-pause{background:#1f9d5f;color:#fff;display:none}
   .btn-pause.on{display:flex}
-  .btn-stop{background:#0b6e42;color:#fff;display:none}
+  .btn-stop{background:#258654;color:#fff;display:none}
   .btn-stop.on{display:flex}
   .btn-start.hide{display:none}
   .gps-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#2ecc71;margin-right:6px;animation:pulse 1.5s infinite}
@@ -578,9 +581,9 @@
       </div>
 
       <div class="act-pick" id="actPick">
-        <button class="act-opt on" data-act="run" type="button">🏃 Бег</button>
-        <button class="act-opt" data-act="bike" type="button">🚴 Велосипед</button>
-        <button class="act-opt" data-act="ellipse" type="button">⭕ Эллипс</button>
+        <button class="act-opt on" data-act="run" type="button"><svg class="act-ic" viewBox="0 0 64 64" aria-hidden="true"><circle cx="36" cy="13" r="5" fill="#36A96B"/><path d="M34 22l-8 8 8 6 7 13" fill="none" stroke="#36A96B" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M36 24l9 5 7-2" fill="none" stroke="#36A96B" stroke-width="4" stroke-linecap="round"/><path d="M27 37l-9 10" fill="none" stroke="#36A96B" stroke-width="4" stroke-linecap="round"/><path d="M14 55c9-3 24-3 36 0" fill="none" stroke="#36A96B" stroke-width="1.7" opacity=".35" stroke-linecap="round"/></svg><span>Бег</span></button>
+        <button class="act-opt" data-act="bike" type="button"><svg class="act-ic" viewBox="0 0 64 64" aria-hidden="true"><circle cx="20" cy="43" r="11" fill="none" stroke="#36A96B" stroke-width="3"/><circle cx="45" cy="43" r="11" fill="none" stroke="#36A96B" stroke-width="3"/><path d="M20 43l9-17h9l7 17M29 26l8 17H20M38 26l6-8h7" fill="none" stroke="#36A96B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="34" cy="13" r="4" fill="#36A96B"/><path d="M36 19l-7 7" stroke="#36A96B" stroke-width="3" stroke-linecap="round"/></svg><span>Велосипед</span></button>
+        <button class="act-opt" data-act="ellipse" type="button"><svg class="act-ic" viewBox="0 0 64 64" aria-hidden="true"><path d="M19 49c2-18 9-29 18-34" fill="none" stroke="#36A96B" stroke-width="3" stroke-linecap="round"/><path d="M45 49c-2-18-9-29-18-34" fill="none" stroke="#36A96B" stroke-width="3" stroke-linecap="round"/><ellipse cx="32" cy="50" rx="20" ry="5" fill="none" stroke="#36A96B" stroke-width="2.5"/><path d="M32 17v28M23 28h18" stroke="#36A96B" stroke-width="3" stroke-linecap="round"/></svg><span>Эллипс</span></button>
       </div>
       <div id="bikeQuick" style="display:none;flex-wrap:wrap;gap:7px;margin-bottom:12px">
         <button class="bq-opt" data-bt="шоссейный" type="button">Шоссейный</button>
@@ -649,7 +652,7 @@
       <div class="mach-img" id="machImg"></div>
       <div class="dev-row" style="margin-top:12px"><div class="dev-info"><div class="dev-n" id="machName">Беговая дорожка</div><div class="dev-s" id="treadState">не подключена · в зале или дома</div></div></div>
       <div class="dev-btns" style="flex-direction:column;gap:9px">
-        <button class="chip cam" id="treadPhoto" style="width:100%;background:linear-gradient(135deg,#0e9c55,#16b86a);color:#fff;border-color:transparent;font-weight:800;padding:13px 12px;font-size:14.5px">📷 <span id="machPhotoLbl">Фото табло с ИИ-распознаванием</span></button>
+        <button class="chip cam" id="treadPhoto" style="width:100%;background:linear-gradient(135deg,#258654,#36A96B);color:#fff;border-color:transparent;font-weight:800;padding:13px 12px;font-size:14.5px">📷 <span id="machPhotoLbl">Фото табло с ИИ-распознаванием</span></button>
         <button class="chip" id="treadBt" style="width:100%">🔗 Подключить по Bluetooth</button>
         <input type="file" id="treadFile" accept="image/*" capture="environment" style="display:none">
       </div>
@@ -662,6 +665,10 @@
     <div class="dev-card">
       <div class="dev-row"><div class="dev-ic">📿</div><div class="dev-info"><div class="dev-n">Умный браслет</div><div class="dev-s" id="bandState">не подключён</div></div></div>
       <button class="chip" id="bandBt" style="width:100%;justify-content:center">🔗 Подключить браслет (Bluetooth)</button>
+    </div>
+    <div class="dev-card">
+      <div class="dev-row"><div class="dev-ic">❤️</div><div class="dev-info"><div class="dev-n">Датчик пульса</div><div class="dev-s" id="hrConnState">не подключён</div></div></div>
+      <button class="chip" id="hrConnect" style="width:100%;justify-content:center">🔗 Подключить датчик (Bluetooth)</button>
     </div>
     <p class="dev-note">Часы, браслеты и пояса подключаются по стандарту Bluetooth (пульс в реальном времени). Полная синхронизация Garmin / Apple Watch / Mi Band и данные о шагах — в нативной версии. Дорожку без Bluetooth можно сфотографировать и вписать цифры.</p>
   </div>
@@ -805,8 +812,7 @@
     <div class="prof" style="padding:10px 0;gap:13px;border-top:1px solid var(--line)">
       <span class="ic" style="font-size:22px">✏️</span>
       <div class="pinfo">
-        <div class="pname" style="font-size:16px">Ручной ввод данных</div>
-        <div class="pcity">сам чертишь маршрут и вводишь время, дату, дистанцию</div>
+        <div class="pname" style="font-size:16px">selfie route</div>
       </div>
       <label class="switch"><input type="checkbox" id="manualToggle"><span class="sl"></span></label>
     </div>
@@ -824,17 +830,6 @@
         <option value="электро">Электро</option>
       </select>
     </div>
-
-    <h3 style="font-size:16px;margin-top:18px" data-i18n="set_devices">Часы и пульсометр</h3>
-    <div class="prof" style="padding:10px 0;gap:13px">
-      <span class="ic" style="font-size:22px">⌚</span>
-      <div class="pinfo">
-        <div class="pname" style="font-size:16px">Датчик пульса (Bluetooth)</div>
-        <div class="pcity" id="hrConnState">подключи пульсометр, пояс или браслет</div>
-      </div>
-    </div>
-    <button class="chip" id="hrConnect" style="width:100%;justify-content:center;margin:2px 0 4px">❤️ Подключить по Bluetooth</button>
-    <p style="margin:0 0 4px">Работает с устройствами, передающими пульс по стандарту Bluetooth (нагрудные пояса, многие браслеты и часы). Полная синхронизация с Garmin / Apple Watch / Mi Band через их экосистемы появится в нативной версии.</p>
 
     <h3 style="font-size:16px;margin-top:18px" data-i18n="set_voice">Голос ИИ-тренера</h3>
 
@@ -1218,8 +1213,8 @@ function setMyMarker(c,label){
   }
 }
 function trackLineCreate(){
-  if(mapProvider==='yandex'){ if(ymap){ if(gpsLine)ymap.geoObjects.remove(gpsLine); gpsLine=new ymaps.Polyline([],{},{strokeColor:'#0fb85f',strokeWidth:5,strokeOpacity:.9}); ymap.geoObjects.add(gpsLine); } }
-  else { if(lmap){ if(gpsLine)lmap.removeLayer(gpsLine); gpsLine=L.polyline([],{color:'#0fb85f',weight:5,opacity:.9}).addTo(lmap); } }
+  if(mapProvider==='yandex'){ if(ymap){ if(gpsLine)ymap.geoObjects.remove(gpsLine); gpsLine=new ymaps.Polyline([],{},{strokeColor:'#36A96B',strokeWidth:5,strokeOpacity:.9}); ymap.geoObjects.add(gpsLine); } }
+  else { if(lmap){ if(gpsLine)lmap.removeLayer(gpsLine); gpsLine=L.polyline([],{color:'#36A96B',weight:5,opacity:.9}).addTo(lmap); } }
 }
 function trackLineUpdate(){
   if(!gpsLine) return;
@@ -1287,7 +1282,7 @@ function mRedraw(){
     if(mRoute){ ymap.geoObjects.remove(mRoute); mRoute=null; }
     mMarks.forEach(p=>ymap.geoObjects.remove(p)); mMarks=[];
     if(path.length){
-      mRoute=new ymaps.Polyline(path,{},{strokeColor:'#0fb85f',strokeWidth:5,strokeOpacity:.9}); ymap.geoObjects.add(mRoute);
+      mRoute=new ymaps.Polyline(path,{},{strokeColor:'#36A96B',strokeWidth:5,strokeOpacity:.9}); ymap.geoObjects.add(mRoute);
       const ends=mPts.length>1?[0,mPts.length-1]:[0];
       ends.forEach((i,k)=>{ const pm=new ymaps.Placemark(mPts[i],{},{preset:k===0?'islands#greenCircleDotIcon':'islands#orangeCircleDotIcon'}); mMarks.push(pm); ymap.geoObjects.add(pm); });
     }
@@ -1296,9 +1291,9 @@ function mRedraw(){
     if(mRoute){ lmap.removeLayer(mRoute); mRoute=null; }
     mMarks.forEach(p=>lmap.removeLayer(p)); mMarks=[];
     if(path.length){
-      mRoute=L.polyline(path,{color:'#0fb85f',weight:5,opacity:.9}).addTo(lmap);
+      mRoute=L.polyline(path,{color:'#36A96B',weight:5,opacity:.9}).addTo(lmap);
       const ends=mPts.length>1?[0,mPts.length-1]:[0];
-      ends.forEach((i,k)=>{ const pm=L.circleMarker(mPts[i],{radius:7,color:'#fff',weight:2,fillColor:(k===0?'#16b86a':'#0a7d44'),fillOpacity:1}).addTo(lmap); mMarks.push(pm); });
+      ends.forEach((i,k)=>{ const pm=L.circleMarker(mPts[i],{radius:7,color:'#fff',weight:2,fillColor:(k===0?'#36A96B':'#0a7d44'),fillOpacity:1}).addTo(lmap); mMarks.push(pm); });
     }
   }
   const d=mTotalKm(); if(d>0 && $('mDist')) $('mDist').value=d.toFixed(2);
@@ -1528,7 +1523,7 @@ function drawRouteCard(){
   const W=1080,H=1080,c=document.createElement('canvas');c.width=W;c.height=H;
   const x=c.getContext('2d');
   x.fillStyle='#0d1117';x.fillRect(0,0,W,H);
-  x.fillStyle='#0fb85f';x.font='800 64px sans-serif';x.fillText('Skride',60,110);
+  x.fillStyle='#36A96B';x.font='800 64px sans-serif';x.fillText('Skride',60,110);
   x.fillStyle='#8a96a3';x.font='600 30px sans-serif';x.fillText((profile.name||'Бегун')+' · '+new Date().toLocaleDateString('ru-RU'),60,160);
   const lats=pts.map(p=>p[0]),lngs=pts.map(p=>p[1]);
   const minLa=Math.min(...lats),maxLa=Math.max(...lats),minLo=Math.min(...lngs),maxLo=Math.max(...lngs);
@@ -1536,10 +1531,10 @@ function drawRouteCard(){
   const sc=Math.min((W-pad*2)/sx,(H-380)/sy);
   const ox=(W-sx*sc)/2,oy=260+((H-380)-sy*sc)/2;
   const X=lo=>ox+(lo-minLo)*sc,Y=la=>(260+(H-380))-(oy-260+(la-minLa)*sc);
-  x.strokeStyle='#0fb85f';x.lineWidth=10;x.lineJoin='round';x.lineCap='round';x.beginPath();
+  x.strokeStyle='#36A96B';x.lineWidth=10;x.lineJoin='round';x.lineCap='round';x.beginPath();
   pts.forEach((p,i)=>{const px=X(p[1]),py=Y(p[0]);i?x.lineTo(px,py):x.moveTo(px,py);});x.stroke();
   x.fillStyle='#2ecc71';x.beginPath();x.arc(X(pts[0][1]),Y(pts[0][0]),16,0,7);x.fill();
-  x.fillStyle='#0fb85f';x.beginPath();x.arc(X(pts.at(-1)[1]),Y(pts.at(-1)[0]),16,0,7);x.fill();
+  x.fillStyle='#36A96B';x.beginPath();x.arc(X(pts.at(-1)[1]),Y(pts.at(-1)[0]),16,0,7);x.fill();
   x.fillStyle='#fff';x.font='800 140px sans-serif';x.fillText(dist,60,H-120);
   x.fillStyle='#8a96a3';x.font='700 44px sans-serif';x.fillText('КМ',60+x.measureText(dist).width+30,H-120);
   const a=document.createElement('a');a.href=c.toDataURL('image/png');a.download='skride-route.png';a.click();
@@ -1574,15 +1569,15 @@ async function buildRouteImage(track){
   }
   await Promise.all(loads);
   x.save();x.beginPath();x.rect(0,mapTop,W,mapH);x.clip();
-  x.strokeStyle='#0fb85f';x.lineWidth=7;x.lineJoin='round';x.lineCap='round';x.beginPath();
+  x.strokeStyle='#36A96B';x.lineWidth=7;x.lineJoin='round';x.lineCap='round';x.beginPath();
   track.forEach((p,i)=>{ const q=project(p[0],p[1]); i?x.lineTo(q[0],q[1]):x.moveTo(q[0],q[1]); });
   x.stroke();
   const s=project(track[0][0],track[0][1]), e=project(track[track.length-1][0],track[track.length-1][1]);
-  x.fillStyle='#16b86a';x.beginPath();x.arc(s[0],s[1],13,0,7);x.fill();
+  x.fillStyle='#36A96B';x.beginPath();x.arc(s[0],s[1],13,0,7);x.fill();
   x.fillStyle='#0a7d44';x.beginPath();x.arc(e[0],e[1],13,0,7);x.fill();
   x.restore();
   x.fillStyle='rgba(13,36,23,.85)';x.fillRect(0,0,W,196);
-  x.fillStyle='#0fb85f';x.font='800 64px sans-serif';x.fillText('Skride',60,96);
+  x.fillStyle='#36A96B';x.font='800 64px sans-serif';x.fillText('Skride',60,96);
   x.fillStyle='#c9d2db';x.font='600 30px sans-serif';x.fillText((profile.name||'Бегун')+' · '+new Date().toLocaleDateString('ru-RU'),60,148);
   const dist=$('mapDist').textContent;
   x.fillStyle='rgba(13,36,23,.85)';x.fillRect(0,H-220,W,220);
@@ -2347,7 +2342,7 @@ function statsRender(){
   h+='<div class="st-h">🚶 Данные с телефона (ходьба)</div><div class="st-card" style="padding:14px 15px">';
   if(!walkData.enabled){
     h+='<div style="font-size:13px;color:var(--ink2);line-height:1.5">Учитывать ежедневную ходьбу с телефона в общей активности. Автоматическое чтение шагов появится в нативной версии (Google Fit / Apple Health) — пока можно вписать вручную.</div>'+
-       '<button class="lg-btn" id="walkConnect" style="margin:12px 0 0;background:linear-gradient(135deg,#0e9c55,#16b86a);color:#fff">📲 Подключить Google Fit / Apple Health</button>'+
+       '<button class="lg-btn" id="walkConnect" style="margin:12px 0 0;background:linear-gradient(135deg,#258654,#36A96B);color:#fff">📲 Подключить Google Fit / Apple Health</button>'+
        '<button class="lg-btn" id="walkEnable" style="margin:8px 0 0">Или вписать вручную</button>';
   } else {
     h+='<div class="st-row" style="border:none;padding-top:0"><span>Пройдено пешком</span><b>'+walkKm.toFixed(1)+' км</b></div>'+
@@ -2914,13 +2909,23 @@ class NativeSpeechRec{
   stop(){ try{ window.Capacitor.Plugins.SpeechRecognition.stop(); }catch(e){} }
 }
 const SpeechRec = NATIVE_SR ? NativeSpeechRec : (window.SpeechRecognition || window.webkitSpeechRecognition);
+/* запрос разрешения на микрофон через нативный плагин (показывает системное окно Android) */
+async function ensureMicNative(){
+  try{
+    const SR=(window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins.SpeechRecognition)||null;
+    if(!SR) return true;
+    if(SR.checkPermissions){ let p=await SR.checkPermissions(); if(p&&p.speechRecognition==='granted') return true; p=await SR.requestPermissions(); return !!(p&&p.speechRecognition==='granted'); }
+    if(SR.requestPermission){ try{ await SR.requestPermission(); }catch(e){} if(SR.hasPermission){ const h=await SR.hasPermission(); return !!(h&&(h.permission===true||h.permission==='granted')); } }
+    return true;
+  }catch(e){ return false; }
+}
 let _permKind=null;
 function showPerm(kind){
   _permKind=kind; const isMic=(kind==='mic');
   if($('permIcon')) $('permIcon').textContent=isMic?'🎤':'📍';
   if($('permTitle')) $('permTitle').textContent=isMic?'Доступ к микрофону':'Доступ к геолокации';
   if($('permText')){
-    const standalone = !!(window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || (document.referrer||'').startsWith('android-app://');
+    const standalone = isNative || !!(window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || (document.referrer||'').startsWith('android-app://');
     const perm = isMic ? 'Микрофон' : 'Местоположение';
     const base = isMic ? 'Чтобы говорить с тренером голосом, разреши доступ к микрофону.' : 'Чтобы показать тебя на карте, разреши доступ к геолокации.';
     const help = standalone
@@ -2934,7 +2939,8 @@ async function permState(name){ try{ if(navigator.permissions&&navigator.permiss
 let recog=null, recOn=false;
 async function startVoiceAsk(){
   if(!SpeechRec){ toast('Голосовой ввод не поддерживается этим браузером'); return; }
-  if(await permState('microphone')==='denied'){ showPerm('mic'); return; }
+  if(isNative){ if(!(await ensureMicNative())){ showPerm('mic'); return; } }
+  else if(await permState('microphone')==='denied'){ showPerm('mic'); return; }
   if(recOn){ try{recog.stop();}catch(e){} return; }
   try{
     recog=new SpeechRec(); recog.lang='ru-RU'; recog.interimResults=false; recog.maxAlternatives=1;
@@ -2958,17 +2964,25 @@ function openNativeSettings(){
 }
 if($('permRetry')) $('permRetry').onclick=async()=>{
   if($('permModal'))$('permModal').style.display='none';
-  if(isNative && openNativeSettings()){ return; }
   if(_permKind==='mic'){
+    if(isNative){
+      const ok=await ensureMicNative();
+      if(ok){ startVoiceAsk(); return; }
+      if(openNativeSettings()) return;
+      showPerm('mic'); return;
+    }
     try{ const st=await navigator.mediaDevices.getUserMedia({audio:true}); st.getTracks().forEach(t=>t.stop()); startVoiceAsk(); }
     catch(e){ showPerm('mic'); }
-  } else if(_permKind==='geo'){ toast('Определяю местоположение…'); centerOnUser(16, true); }
+  } else if(_permKind==='geo'){
+    if(isNative && openNativeSettings()){ return; }
+    toast('Определяю местоположение…'); centerOnUser(16, true);
+  }
 };
 
 /* ---- режим разговора (hands-free, как с Алисой): слушает → отвечает → снова слушает ---- */
 let convoMode=false;
 function setConvoUI(on){ const b=$('coachConvo'); if(b){ b.classList.toggle('on',on); b.textContent= on?'⏸ Остановить разговор':'🎙️ Разговор'; } }
-function startConvo(){ if(!SpeechRec){ toast('Голосовой ввод не поддерживается'); return; } convoMode=true; setConvoUI(true); unlockAudio(); toast('Режим разговора: просто говори'); convoListen(); }
+async function startConvo(){ if(!SpeechRec){ toast('Голосовой ввод не поддерживается'); return; } if(isNative && !(await ensureMicNative())){ showPerm('mic'); return; } convoMode=true; setConvoUI(true); unlockAudio(); toast('Режим разговора: просто говори'); convoListen(); }
 function stopConvo(){ convoMode=false; setConvoUI(false); try{recog&&recog.stop();}catch(e){} stopSpeaking(); const b=$('coachMic'); if(b)b.classList.remove('rec'); }
 function convoListen(){
   if(!convoMode) return;
