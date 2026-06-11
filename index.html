@@ -87,6 +87,8 @@
     .dev-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:13px 15px;margin-bottom:10px;box-shadow:var(--shadow)}
   .dev-row{display:flex;align-items:center;gap:13px;margin-bottom:11px}
   .dev-ic{width:46px;height:46px;flex:none;border-radius:13px;background:linear-gradient(135deg,#eafaf0,#d6f3e0);display:grid;place-items:center;font-size:24px}
+  .dev-ic svg{width:27px;height:27px}
+  .svic{width:1.05em;height:1.05em;display:inline-block;vertical-align:-.16em;flex:none}
   .dev-info{min-width:0}
   .dev-n{font-family:var(--num);font-weight:800;font-size:16px;color:var(--ink)}
   .dev-s{font-size:12px;font-weight:600;color:var(--muted);margin-top:2px}
@@ -126,6 +128,11 @@
     
   .ym-bar iframe{flex:1;border:none;height:66px;border-radius:10px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.10)}
   .ym-bar-x{flex:none;width:28px;height:28px;border:none;border-radius:50%;background:rgba(255,255,255,.22);color:#fff;font-size:13px;cursor:pointer;transition:.15s}
+  .ym-lbl{flex:1;display:flex;align-items:center;gap:9px;background:none;border:none;color:#fff;font-weight:800;font-size:14px;cursor:pointer;padding:9px 4px;text-align:left}
+  .ym-lbl .svic{width:19px;height:19px}
+  .ym-lbl .ym-play{margin-left:auto;font-size:11.5px;font-weight:700;background:rgba(255,255,255,.22);padding:5px 10px;border-radius:20px;white-space:nowrap}
+  .ym-bar.ym-min .ym-frame{display:none}
+  .ym-bar:not(.ym-min) .ym-lbl{display:none}
   .ym-bar-x:active{background:rgba(255,255,255,.4)}
   .ym-eq{flex:none;display:flex;align-items:flex-end;gap:2px;height:22px;padding:0 2px}
   .ym-eq i{width:3px;background:rgba(255,255,255,.9);border-radius:2px;animation:ymeq .9s ease-in-out infinite}
@@ -455,6 +462,7 @@
 </style>
 </head>
 <body>
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true"><symbol id="ic-run" viewBox="0 0 64 64"><circle cx="36" cy="13" r="5" fill="currentColor"/><path d="M34 22l-8 8 8 6 7 13" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M36 24l9 5 7-2" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><path d="M27 37l-9 10" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><path d="M14 55c9-3 24-3 36 0" fill="none" stroke="currentColor" stroke-width="1.7" opacity=".35" stroke-linecap="round"/></symbol><symbol id="ic-bike" viewBox="0 0 64 64"><circle cx="20" cy="43" r="11" fill="none" stroke="currentColor" stroke-width="3"/><circle cx="45" cy="43" r="11" fill="none" stroke="currentColor" stroke-width="3"/><path d="M20 43l9-17h9l7 17M29 26l8 17H20M38 26l6-8h7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="34" cy="13" r="4" fill="currentColor"/><path d="M36 19l-7 7" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></symbol><symbol id="ic-elliptical" viewBox="0 0 64 64"><path d="M19 49c2-18 9-29 18-34" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M45 49c-2-18-9-29-18-34" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><ellipse cx="32" cy="50" rx="20" ry="5" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M32 17v28M23 28h18" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></symbol><symbol id="ic-coach" viewBox="0 0 64 64"><circle cx="32" cy="18" r="8" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M17 52c2-11 9-17 15-17s13 6 15 17" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M45 27h8v12h-8" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></symbol><symbol id="ic-music" viewBox="0 0 64 64"><path d="M25 44V17l22-5v27" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="45" r="7" fill="none" stroke="currentColor" stroke-width="2.5"/><circle cx="42" cy="40" r="7" fill="none" stroke="currentColor" stroke-width="2.5"/></symbol><symbol id="ic-headphones" viewBox="0 0 64 64"><path d="M15 36v-6c0-10 7-18 17-18s17 8 17 18v6" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><rect x="10" y="34" width="9" height="16" rx="4" fill="none" stroke="currentColor" stroke-width="2.5"/><rect x="45" y="34" width="9" height="16" rx="4" fill="none" stroke="currentColor" stroke-width="2.5"/></symbol><symbol id="ic-heart-rate" viewBox="0 0 64 64"><path d="M12 33h9l5-12 9 24 5-12h12" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 16c5-6 12-1 12 4 0-5 8-10 13-4 6 8-5 18-13 25-8-7-19-17-12-25z" fill="none" stroke="currentColor" stroke-width="2.2" opacity=".45"/></symbol><symbol id="ic-save" viewBox="0 0 64 64"><rect x="14" y="10" width="36" height="44" rx="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M22 11v16h20V11" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M24 43h16" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol><symbol id="ic-play" viewBox="0 0 64 64"><circle cx="32" cy="32" r="24" fill="none" stroke="currentColor" stroke-width="2"/><path d="M27 22 L45 32 L27 42 Z" fill="currentColor"/></symbol><symbol id="ic-pause" viewBox="0 0 64 64"><circle cx="32" cy="32" r="24" fill="none" stroke="currentColor" stroke-width="2"/><rect x="24" y="21" width="6" height="22" rx="3" fill="currentColor"/><rect x="34" y="21" width="6" height="22" rx="3" fill="currentColor"/></symbol><symbol id="ic-stop" viewBox="0 0 64 64"><circle cx="32" cy="32" r="24" fill="none" stroke="currentColor" stroke-width="2"/><rect x="23" y="23" width="18" height="18" rx="5" fill="currentColor"/></symbol><symbol id="ic-record" viewBox="0 0 64 64"><path d="M18 50V34M32 50V20M46 50V28" stroke="currentColor" stroke-width="5" stroke-linecap="round"/><path d="M15 16l10 8 10-12 14 9" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></symbol><symbol id="ic-medal" viewBox="0 0 64 64"><path d="M22 10l10 17 10-17M32 27l-8-14M32 27l8-14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><circle cx="32" cy="42" r="12" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M32 35l2 5 5 .5-4 3.5 1.2 5-4.2-2.7-4.2 2.7 1.2-5-4-3.5 5-.5z" fill="currentColor"/></symbol><symbol id="ic-tempo" viewBox="0 0 64 64"><circle cx="32" cy="32" r="22" fill="none" stroke="currentColor" stroke-width="3"/><path d="M32 18v15l10 6" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M18 11l-5 5M46 11l5 5" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></symbol><symbol id="ic-speed" viewBox="0 0 64 64"><path d="M16 43a18 18 0 1 1 32 0" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M32 41l11-16" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><path d="M22 43h20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></symbol><symbol id="ic-distance" viewBox="0 0 64 64"><path d="M12 42h40" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M17 35l-5 7 5 7M47 35l5 7-5 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M25 22h14" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></symbol><symbol id="ic-level" viewBox="0 0 64 64"><path d="M16 45h32" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M20 45V31M32 45V19M44 45V25" stroke="currentColor" stroke-width="6" stroke-linecap="round"/><path d="M15 16h34" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity=".35"/></symbol><symbol id="ic-calendar" viewBox="0 0 64 64"><rect x="13" y="15" width="38" height="36" rx="8" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M13 26h38M23 11v8M41 11v8" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><circle cx="24" cy="36" r="2.5" fill="currentColor"/><circle cx="33" cy="36" r="2.5" fill="currentColor"/><circle cx="42" cy="36" r="2.5" fill="currentColor"/></symbol><symbol id="ic-settings" viewBox="0 0 64 64"><circle cx="32" cy="32" r="7" fill="none" stroke="currentColor" stroke-width="3"/><path d="M32 10v7M32 47v7M10 32h7M47 32h7M16 16l5 5M43 43l5 5M48 16l-5 5M21 43l-5 5" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></symbol><symbol id="ic-share" viewBox="0 0 64 64"><circle cx="18" cy="33" r="6" fill="none" stroke="currentColor" stroke-width="2.5"/><circle cx="46" cy="18" r="6" fill="none" stroke="currentColor" stroke-width="2.5"/><circle cx="46" cy="48" r="6" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M24 30l16-9M24 36l16 9" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></symbol><symbol id="ic-gps" viewBox="0 0 64 64"><path d="M32 8c10 0 18 8 18 18 0 13-18 30-18 30S14 39 14 26C14 16 22 8 32 8z" fill="none" stroke="currentColor" stroke-width="2.5"/><circle cx="32" cy="26" r="6" fill="currentColor"/></symbol><symbol id="ic-map" viewBox="0 0 64 64"><path d="M12 17l13-5 14 5 13-5v35l-13 5-14-5-13 5z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><path d="M25 12v35M39 17v35" stroke="currentColor" stroke-width="2.4"/></symbol><symbol id="ic-route" viewBox="0 0 64 64"><circle cx="17" cy="47" r="5" fill="currentColor"/><circle cx="47" cy="17" r="5" fill="currentColor"/><path d="M17 47c13-3 2-20 16-20 10 0 7-8 14-10" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-dasharray="5 5"/></symbol></svg>
 
 <!-- ONBOARDING (вступительная карусель при первом запуске) -->
 <div id="onboarding" class="ob" style="display:none">
@@ -509,9 +517,11 @@
   </div>
 </div>
 
-<div id="ymBar" class="ym-bar" style="display:none">
+<div id="ymBar" class="ym-bar ym-min" style="display:none">
   <div class="ym-eq"><i></i><i></i><i></i><i></i></div>
-  <iframe id="ymIframe" frameborder="0" allow="autoplay"></iframe>
+  <button id="ymExpand" class="ym-lbl" type="button"><svg class="svic" aria-hidden="true"><use href="#ic-music"></use></svg><span>Яндекс Музыка</span><b class="ym-play">▶ открыть</b></button>
+  <iframe id="ymIframe" class="ym-frame" frameborder="0" allow="autoplay"></iframe>
+  <button id="ymToggle" class="ym-bar-x" aria-label="свернуть плеер">▴</button>
   <button id="ymOpenExt" class="ym-bar-x" title="Открыть в Яндекс Музыке" aria-label="открыть в Яндекс Музыке">↗</button>
   <button id="ymBarClose" class="ym-bar-x" aria-label="скрыть плеер">✕</button>
 </div>
@@ -596,7 +606,7 @@
       <!-- GPS tracking -->
       <div class="track-panel">
         <div class="track-mode-note" id="trackModeNote">Автозапись по GPS — нажми «Старт» и беги</div>
-        <button class="chip" id="voiceBtn" style="margin:0 auto 12px;display:inline-flex">🎧 Голос ИИ-тренера: выкл</button>
+        <button class="chip" id="voiceBtn" style="margin:0 auto 12px;display:inline-flex"><svg class="svic" aria-hidden="true"><use href="#ic-headphones"></use></svg> Голос ИИ-тренера: выкл</button>
         <div class="track-live" id="trackLive">
           <div class="tl"><div class="tv accent" id="liveDist">0.00</div><div class="tu">км</div></div>
           <div class="tl"><div class="tv" id="liveTime">0:00</div><div class="tu">время</div></div>
@@ -634,7 +644,7 @@
           <div class="mp-f full"><label>Название</label><input id="mTitle" type="text" placeholder="Пробежка"></div>
         </div>
         <img id="mPhoto" style="display:none;width:100%;border-radius:12px;margin-bottom:10px">
-        <button class="btn-pri" id="mSave" style="width:100%;height:auto;padding:17px;font-size:17.5px;font-weight:800;border-radius:16px;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:8px">💾 Сохранить тренировку</button>
+        <button class="btn-pri" id="mSave" style="width:100%;height:auto;padding:17px;font-size:17.5px;font-weight:800;border-radius:16px;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:8px"><svg class="svic" aria-hidden="true"><use href="#ic-save"></use></svg> Сохранить тренировку</button>
       </div>
 
       <div class="map-bar" id="mapBar">
@@ -659,16 +669,16 @@
       <p style="font-size:12px;color:var(--muted);line-height:1.5;margin:8px 2px 0">Сфоткай дисплей тренажёра — скорость, время и дистанция распознаются и заполнятся сами.</p>
     </div>
     <div class="dev-card">
-      <div class="dev-row"><div class="dev-ic">⌚</div><div class="dev-info"><div class="dev-n">Умные часы</div><div class="dev-s" id="watchState">не подключены</div></div></div>
-      <button class="chip" id="watchBt" style="width:100%;justify-content:center">🔗 Подключить часы (Bluetooth)</button>
+      <div class="dev-row"><div class="dev-ic"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="23" y="21" width="18" height="22" rx="5" fill="none" stroke="#36A96B" stroke-width="3"/><path d="M27 21l1.5-7h7l1.5 7M27 43l1.5 7h7l1.5-7" fill="none" stroke="#36A96B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M32 28v5l3.5 2.5" fill="none" stroke="#36A96B" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="dev-info"><div class="dev-n">Умные часы</div><div class="dev-s" id="watchState">не подключены</div></div></div>
+      <button class="chip" id="watchBt" style="width:100%;justify-content:center">Подключить часы (Bluetooth)</button>
     </div>
     <div class="dev-card">
-      <div class="dev-row"><div class="dev-ic">📿</div><div class="dev-info"><div class="dev-n">Умный браслет</div><div class="dev-s" id="bandState">не подключён</div></div></div>
-      <button class="chip" id="bandBt" style="width:100%;justify-content:center">🔗 Подключить браслет (Bluetooth)</button>
+      <div class="dev-row"><div class="dev-ic"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="24" y="13" width="16" height="38" rx="8" fill="none" stroke="#36A96B" stroke-width="3"/><rect x="27.5" y="24" width="9" height="16" rx="3" fill="none" stroke="#36A96B" stroke-width="2.4"/></svg></div><div class="dev-info"><div class="dev-n">Умный браслет</div><div class="dev-s" id="bandState">не подключён</div></div></div>
+      <button class="chip" id="bandBt" style="width:100%;justify-content:center">Подключить браслет (Bluetooth)</button>
     </div>
     <div class="dev-card">
-      <div class="dev-row"><div class="dev-ic">❤️</div><div class="dev-info"><div class="dev-n">Датчик пульса</div><div class="dev-s" id="hrConnState">не подключён</div></div></div>
-      <button class="chip" id="hrConnect" style="width:100%;justify-content:center">🔗 Подключить датчик (Bluetooth)</button>
+      <div class="dev-row"><div class="dev-ic"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M12 33h9l5-12 9 24 5-12h12" fill="none" stroke="#36A96B" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 16c5-6 12-1 12 4 0-5 8-10 13-4 6 8-5 18-13 25-8-7-19-17-12-25z" fill="none" stroke="#36A96B" stroke-width="2.2" opacity=".45"/></svg></div><div class="dev-info"><div class="dev-n">Датчик пульса</div><div class="dev-s" id="hrConnState">не подключён</div></div></div>
+      <button class="chip" id="hrConnect" style="width:100%;justify-content:center">Подключить датчик (Bluetooth)</button>
     </div>
     <p class="dev-note">Часы, браслеты и пояса подключаются по стандарту Bluetooth (пульс в реальном времени). Полная синхронизация Garmin / Apple Watch / Mi Band и данные о шагах — в нативной версии. Дорожку без Bluetooth можно сфотографировать и вписать цифры.</p>
   </div>
@@ -709,10 +719,10 @@
   <div class="sec">
     <div class="sec-h"><h2 data-i18n="sec_records">Рекорды</h2></div>
     <div class="card recs">
-      <div class="rec"><span class="ic">🔥</span><div><div class="rv" id="rStreak">0</div><div class="rl">дней подряд</div></div></div>
-      <div class="rec"><span class="ic">🏅</span><div><div class="rv" id="rLong">—</div><div class="rl" id="rLongL">макс. дистанция</div></div></div>
-      <div class="rec"><span class="ic">⚡</span><div><div class="rv" id="rPace">—</div><div class="rl" id="rPaceL">лучший темп</div></div></div>
-      <div class="rec"><span class="ic">📅</span><div><div class="rv" id="rTotal">0</div><div class="rl">всего пробежек</div></div></div>
+      <div class="rec"><span class="ic"><svg class="svic" style="color:#36A96B" aria-hidden="true"><use href="#ic-record"></use></svg></span><div><div class="rv" id="rStreak">0</div><div class="rl">дней подряд</div></div></div>
+      <div class="rec"><span class="ic"><svg class="svic" style="color:#36A96B" aria-hidden="true"><use href="#ic-medal"></use></svg></span><div><div class="rv" id="rLong">—</div><div class="rl" id="rLongL">макс. дистанция</div></div></div>
+      <div class="rec"><span class="ic"><svg class="svic" style="color:#36A96B" aria-hidden="true"><use href="#ic-tempo"></use></svg></span><div><div class="rv" id="rPace">—</div><div class="rl" id="rPaceL">лучший темп</div></div></div>
+      <div class="rec"><span class="ic"><svg class="svic" style="color:#36A96B" aria-hidden="true"><use href="#ic-calendar"></use></svg></span><div><div class="rv" id="rTotal">0</div><div class="rl">всего пробежек</div></div></div>
     </div>
   </div>
 
@@ -731,8 +741,8 @@
       <div class="coach-chat-h">💬 Спроси тренера</div>
       <div class="coach-ctrls">
         <button id="coachConvo" type="button">🎙️ Разговор</button>
-        <button id="coachPlay" type="button">▶ Озвучить</button>
-        <button id="coachStop" type="button">⏹ Стоп</button>
+        <button id="coachPlay" type="button"><svg class="svic" aria-hidden="true"><use href="#ic-play"></use></svg> Озвучить</button>
+        <button id="coachStop" type="button"><svg class="svic" aria-hidden="true"><use href="#ic-stop"></use></svg> Стоп</button>
       </div>
       <div class="coach-thread" id="coachThread"></div>
       <div class="coach-chips" id="coachChips"></div>
@@ -746,19 +756,19 @@
 
   <!-- MUSIC -->
   <div class="sec" id="musicSec">
-    <div class="sec-h"><h2>🎵 Музыка</h2><span style="font-size:11px;font-weight:600;color:var(--muted)">Яндекс Музыка</span></div>
+    <div class="sec-h"><h2><svg class="svic" style="color:#36A96B" aria-hidden="true"><use href="#ic-music"></use></svg> Музыка</h2><span style="font-size:11px;font-weight:600;color:var(--muted)">Яндекс Музыка</span></div>
     <div class="card" style="padding:14px 15px">
       <div style="font-size:12.5px;font-weight:700;color:var(--muted);margin-bottom:7px">Что слушать во время тренировки</div>
       <div class="act-pick" id="listenPick" style="margin-bottom:14px">
-        <button class="act-opt on" data-listen="coach" type="button">🎙️ Тренер</button>
-        <button class="act-opt" data-listen="music" type="button">🎵 Музыка</button>
-        <button class="act-opt" data-listen="both" type="button">🎧 Оба</button>
+        <button class="act-opt on" data-listen="coach" type="button"><svg class="svic" aria-hidden="true"><use href="#ic-coach"></use></svg> Тренер</button>
+        <button class="act-opt" data-listen="music" type="button"><svg class="svic" aria-hidden="true"><use href="#ic-music"></use></svg> Музыка</button>
+        <button class="act-opt" data-listen="both" type="button"><svg class="svic" aria-hidden="true"><use href="#ic-headphones"></use></svg> Оба</button>
       </div>
 
       <div id="ymDayCard" style="background:var(--grad);color:#fff;border-radius:14px;padding:14px 15px;margin-bottom:12px">
         <div style="font-size:11px;font-weight:800;letter-spacing:.5px;opacity:.95;text-transform:uppercase">Плейлист дня от Skride</div>
         <div id="ymDayName" style="font-family:var(--num);font-weight:800;font-size:18px;margin:3px 0 10px"></div>
-        <button id="ymDayOpen" class="chip" type="button" style="background:#fff;color:var(--ink);border:none">▶ Включить</button>
+        <button id="ymDayOpen" class="chip" type="button" style="background:#fff;color:var(--ink);border:none"><svg class="svic" aria-hidden="true"><use href="#ic-play"></use></svg> Включить</button>
       </div>
 
       <div style="font-size:12.5px;font-weight:700;color:var(--muted);margin-bottom:7px">Подборки — тап и играет сразу</div>
@@ -768,8 +778,8 @@
       <div style="font-size:12px;color:var(--muted);line-height:1.55;margin-bottom:8px">В приложении Яндекс Музыка открой любой свой плейлист → «···» (или «Поделиться») → «Скопировать ссылку» и вставь сюда — он заиграет в приложении:</div>
       <input id="ymLink" type="text" placeholder="Вставь ссылку на свой плейлист…" inputmode="url" style="margin-bottom:8px">
       <div class="row">
-        <button class="btn-sec" id="ymStop">⏹ Стоп</button>
-        <button class="btn-pri" id="ymLoad">▶ Играть</button>
+        <button class="btn-sec" id="ymStop"><svg class="svic" aria-hidden="true"><use href="#ic-stop"></use></svg> Стоп</button>
+        <button class="btn-pri" id="ymLoad"><svg class="svic" aria-hidden="true"><use href="#ic-play"></use></svg> Играть</button>
       </div>
       <p style="font-size:11.5px;color:var(--muted);line-height:1.5;margin:10px 2px 0">▶ Плей и пауза — также внутри самого плеера. 🔊 Громкость — кнопками громкости телефона или наушников. Совет: открой Яндекс Музыку, найди плейлист (можно свой «Плейлист дня»), «Поделиться» → скопируй ссылку и вставь сюда. Для полного воспроизведения нужна активная Яндекс Музыка (подписка/вход) в этом браузере.</p>
     </div>
@@ -939,7 +949,7 @@
 
     <h3 style="font-size:16px;margin-top:18px" data-i18n="set_about">О разработчике</h3>
     <div class="card about" style="box-shadow:none;border:1px solid var(--line)">
-      <div class="row2"><span class="ic">⚡</span>
+      <div class="row2"><span class="ic"><svg class="svic" style="color:#36A96B" aria-hidden="true"><use href="#ic-tempo"></use></svg></span>
         <div><div class="t">Си Кей Лаб</div>
         <div class="d">Skride разработан в IT-лаборатории «Си Кей Лаб».</div></div>
       </div>
@@ -1899,21 +1909,51 @@ function render(){
     const r=runs.find(x=>x.id==c.dataset.track); if(r) drawMini(c,r.track);
   });
 }
-function drawMini(c,track){
-  const dpr=window.devicePixelRatio||1,W=c.clientWidth||300,H=130;
-  c.width=W*dpr;c.height=H*dpr;const ctx=c.getContext('2d');ctx.scale(dpr,dpr);
-  ctx.fillStyle='#eef1f3';ctx.fillRect(0,0,W,H);
-  const lats=track.map(p=>p[0]),lngs=track.map(p=>p[1]);
-  const minLa=Math.min(...lats),maxLa=Math.max(...lats),minLo=Math.min(...lngs),maxLo=Math.max(...lngs);
-  const pad=18,sx=(maxLo-minLo)||1e-6,sy=(maxLa-minLa)||1e-6;
-  const sc=Math.min((W-pad*2)/sx,(H-pad*2)/sy);
-  const ox=(W-sx*sc)/2, oy=(H-sy*sc)/2;
-  const X=lo=>ox+(lo-minLo)*sc, Y=la=>H-(oy+(la-minLa)*sc);
-  ctx.strokeStyle='#0fae9e';ctx.lineWidth=3.5;ctx.lineJoin='round';ctx.lineCap='round';ctx.beginPath();
-  track.forEach((p,i)=>{const x=X(p[1]),y=Y(p[0]);i?ctx.lineTo(x,y):ctx.moveTo(x,y);});ctx.stroke();
-  // start/end dots
-  ctx.fillStyle='#2ecc71';const s=track[0];ctx.beginPath();ctx.arc(X(s[1]),Y(s[0]),5,0,7);ctx.fill();
-  ctx.fillStyle='#0fae9e';const e=track[track.length-1];ctx.beginPath();ctx.arc(X(e[1]),Y(e[0]),5,0,7);ctx.fill();
+const _tileCache={};
+function loadTile(z,x,y){
+  const k=z+'/'+x+'/'+y;
+  if(_tileCache[k]) return _tileCache[k];
+  const p=new Promise(res=>{ const im=new Image(); im.crossOrigin='anonymous';
+    im.onload=()=>res(im); im.onerror=()=>res(null);
+    im.src='https://tile.openstreetmap.org/'+z+'/'+x+'/'+y+'.png'; });
+  _tileCache[k]=p; return p;
+}
+async function drawMini(c,track){
+  if(!track||track.length<2) return;
+  const dpr=window.devicePixelRatio||1, W=c.clientWidth||300, H=130;
+  c.width=W*dpr; c.height=H*dpr; const ctx=c.getContext('2d'); ctx.scale(dpr,dpr);
+  let minLat=90,maxLat=-90,minLng=180,maxLng=-180;
+  track.forEach(p=>{ minLat=Math.min(minLat,p[0]);maxLat=Math.max(maxLat,p[0]);minLng=Math.min(minLng,p[1]);maxLng=Math.max(maxLng,p[1]); });
+  const padLat=(maxLat-minLat)*0.2||0.0012, padLng=(maxLng-minLng)*0.2||0.0012;
+  minLat-=padLat;maxLat+=padLat;minLng-=padLng;maxLng+=padLng;
+  const lon2x=(lon,z)=>(lon+180)/360*Math.pow(2,z);
+  const lat2y=(lat,z)=>{ const r=lat*Math.PI/180; return (1-Math.log(Math.tan(r)+1/Math.cos(r))/Math.PI)/2*Math.pow(2,z); };
+  let z=18;
+  for(z=18;z>=2;z--){ const pxW=(lon2x(maxLng,z)-lon2x(minLng,z))*256, pxH=(lat2y(minLat,z)-lat2y(maxLat,z))*256; if(pxW<=W&&pxH<=H) break; }
+  const cx=lon2x((minLng+maxLng)/2,z)*256, cy=lat2y((minLat+maxLat)/2,z)*256;
+  const project=(lat,lng)=>[ W/2+(lon2x(lng,z)*256-cx), H/2+(lat2y(lat,z)*256-cy) ];
+  ctx.fillStyle='#e8eef0'; ctx.fillRect(0,0,W,H);
+  const maxT=Math.pow(2,z);
+  const tx0=Math.floor((cx-W/2)/256), tx1=Math.floor((cx+W/2)/256);
+  const ty0=Math.floor((cy-H/2)/256), ty1=Math.floor((cy+H/2)/256);
+  const jobs=[];
+  for(let tx=tx0;tx<=tx1;tx++) for(let ty=ty0;ty<=ty1;ty++){
+    if(ty<0||ty>=maxT) continue;
+    const txn=((tx%maxT)+maxT)%maxT;
+    const dx=W/2+(tx*256-cx), dy=H/2+(ty*256-cy);
+    jobs.push(loadTile(z,txn,ty).then(im=>{ if(im){ try{ctx.drawImage(im,dx,dy,256,256);}catch(_){} } }));
+  }
+  await Promise.all(jobs);
+  ctx.lineJoin='round';ctx.lineCap='round';
+  ctx.strokeStyle='rgba(255,255,255,.8)';ctx.lineWidth=6;ctx.beginPath();
+  track.forEach((p,i)=>{ const q=project(p[0],p[1]); i?ctx.lineTo(q[0],q[1]):ctx.moveTo(q[0],q[1]); });ctx.stroke();
+  ctx.strokeStyle='#36A96B';ctx.lineWidth=3.6;ctx.beginPath();
+  track.forEach((p,i)=>{ const q=project(p[0],p[1]); i?ctx.lineTo(q[0],q[1]):ctx.moveTo(q[0],q[1]); });ctx.stroke();
+  const s=project(track[0][0],track[0][1]), e=project(track[track.length-1][0],track[track.length-1][1]);
+  ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(s[0],s[1],6,0,7);ctx.fill();
+  ctx.fillStyle='#36A96B';ctx.beginPath();ctx.arc(s[0],s[1],4,0,7);ctx.fill();
+  ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(e[0],e[1],6,0,7);ctx.fill();
+  ctx.fillStyle='#258654';ctx.beginPath();ctx.arc(e[0],e[1],4,0,7);ctx.fill();
 }
 function esc(s){return s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
 
@@ -2213,12 +2253,14 @@ function ymToIframe(u){
   m=u.match(/track\/(\d+)/); if(m) return 'https://music.yandex.ru/iframe/#track/'+m[1];
   return '';
 }
-async function ymSet(url){ const f=ymToIframe(url); if(!f){ toast('Не похоже на ссылку Яндекс Музыки'); return; } if($('ymIframe'))$('ymIframe').src=f; if($('ymBar'))$('ymBar').style.display='flex'; document.body.classList.add('has-player'); setYmBarTop(); await sSet(MUSIC_KEY, f); toast('Играет 🎵'); }
-async function ymPlay(){ const inp=($('ymLink')&&$('ymLink').value||'').trim(); if(inp){ ymSet(inp); return; } const saved=await sGet(MUSIC_KEY); if(saved){ if($('ymIframe'))$('ymIframe').src=saved; if($('ymBar'))$('ymBar').style.display='flex'; toast('Играет 🎵'); } else toast('Вставь ссылку на плейлист Яндекс Музыки'); }
+async function ymSet(url){ const f=ymToIframe(url); if(!f){ toast('Не похоже на ссылку Яндекс Музыки'); return; } if($('ymIframe'))$('ymIframe').src=f; if($('ymBar')){$('ymBar').style.display='flex';$('ymBar').classList.add('ym-min');} if($('ymToggle'))$('ymToggle').textContent='▴'; document.body.classList.add('has-player'); setYmBarTop(); await sSet(MUSIC_KEY, f); toast('Играет 🎵'); }
+async function ymPlay(){ const inp=($('ymLink')&&$('ymLink').value||'').trim(); if(inp){ ymSet(inp); return; } const saved=await sGet(MUSIC_KEY); if(saved){ if($('ymIframe'))$('ymIframe').src=saved; if($('ymBar')){$('ymBar').style.display='flex';$('ymBar').classList.add('ym-min');} if($('ymToggle'))$('ymToggle').textContent='▴'; toast('Играет 🎵'); } else toast('Вставь ссылку на плейлист Яндекс Музыки'); }
 function ymStop(){ if($('ymIframe'))$('ymIframe').src=''; if($('ymBar'))$('ymBar').style.display='none'; document.body.classList.remove('has-player'); setYmBarTop(); toast('Остановлено ⏹'); }
 if($('ymLoad')) $('ymLoad').onclick=ymPlay;
 if($('ymStop')) $('ymStop').onclick=ymStop;
 if($('ymBarClose')) $('ymBarClose').onclick=ymStop;
+if($('ymToggle')) $('ymToggle').onclick=()=>{ const b=$('ymBar'); const min=b.classList.toggle('ym-min'); $('ymToggle').textContent=min?'▴':'▾'; setYmBarTop(); };
+if($('ymExpand')) $('ymExpand').onclick=()=>{ const b=$('ymBar'); b.classList.remove('ym-min'); if($('ymToggle'))$('ymToggle').textContent='▾'; setYmBarTop(); };
 if($('ymOpenExt')) $('ymOpenExt').onclick=()=>{ const u=_ymExternal||(($('ymLink')&&$('ymLink').value.trim())||'https://music.yandex.ru/'); window.open(u,'_blank'); };
 const YM_LISTS=[
  {n:'⚡ Энергия для бега', u:'music.partners/1169'},
@@ -2517,7 +2559,7 @@ $('keySave').onclick=async()=>{await sSet(YKEY,$('keyInput').value.trim());$('se
 /* ---- голосовой тренер: переключатель в настройках + кнопка на панели ---- */
 function syncVoiceUI(){
   const b=$('voiceBtn');
-  if(b){ b.textContent='🎧 Голос ИИ-тренера: '+(voiceCoach?'вкл':'выкл'); b.style.borderColor=voiceCoach?'var(--orange)':'var(--line2)'; b.style.color=voiceCoach?'var(--orange)':'var(--ink2)'; }
+  if(b){ b.innerHTML='<svg class="svic" aria-hidden="true"><use href="#ic-headphones"></use></svg> Голос ИИ-тренера: '+(voiceCoach?'вкл':'выкл'); b.style.borderColor=voiceCoach?'var(--orange)':'var(--line2)'; b.style.color=voiceCoach?'var(--orange)':'var(--ink2)'; }
   if($('voiceToggle')) $('voiceToggle').checked=voiceCoach;
 }
 async function setVoice(v, announce){
@@ -2939,14 +2981,18 @@ async function permState(name){ try{ if(navigator.permissions&&navigator.permiss
 let recog=null, recOn=false;
 async function startVoiceAsk(){
   if(!SpeechRec){ toast('Голосовой ввод не поддерживается этим браузером'); return; }
-  if(isNative){ if(!(await ensureMicNative())){ showPerm('mic'); return; } }
+  if(isNative){
+    if(!NATIVE_SR){ toast('Нет нативного модуля распознавания — обнови сборку приложения'); return; }
+    try{ if(NATIVE_SR.available){ const av=await NATIVE_SR.available(); if(av && av.available===false){ toast('На телефоне нет службы распознавания речи (включи Google)'); return; } } }catch(e){}
+    if(!(await ensureMicNative())){ showPerm('mic'); return; }
+  }
   else if(await permState('microphone')==='denied'){ showPerm('mic'); return; }
   if(recOn){ try{recog.stop();}catch(e){} return; }
   try{
     recog=new SpeechRec(); recog.lang='ru-RU'; recog.interimResults=false; recog.maxAlternatives=1;
     recog.onstart=()=>{ recOn=true; const b=$('coachMic'); if(b)b.classList.add('rec'); toast('Слушаю... говори'); };
     recog.onresult=(ev)=>{ const t=ev.results[0][0].transcript; if(t){ coachSendText(t); } };
-    recog.onerror=(ev)=>{ if(ev.error==='not-allowed'||ev.error==='service-not-allowed'){ showPerm('mic'); } else { toast('Не расслышал, попробуй ещё'); } };
+    recog.onerror=(ev)=>{ if(ev.error==='not-allowed'||ev.error==='service-not-allowed'){ showPerm('mic'); } else if(ev.error==='no-speech'||ev.error==='no-match'){ toast('Не расслышал, попробуй ещё'); } else { toast('Микрофон: '+(ev.message||ev.error||'ошибка')); } };
     recog.onend=()=>{ recOn=false; const b=$('coachMic'); if(b)b.classList.remove('rec'); };
     recog.start();
   }catch(e){ toast('Не удалось запустить микрофон'); }
