@@ -2869,7 +2869,36 @@ if($('authLoginBtn')) $('authLoginBtn').onclick=()=>doAuth('/api/login');
 if($('authRegBtn')) $('authRegBtn').onclick=()=>doAuth('/api/register');
 if($('authLogout')) $('authLogout').onclick=doLogout;
 if($('authSync')) $('authSync').onclick=cloudSyncInitial;
-if($('authYandexBtn')) $('authYandexBtn').onclick=()=>toast('Вход через Яндекс ID подключим следующим шагом');
+const YA_CLIENT_ID='56d4c54c13f648938f52754b4b12b3b3';
+function yaAuthURL(){ const srv=(cloudURL||DEFAULT_SERVER).replace(/\/+$/,''); return 'https://oauth.yandex.ru/authorize?response_type=token&client_id='+YA_CLIENT_ID+'&redirect_uri='+encodeURIComponent(srv+'/yandex-callback'); }
+async function yandexExchange(token){
+  if(!token){ toast('Не получил токен от Яндекса'); return; }
+  toast('Входим через Яндекс…');
+  try{
+    const d=await apiFetch('/api/yandex',{method:'POST',body:JSON.stringify({token:token})});
+    authToken=d.token; authUser=d.user; await saveAuth();
+    storeMode='cloud'; await sSet(STORE_KEY,'cloud');
+    updateAuthUI(); await cloudSyncInitial(); toast('Готово ✓ вы вошли через Яндекс');
+  }catch(e){ toast(e.message||'Не удалось войти через Яндекс'); }
+}
+let yaWin=null;
+window.addEventListener('message',(ev)=>{
+  if(!ev||!ev.data||typeof ev.data!=='object') return;
+  if(ev.data.yandexToken){ if(yaWin){try{yaWin.close();}catch(_){}} yandexExchange(ev.data.yandexToken); }
+});
+if($('authYandexBtn')) $('authYandexBtn').onclick=()=>{
+  if(!cloudURL){ toast('Сначала укажи адрес сервера ниже («Облачный ИИ»)'); return; }
+  const url=yaAuthURL();
+  yaWin=window.open(url,'yandex_login','width=520,height=680');
+  if(!yaWin){ location.href=url; }
+};
+(function(){ try{
+  const h=location.hash||'';
+  if(h.indexOf('ytk=')>=0){
+    const m=h.match(/ytk=([^&]+)/);
+    if(m && m[1]){ const tk=decodeURIComponent(m[1]); history.replaceState(null,'',location.pathname+location.search); yandexExchange(tk); }
+  }
+}catch(_){} })();
 let ttsVoice='zahar'; const TTS_VOICE_KEY='stride:ttsvoice';
 let bikeType=''; const BIKE_KEY='stride:biketype';
 function coachContext(){ const wk=_wk(), bp=_bestPace(); let c='всего тренировок '+runs.length+', за неделю '+wk.km.toFixed(1)+' км ('+wk.n+' трен)'; if(bp) c+=', лучший темп '+fmtPace(bp)+'/км'; c+=', ориентир макс пульса '+(maxHr||190)+', сейчас вид активности: '+(activityType==='bike'?'велосипед':'бег'); if(activityType==='bike'&&bikeType) c+=' ('+bikeType+')'; return c; }
