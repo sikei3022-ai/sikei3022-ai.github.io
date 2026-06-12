@@ -1106,7 +1106,7 @@ const $=id=>document.getElementById(id);
 // Можно переопределить своим ключом через настройки ⚙.
 const YANDEX_KEY='fb32ecf2-89e6-454a-9b4c-9d46d2252be2';
 const YANDEX_KEY_BACKUP='729aa267-ca44-4237-9f0d-a5fc13684126';
-const APP_VERSION='2026.06.12.1'; // версия для автообновления — меняется при каждом релизе
+const APP_VERSION='2026.06.12.2'; // версия для автообновления — меняется при каждом релизе
 let runs=[], pts=[], route=null, placemarks=[], deferredPrompt=null, goal=20, editId=null;
 let routeMode='road';
 let profile={name:'Бегун',ava:'Я',city:''};
@@ -3196,16 +3196,17 @@ const NATIVE_SR=(window.Capacitor && window.Capacitor.Plugins && window.Capacito
 class NativeSpeechRec{
   constructor(){ this.lang='ru-RU'; this.interimResults=false; this.maxAlternatives=1; this.onstart=this.onresult=this.onerror=this.onend=null; }
   async _perm(SR){
+    // пытаемся получить разрешение, но НЕ блокируем старт если формат ответа неясен
     try{
-      if(SR.checkPermissions){ let p=await SR.checkPermissions(); if(p&&p.speechRecognition==='granted') return true; p=await SR.requestPermissions(); return !!(p&&p.speechRecognition==='granted'); }
-      if(SR.hasPermission){ let h=await SR.hasPermission(); if(h&&(h.permission===true||h.permission==='granted')) return true; await SR.requestPermission(); h=await SR.hasPermission(); return !!(h&&(h.permission===true||h.permission==='granted')); }
+      if(SR.requestPermissions){ await SR.requestPermissions(); }
+      else if(SR.requestPermission){ await SR.requestPermission(); }
     }catch(e){}
-    return true;
+    return true; // решение о доступе примет сам SR.start()
   }
   async start(){
     const SR=window.Capacitor.Plugins.SpeechRecognition;
     try{
-      if(!(await this._perm(SR))){ this.onerror&&this.onerror({error:'not-allowed'}); this.onend&&this.onend(); return; }
+      await this._perm(SR);
       this.onstart&&this.onstart();
       const res=await SR.start({ language:this.lang||'ru-RU', maxResults:1, partialResults:false, popup:false });
       const t=(res&&res.matches&&res.matches[0])||'';
@@ -3309,7 +3310,7 @@ function convoListen(){
     let got=false;
     recog.onstart=()=>{ const b=$('coachMic'); if(b)b.classList.add('rec'); };
     recog.onresult=(ev)=>{ got=true; const t=ev.results[0][0].transcript; if(t) convoAsk(t); };
-    recog.onerror=()=>{};
+    recog.onerror=(ev)=>{ const er=(ev&&ev.error)||'?'; const m=(ev&&ev.message)?(' — '+ev.message):''; if(er==='not-allowed'){ toast('Микрофон не разрешён'+m); } else if(er==='no-speech'){ /* тишина, просто слушаем дальше */ } else { toast('Распознавание: '+er+m); } };
     recog.onend=()=>{ const b=$('coachMic'); if(b)b.classList.remove('rec'); if(convoMode && !got){ setTimeout(convoListen, 500); } };
     recog.start();
   }catch(e){ if(convoMode) setTimeout(convoListen, 900); }
