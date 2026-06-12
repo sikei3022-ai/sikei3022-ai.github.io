@@ -3254,7 +3254,7 @@ async function startVoiceAsk(){
   if(isNative){
     if(!NATIVE_SR){ toast('Нет нативного модуля распознавания — обнови сборку приложения'); return; }
     try{ if(NATIVE_SR.available){ const av=await NATIVE_SR.available(); if(av && av.available===false){ toast('На телефоне нет службы распознавания речи (включи Google)'); return; } } }catch(e){}
-    if(!(await ensureMicNative())){ showPerm('mic'); return; }
+    // разрешение запросит сам плагин при start(); не блокируем заранее
   }
   else if(await permState('microphone')==='denied'){ showPerm('mic'); return; }
   if(recOn){ try{recog.stop();}catch(e){} return; }
@@ -3262,13 +3262,14 @@ async function startVoiceAsk(){
     recog=new SpeechRec(); recog.lang='ru-RU'; recog.interimResults=false; recog.maxAlternatives=1;
     recog.onstart=()=>{ recOn=true; const b=$('coachMic'); if(b)b.classList.add('rec'); toast('Слушаю... говори'); };
     recog.onresult=(ev)=>{ const t=ev.results[0][0].transcript; if(t){ coachSendText(t); } };
-    recog.onerror=(ev)=>{ if(ev.error==='not-allowed'||ev.error==='service-not-allowed'){ showPerm('mic'); } else if(ev.error==='no-speech'||ev.error==='no-match'){ toast('Не расслышал, попробуй ещё'); } else { toast('Микрофон: '+(ev.message||ev.error||'ошибка')); } };
+    recog.onerror=(ev)=>{ if(ev.error==='not-allowed'||ev.error==='service-not-allowed'){ if(isNative){ toast('Разреши микрофон: Настройки → Приложения → Skride → Разрешения → Микрофон'); } else { showPerm('mic'); } } else if(ev.error==='no-speech'||ev.error==='no-match'){ toast('Не расслышал, попробуй ещё'); } else { toast('Микрофон: '+(ev.message||ev.error||'ошибка')); } };
     recog.onend=()=>{ recOn=false; const b=$('coachMic'); if(b)b.classList.remove('rec'); };
     recog.start();
   }catch(e){ toast('Не удалось запустить микрофон'); }
 }
 if($('coachMic')) $('coachMic').onclick=()=>{ unlockAudio(); if(convoMode){ stopConvo(); } else { startVoiceAsk(); } };
 if($('permClose')) $('permClose').onclick=()=>{ if($('permModal'))$('permModal').style.display='none'; };
+if($('permModal')) $('permModal').onclick=(e)=>{ if(e.target===$('permModal')) $('permModal').style.display='none'; };
 function openNativeSettings(){
   // в нативном приложении (Capacitor) пробуем открыть настройки приложения на телефоне
   try{
@@ -3285,10 +3286,11 @@ if($('permRetry')) $('permRetry').onclick=async()=>{
       const ok=await ensureMicNative();
       if(ok){ startVoiceAsk(); return; }
       if(openNativeSettings()) return;
-      showPerm('mic'); return;
+      toast('Разреши доступ к микрофону в настройках телефона'); return;
     }
+    // TWA/браузер: голосовой ввод недоступен — просто закрываем, без повторного показа окна
     try{ const st=await navigator.mediaDevices.getUserMedia({audio:true}); st.getTracks().forEach(t=>t.stop()); startVoiceAsk(); }
-    catch(e){ showPerm('mic'); }
+    catch(e){ toast('Голосовой ввод заработает в приложении из магазина'); }
   } else if(_permKind==='geo'){
     if(isNative && openNativeSettings()){ return; }
     toast('Определяю местоположение…'); centerOnUser(16, true);
@@ -3298,7 +3300,7 @@ if($('permRetry')) $('permRetry').onclick=async()=>{
 /* ---- режим разговора (hands-free, как с Алисой): слушает → отвечает → снова слушает ---- */
 let convoMode=false;
 function setConvoUI(on){ const b=$('coachConvo'); if(b){ b.classList.toggle('on',on); b.textContent= on?'⏸ Остановить разговор':'🎙️ Разговор'; } }
-async function startConvo(){ if(!SpeechRec){ toast('Голосовой ввод не поддерживается'); return; } if(isNative && !(await ensureMicNative())){ showPerm('mic'); return; } convoMode=true; setConvoUI(true); unlockAudio(); toast('Режим разговора: просто говори'); convoListen(); }
+async function startConvo(){ if(!SpeechRec){ toast('Голосовой ввод не поддерживается'); return; } convoMode=true; setConvoUI(true); unlockAudio(); toast('Режим разговора: просто говори'); convoListen(); }
 function stopConvo(){ convoMode=false; setConvoUI(false); try{recog&&recog.stop();}catch(e){} stopSpeaking(); const b=$('coachMic'); if(b)b.classList.remove('rec'); }
 function convoListen(){
   if(!convoMode) return;
