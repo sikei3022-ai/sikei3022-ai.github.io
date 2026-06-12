@@ -639,16 +639,11 @@
         <div class="gps-status" id="gpsStatus"></div>
       </div>
 
-      <!-- ручной ввод (показывается в режиме ручного ввода) -->
+      <!-- selfie route -->
       <div class="manual-panel" id="manualPanel" style="display:none">
-        <div class="map-toggle" style="margin-bottom:10px">
-          <span>Прокладка:</span>
-          <button id="mRoad" class="mt-opt on" type="button">По дорогам</button>
-          <button id="mDirect" class="mt-opt" type="button">Напрямую (лес, поля)</button>
-        </div>
         <div class="mp-tools">
-          <span class="mp-hint" id="mHintRoad">✏️ Тапай по карте — маршрут проложится по дорогам, дистанция посчитается сама. Время и дату впиши ниже.</span>
-          <span class="mp-hint" id="mHintDirect" style="display:none">✏️ Тапай по карте — точки соединятся прямой линией. Удобно для леса, полян и троп без дорог. Ставь точки чаще на поворотах.</span>
+          <span class="mp-hint" id="mHintRoad">✏️ Тапай по карте — линия проложится по дорогам, дистанция посчитается сама. Время и дату впиши ниже.</span>
+          <span class="mp-hint" id="mHintDirect" style="display:none">🌲 Тапай по карте — точки соединятся прямой линией. Для леса, полян и троп. Ставь точки чаще на поворотах.</span>
           <span class="mp-hint" id="mSnapHint" style="display:none;color:var(--orange)">⏳ Прокладываю по дорогам…</span>
           <div style="display:flex;gap:8px">
             <button class="chip" id="mUndo">↩ Точку назад</button>
@@ -847,6 +842,14 @@
       </div>
       <label class="switch"><input type="checkbox" id="manualToggle"><span class="sl"></span></label>
     </div>
+    <div class="prof" id="forestRow" style="padding:10px 0 10px 34px;gap:13px;border-top:1px solid var(--line);display:none">
+      <span class="ic" style="font-size:20px">🌲</span>
+      <div class="pinfo">
+        <div class="pname" style="font-size:15px">forest</div>
+        <div class="pcity">черти по лесу и полям — линия идёт напрямую</div>
+      </div>
+      <label class="switch"><input type="checkbox" id="forestToggle"><span class="sl"></span></label>
+    </div>
 
     <h3 style="font-size:16px;margin-top:18px">🚴 Велосипед</h3>
     <div class="prof" style="padding:10px 0;gap:13px">
@@ -990,7 +993,7 @@
     </div>
     <div class="card" style="box-shadow:none;border:1px solid var(--line);padding:6px 0">
       <div class="prem-row"><span class="prem-f" data-i18n="prem_f1">GPS-трекинг и маршруты</span><span class="prem-y">✓</span><span class="prem-y">✓</span></div>
-      <div class="prem-row"><span class="prem-f" data-i18n="prem_f2">Ручной ввод и пульсовые зоны</span><span class="prem-y">✓</span><span class="prem-y">✓</span></div>
+      <div class="prem-row"><span class="prem-f" data-i18n="prem_f2">selfie route и пульсовые зоны</span><span class="prem-y">✓</span><span class="prem-y">✓</span></div>
       <div class="prem-row"><span class="prem-f" data-i18n="prem_f3">ИИ-тренер — полный анализ и голос</span><span class="prem-n">—</span><span class="prem-y">✓</span></div>
       <div class="prem-row"><span class="prem-f" data-i18n="prem_f4">100 легенд бега — рейтинг</span><span class="prem-n">—</span><span class="prem-y">✓</span></div>
       <div class="prem-row"><span class="prem-f" data-i18n="prem_f5">Беговая дорожка и датчики</span><span class="prem-n">—</span><span class="prem-y">✓</span></div>
@@ -1236,7 +1239,7 @@ function loadYmaps(key){
     setTimeout(()=>{ if(!window.ymaps) rej(); },9000);
   });
 }
-function mapFail(msg){ $('map').className='map-fallback'; $('map').innerHTML=msg||'Карта не загрузилась — проверь интернет. Геопозиция и ручной ввод работают и без карты.'; }
+function mapFail(msg){ $('map').className='map-fallback'; $('map').innerHTML=msg||'Карта не загрузилась — проверь интернет. Геопозиция и selfie route работают и без карты.'; }
 function centerOnUser(z, _hi, _silent){
   if(!navigator.geolocation){ if(!_silent) toast('Геолокация не поддерживается этим браузером'); return; }
   const ok=p=>{
@@ -1443,7 +1446,8 @@ function applyMode(){
   if($('manualPanel')) $('manualPanel').style.display=manual?'block':'none';
   if($('gpsToggle')) $('gpsToggle').checked=!manual;
   if($('manualToggle')) $('manualToggle').checked=manual;
-  const note=document.querySelector('#mapSec .sec-h span'); if(note) note.textContent=manual?'ручной ввод — чертишь сам':'автозапись по GPS';
+  const note=document.querySelector('#mapSec .sec-h span'); if(note) note.textContent=manual?'selfie route':'автозапись по GPS';
+  if($('forestRow')) $('forestRow').style.display=manual?'flex':'none';
   if(manual && $('mDate') && !$('mDate').value) $('mDate').value=new Date().toISOString().slice(0,10);
   if(manual && typeof updateDow==='function') updateDow();
   if(!manual){ mPts=[]; mRedraw(); }
@@ -1451,7 +1455,7 @@ function applyMode(){
 async function setMode(m){
   if(tracking){ toast('Сначала останови запись'); applyMode(); return; }
   appMode=m; await sSet(MODE_KEY,m); applyMode();
-  toast(m==='manual'?'Ручной ввод включён':'Автозапись по GPS включена');
+  toast(m==='manual'?'selfie route включён':'Автозапись по GPS включена');
 }
 const numv=el=>{ const v=((el&&el.value)||'').toString().replace(',','.').trim(); const n=parseFloat(v); return isFinite(n)?n:0; };
 if($('gpsToggle')) $('gpsToggle').onchange=()=>setMode($('gpsToggle').checked?'gps':'manual');
@@ -1461,27 +1465,23 @@ if($('mClear')) $('mClear').onclick=()=>{ mPts=[]; mLegs=[]; mRedraw(); if($('mD
 async function setDrawMode(mode){
   mDrawMode=mode;
   const road=mode==='road';
-  if($('mRoad')) $('mRoad').classList.toggle('on',road);
-  if($('mDirect')) $('mDirect').classList.toggle('on',!road);
   if($('mHintRoad')) $('mHintRoad').style.display=road?'':'none';
   if($('mHintDirect')) $('mHintDirect').style.display=road?'none':'';
+  if($('forestToggle')) $('forestToggle').checked=!road;
   // переложить уже поставленные точки по новому режиму
   if(mPts.length>=2){
     if(road){
-      // прокладываем по дорогам заново
       mSnapBusy++; if($('mSnapHint')) $('mSnapHint').style.display='block';
       for(let i=0;i<mPts.length-1;i++){ mLegs[i]=await snapLeg(mPts[i],mPts[i+1]); mRedraw(); }
       mSnapBusy--; if(mSnapBusy<=0 && $('mSnapHint')) $('mSnapHint').style.display='none';
     } else {
-      // прямые отрезки
       for(let i=0;i<mPts.length-1;i++){ mLegs[i]={coords:[mPts[i],mPts[i+1]],km:haversine(mPts[i],mPts[i+1]),snapped:false}; }
       mRedraw();
     }
     if($('mDist')) $('mDist').value=mTotalKm().toFixed(2);
   }
 }
-if($('mRoad')) $('mRoad').onclick=()=>setDrawMode('road');
-if($('mDirect')) $('mDirect').onclick=()=>setDrawMode('direct');
+if($('forestToggle')) $('forestToggle').onchange=()=>setDrawMode($('forestToggle').checked?'direct':'road');
 if($('mSave')) $('mSave').onclick=async()=>{
   try{
     const km=numv($('mDist'));
@@ -3390,7 +3390,7 @@ const I18N={
    ob1_d:'Беговой трекер, который делает тебя быстрее: запись по GPS, ИИ-тренер и сравнение с легендами.',ob2_t:'Беги за лучшими бегунами планеты',ob2_d:'Сравни свой темп со 100 легендами мирового бега и поднимайся в рейтинге.',
    obskip:'Пропустить',obnext:'Далее',obstart:'Начать 🏃',
    set_title:'Настройки',set_mode:'Режим записи',set_devices:'Часы и пульсометр',set_voice:'Голос ИИ-тренера',set_lang:'Язык / Language',set_about:'О разработчике',
-   prem_title:'Skride Premium',prem_sub:'14 дней бесплатно, затем 100 ₽/мес. Открой все возможности.',prem_f1:'GPS-трекинг и маршруты',prem_f2:'Ручной ввод и пульсовые зоны',prem_f3:'ИИ-тренер — полный анализ и голос',prem_f4:'100 легенд бега — рейтинг',prem_f5:'Беговая дорожка и датчики',prem_free:'Free',prem_pro:'Premium',prem_activate:'Оформить подписку — 100 ₽/мес',close:'Закрыть',prem_note:'Реальная оплата подключается через Google Play в нативной версии. Сейчас кнопка активирует Premium в демо-режиме для проверки.',
+   prem_title:'Skride Premium',prem_sub:'14 дней бесплатно, затем 100 ₽/мес. Открой все возможности.',prem_f1:'GPS-трекинг и маршруты',prem_f2:'selfie route и пульсовые зоны',prem_f3:'ИИ-тренер — полный анализ и голос',prem_f4:'100 легенд бега — рейтинг',prem_f5:'Беговая дорожка и датчики',prem_free:'Free',prem_pro:'Premium',prem_activate:'Оформить подписку — 100 ₽/мес',close:'Закрыть',prem_note:'Реальная оплата подключается через Google Play в нативной версии. Сейчас кнопка активирует Premium в демо-режиме для проверки.',
    prem_on:'Premium активен ⭐',prem_off:'Бесплатный план',prem_activated:'Premium активирован ⭐',prem_locked:'Это функция Premium'},
  en:{sec_route:'Route',sec_hr:'Heart rate & zones',sec_week:'This week',sec_records:'Records',sec_level:'Runner level',sec_coach:'AI coach',sec_feed:'Activities',sec_tread:'Treadmill',
    ob1_d:'A running tracker that makes you faster: GPS recording, an AI coach and comparison with legends.',ob2_t:'Run with the best runners on the planet',ob2_d:'Compare your pace with 100 running legends and climb the ranking.',
