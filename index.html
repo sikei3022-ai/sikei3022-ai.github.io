@@ -641,8 +641,14 @@
 
       <!-- ручной ввод (показывается в режиме ручного ввода) -->
       <div class="manual-panel" id="manualPanel" style="display:none">
+        <div class="map-toggle" style="margin-bottom:10px">
+          <span>Прокладка:</span>
+          <button id="mRoad" class="mt-opt on" type="button">По дорогам</button>
+          <button id="mDirect" class="mt-opt" type="button">Напрямую (лес, поля)</button>
+        </div>
         <div class="mp-tools">
-          <span class="mp-hint">✏️ Тапай по карте — маршрут проложится по дорогам, дистанция посчитается сама. Время и дату впиши ниже.</span>
+          <span class="mp-hint" id="mHintRoad">✏️ Тапай по карте — маршрут проложится по дорогам, дистанция посчитается сама. Время и дату впиши ниже.</span>
+          <span class="mp-hint" id="mHintDirect" style="display:none">✏️ Тапай по карте — точки соединятся прямой линией. Удобно для леса, полян и троп без дорог. Ставь точки чаще на поворотах.</span>
           <span class="mp-hint" id="mSnapHint" style="display:none;color:var(--orange)">⏳ Прокладываю по дорогам…</span>
           <div style="display:flex;gap:8px">
             <button class="chip" id="mUndo">↩ Точку назад</button>
@@ -1354,6 +1360,7 @@ function doSearch(){
 /* ===== Режим записи: GPS / ручной ===== */
 let appMode='gps'; const MODE_KEY='stride:mode';
 let mPts=[], mLegs=[], mRoute=null, mMarks=[], mSnapBusy=0;
+let mDrawMode='road'; // 'road' = по дорогам (OSRM), 'direct' = напрямую (лес/поля)
 function mFullPath(){
   if(!mPts.length) return [];
   let path=[mPts[0]];
@@ -1400,6 +1407,7 @@ async function mAddPoint(latlng){
     const idx=mPts.length-2, a=mPts[idx], b=mPts[idx+1];
     mLegs[idx]={ coords:[a,b], km:haversine(a,b), snapped:false }; /* сразу прямая — мгновенный отклик */
     mRedraw();
+    if(mDrawMode==='direct'){ return; } /* лес/поля: оставляем прямую, без прокладки по дорогам */
     mSnapBusy++; if($('mSnapHint')) $('mSnapHint').style.display='block';
     const leg=await snapLeg(a,b);
     mLegs[idx]=leg; mRedraw();
@@ -1450,6 +1458,30 @@ if($('gpsToggle')) $('gpsToggle').onchange=()=>setMode($('gpsToggle').checked?'g
 if($('manualToggle')) $('manualToggle').onchange=()=>setMode($('manualToggle').checked?'manual':'gps');
 if($('mUndo')) $('mUndo').onclick=()=>{ mPts.pop(); mLegs.length=Math.max(0,mPts.length-1); mRedraw(); if(!mPts.length && $('mDist')) $('mDist').value=''; };
 if($('mClear')) $('mClear').onclick=()=>{ mPts=[]; mLegs=[]; mRedraw(); if($('mDist')) $('mDist').value=''; };
+async function setDrawMode(mode){
+  mDrawMode=mode;
+  const road=mode==='road';
+  if($('mRoad')) $('mRoad').classList.toggle('on',road);
+  if($('mDirect')) $('mDirect').classList.toggle('on',!road);
+  if($('mHintRoad')) $('mHintRoad').style.display=road?'':'none';
+  if($('mHintDirect')) $('mHintDirect').style.display=road?'none':'';
+  // переложить уже поставленные точки по новому режиму
+  if(mPts.length>=2){
+    if(road){
+      // прокладываем по дорогам заново
+      mSnapBusy++; if($('mSnapHint')) $('mSnapHint').style.display='block';
+      for(let i=0;i<mPts.length-1;i++){ mLegs[i]=await snapLeg(mPts[i],mPts[i+1]); mRedraw(); }
+      mSnapBusy--; if(mSnapBusy<=0 && $('mSnapHint')) $('mSnapHint').style.display='none';
+    } else {
+      // прямые отрезки
+      for(let i=0;i<mPts.length-1;i++){ mLegs[i]={coords:[mPts[i],mPts[i+1]],km:haversine(mPts[i],mPts[i+1]),snapped:false}; }
+      mRedraw();
+    }
+    if($('mDist')) $('mDist').value=mTotalKm().toFixed(2);
+  }
+}
+if($('mRoad')) $('mRoad').onclick=()=>setDrawMode('road');
+if($('mDirect')) $('mDirect').onclick=()=>setDrawMode('direct');
 if($('mSave')) $('mSave').onclick=async()=>{
   try{
     const km=numv($('mDist'));
@@ -2836,6 +2868,20 @@ const BIKE_TECH=[
  'На спуске опусти центр тяжести, тормози плавно обоими тормозами заранее.',
  'Проверяй давление в шинах перед выездом — это и скорость, и безопасность.'
 ];
+const ELLIPSE_TRAIN=[
+ 'Раз в неделю — длинная спокойная сессия 40–50 минут в ровном темпе: строит базу выносливости.',
+ 'Добавь интервалы: 6×1 минута активнее с минутой спокойного отдыха — поднимает пульсовой потолок.',
+ 'Меняй нагрузку (уровень сопротивления): тяжелее — для силы ног, легче и быстрее — для кардио.',
+ 'Используй ручки активно — толкай и тяни, чтобы подключить верх тела и сжечь больше.',
+ 'Чередуй тяжёлые и лёгкие дни. Восстановление между тренировками делает тебя сильнее.'
+];
+const ELLIPSE_TECH=[
+ 'Держи спину прямо, корпус ровно — не наваливайся на ручки всем весом.',
+ 'Дави всей стопой, особенно пяткой — так нагрузка идёт на крупные мышцы ног.',
+ 'Держи ровный, плавный ход — без рывков. Каденс важнее скорости рывками.',
+ 'Дыши ритмично и глубоко: вдох на 2 шага, выдох на 2 — пульс будет ровнее.',
+ 'Не блокируй колени в крайних точках — движение должно быть круговым и мягким.'
+];
 function renderCoach(){
   const c=$('coachCard'); if(!c) return;
   const AVA='<svg class="coach-ava" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'+
@@ -2874,17 +2920,25 @@ function renderCoach(){
 
   const a=coachAdvice();
   const bikeMode=activityType==='bike';
-  const tech=(bikeMode?BIKE_TECH:TECH_TIPS)[(runs.length + new Date().getDate()) % (bikeMode?BIKE_TECH:TECH_TIPS).length];
-  const train=(bikeMode?BIKE_TRAIN:TRAIN_TIPS)[(runs.length + new Date().getDate()) % (bikeMode?BIKE_TRAIN:TRAIN_TIPS).length];
+  const ellMode=activityType==='ellipse';
+  const techPool = ellMode?ELLIPSE_TECH : (bikeMode?BIKE_TECH:TECH_TIPS);
+  const trainPool = ellMode?ELLIPSE_TRAIN : (bikeMode?BIKE_TRAIN:TRAIN_TIPS);
+  const idx=(runs.length + new Date().getDate());
+  const tech=techPool[idx % techPool.length];
+  const train=trainPool[idx % trainPool.length];
+  const techLabel = ellMode?'Техника на эллипсе:' : (bikeMode?'Техника езды:':'Техника бега:');
+  const coachNote = ellMode
+    ? 'Советы — по принципам тренировок на эллиптическом тренажёре и анализа твоих данных. Не заменяют врача или личного тренера.'
+    : (bikeMode
+      ? 'Советы — по принципам велоподготовки и анализа твоих данных. Не заменяют врача или личного тренера.'
+      : 'Советы — на основе принципов беговой подготовки («Natural Running», методические пособия по лёгкой атлетике) и анализа твоих данных. Не заменяют врача или личного тренера.');
   c.innerHTML=BANNER+'<div class="coach-intro" style="padding-top:12px">'+
     '<div style="font-family:var(--num);font-weight:800;font-size:15px;line-height:1.2">'+esc(a.head)+'</div></div>'+
     a.tips.map(t=>'<div class="coach-tip">'+esc(t)+'</div>').join('')+
     '<div class="coach-tip"><b style="color:var(--orange)">Тренировка:</b> '+esc(train)+'</div>'+
-    '<div class="coach-tip"><b style="color:var(--orange)">'+(bikeMode?'Техника езды:':'Техника бега:')+'</b> '+esc(tech)+'</div>'+
+    '<div class="coach-tip"><b style="color:var(--orange)">'+techLabel+'</b> '+esc(tech)+'</div>'+
     '<button class="lg-btn" id="coachSpeak" style="margin:12px 0 0"><svg class="svic" aria-hidden="true"><use href="#ic-volume"></use></svg> Послушать совет</button>'+
-    '<div class="coach-note">'+(bikeMode
-      ? 'Советы — по принципам велоподготовки и анализа твоих данных. Не заменяют врача или личного тренера.'
-      : 'Советы — на основе принципов беговой подготовки («Natural Running», методические пособия по лёгкой атлетике) и анализа твоих данных. Не заменяют врача или личного тренера.')+'</div>';
+    '<div class="coach-note">'+coachNote+'</div>';
   const speakText=a.tips[0]+'. По тренировкам: '+train+' По технике: '+tech;
   $('coachSpeak').onclick=()=>{ say(speakText); toast('Озвучиваю совет 🔊'); };
 }
