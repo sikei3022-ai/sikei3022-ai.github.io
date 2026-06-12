@@ -1106,6 +1106,7 @@ const $=id=>document.getElementById(id);
 // Можно переопределить своим ключом через настройки ⚙.
 const YANDEX_KEY='fb32ecf2-89e6-454a-9b4c-9d46d2252be2';
 const YANDEX_KEY_BACKUP='729aa267-ca44-4237-9f0d-a5fc13684126';
+const APP_VERSION='2026.06.12.1'; // версия для автообновления — меняется при каждом релизе
 let runs=[], pts=[], route=null, placemarks=[], deferredPrompt=null, goal=20, editId=null;
 let routeMode='road';
 let profile={name:'Бегун',ava:'Я',city:''};
@@ -1446,7 +1447,7 @@ function applyMode(){
   if($('manualPanel')) $('manualPanel').style.display=manual?'block':'none';
   if($('gpsToggle')) $('gpsToggle').checked=!manual;
   if($('manualToggle')) $('manualToggle').checked=manual;
-  const note=document.querySelector('#mapSec .sec-h span'); if(note) note.textContent=manual?'selfie route':'автозапись по GPS';
+  const note=document.querySelector('#mapSec .sec-h span'); if(note) note.textContent=manual?'':'автозапись по GPS';
   if($('forestRow')) $('forestRow').style.display=manual?'flex':'none';
   if(manual && $('mDate') && !$('mDate').value) $('mDate').value=new Date().toISOString().slice(0,10);
   if(manual && typeof updateDow==='function') updateDow();
@@ -3485,11 +3486,31 @@ async function boot(){
   if(storeMode==='cloud' && authToken && cloudURL) cloudSyncInitial();
   const seen=await sGet(ONB_KEY); if(seen!=='1') obStart();
   renderBoard(pickQuoteDaily());
-  // КЭШ ОТКЛЮЧЁН: удаляем старый service worker и чистим кэши, чтобы версия всегда была свежей
+  // АВТООБНОВЛЕНИЕ: чистим старый SW и проверяем, не вышла ли новая версия
   if('serviceWorker' in navigator){
     try{ navigator.serviceWorker.getRegistrations().then(rs=>{ rs.forEach(r=>r.unregister()); }).catch(()=>{}); }catch(e){}
   }
   if(window.caches && caches.keys){ try{ caches.keys().then(ks=>ks.forEach(k=>caches.delete(k))); }catch(e){} }
+  checkForUpdate();
+}
+async function checkForUpdate(){
+  try{
+    // тянем сам index.html в обход кэша (метка времени в адресе)
+    const url=location.pathname.replace(/[^/]*$/, 'index.html')+'?v='+Date.now();
+    const r=await fetch(url,{cache:'no-store'});
+    if(!r.ok) return;
+    const html=await r.text();
+    const m=html.match(/APP_VERSION='([^']+)'/);
+    if(m && m[1] && m[1]!==APP_VERSION){
+      // вышла новая версия — чистим кэши и перезагружаемся один раз
+      const lastReload=sessionStorage.getItem('skride_upd');
+      if(lastReload===m[1]) return; // уже пробовали в этой сессии — не зацикливаемся
+      try{ sessionStorage.setItem('skride_upd',m[1]); }catch(e){}
+      if(window.caches && caches.keys){ try{ await Promise.all((await caches.keys()).map(k=>caches.delete(k))); }catch(e){} }
+      toast('Обновляю приложение…');
+      setTimeout(()=>{ location.reload(true); }, 800);
+    }
+  }catch(e){}
 }
 boot();
 window.addEventListener('resize',()=>render());
