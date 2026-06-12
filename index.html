@@ -262,6 +262,15 @@
   .sheet .row{display:flex;gap:10px;margin-top:14px}
   .sheet .row button{flex:1;padding:13px;border-radius:11px;font-family:var(--body);font-weight:700;font-size:15px;cursor:pointer;border:none}
   .btn-pri{background:var(--grad);color:#fff;box-shadow:0 6px 18px rgba(34,150,90,.28);letter-spacing:.3px}.btn-sec{background:#fff;color:var(--orange);border:1.5px solid var(--orange)}
+  .ya-btn{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;border:none;cursor:pointer;
+    background:#fff;color:#21201f;font-family:var(--body);font-weight:700;font-size:18px;
+    padding:18px 20px;border-radius:16px;box-shadow:0 6px 20px rgba(0,0,0,.10);border:1.5px solid #ececec;
+    transition:transform .08s ease, box-shadow .15s ease;-webkit-tap-highlight-color:transparent}
+  .ya-btn:active{transform:scale(.985);box-shadow:0 3px 12px rgba(0,0,0,.12)}
+  .ya-btn .ya-logo{width:34px;height:34px;border-radius:9px;background:#FC3F1D;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+  .ya-btn .ya-logo svg{width:20px;height:24px;display:block}
+  .ya-btn .ya-txt{display:flex;flex-direction:column;align-items:flex-start;line-height:1.15}
+  .ya-btn .ya-txt small{font-weight:600;font-size:12px;color:#9a9a9a}
 
   /* goal ring */
   .goal{display:flex;align-items:center;gap:16px;padding:16px}
@@ -897,7 +906,10 @@
           <button class="btn-sec" id="authRegBtn">Регистрация</button>
           <button class="btn-pri" id="authLoginBtn">Войти</button>
         </div>
-        <button class="btn-sec" id="authYandexBtn" style="width:100%;margin-top:8px;border:none">⊕ Войти через Яндекс ID</button>
+        <button type="button" class="ya-btn" id="authYandexBtn" style="margin-top:10px">
+          <span class="ya-logo"><svg viewBox="0 0 20 24" aria-hidden="true"><path fill="#fff" d="M12.7 24h3.2V0h-4.6C6.7 0 4.1 2.4 4.1 5.9c0 2.8 1.3 4.5 3.7 6.1L3.6 24h3.5l4.6-12.9-1.6-1.1C8.4 8.7 7.6 7.6 7.6 5.7c0-1.7 1.2-2.9 3.7-2.9h1.4V24z"/></svg></span>
+          <span class="ya-txt">Войти с Яндекс ID<small>быстрый вход и синхронизация</small></span>
+        </button>
       </div>
       <div id="authLoggedIn" style="display:none">
         <div style="font-size:14px;color:var(--ink)"><b>Вы вошли</b><div id="authWho" style="font-size:12.5px;color:var(--muted);margin-top:2px"></div></div>
@@ -1044,6 +1056,15 @@
     <h3>Профиль</h3>
     <div class="form" style="padding:6px 0 0">
       <div class="f full"><label>Имя</label><input id="pNameIn" type="text" placeholder="Как тебя зовут"></div>
+      <div class="f full" id="profYandexWrap">
+        <button type="button" class="ya-btn" id="profYandexBtn">
+          <span class="ya-logo"><svg viewBox="0 0 20 24" aria-hidden="true"><path fill="#fff" d="M12.7 24h3.2V0h-4.6C6.7 0 4.1 2.4 4.1 5.9c0 2.8 1.3 4.5 3.7 6.1L3.6 24h3.5l4.6-12.9-1.6-1.1C8.4 8.7 7.6 7.6 7.6 5.7c0-1.7 1.2-2.9 3.7-2.9h1.4V24z"/></svg></span>
+          <span class="ya-txt">Войти с Яндекс ID<small>сохранит тренировки в облаке</small></span>
+        </button>
+      </div>
+      <div class="f full" id="profYandexInWrap" style="display:none">
+        <div style="font-size:13.5px;color:var(--ink);background:var(--surface,#eef6f0);border-radius:11px;padding:11px 13px"><b>✓ Вы вошли через Яндекс</b><div id="profYandexWho" style="font-size:12px;color:var(--muted);margin-top:3px"></div></div>
+      </div>
       <div class="f full"><label>Аватар</label>
         <div class="ava-edit">
           <div class="ava-prev" id="avaPrev">Я</div>
@@ -1099,8 +1120,84 @@ function elapsedSec(){ let ms=Date.now()-startTime-pausedAccum; if(paused) ms-=(
 /* ---- storage ---- */
 const RUNS_KEY='stride:runs', YKEY='stride:ykey', GOAL_KEY='stride:goal', PROF_KEY='stride:profile';
 // Хранение через localStorage — надёжно работает и в браузере, и в нативной сборке Capacitor.
-async function sGet(k){ try{return localStorage.getItem(k);}catch(e){return null;} }
-async function sSet(k,v){ try{localStorage.setItem(k,v);}catch(e){} }
+// Надёжное хранилище: в нативной сборке — Capacitor Preferences, в браузере/PWA — IndexedDB.
+// localStorage на Android WebView система периодически чистит при нехватке памяти → данные теряются.
+// Здесь — зеркало в памяти (_mem) + запись в стойкое хранилище. boot() заранее загружает всё в _mem,
+// поэтому sGet остаётся мгновенным и синхронно-совместимым (старый код это ожидает).
+const _mem = {};
+const _CapPrefs = (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Preferences) || null;
+let _idb = null;
+function _idbOpen(){
+  return new Promise((res)=>{
+    try{
+      if(!window.indexedDB){ res(null); return; }
+      const rq = indexedDB.open('skride-store', 1);
+      rq.onupgradeneeded = ()=>{ try{ rq.result.createObjectStore('kv'); }catch(e){} };
+      rq.onsuccess = ()=>res(rq.result);
+      rq.onerror = ()=>res(null);
+    }catch(e){ res(null); }
+  });
+}
+function _idbAll(db){
+  return new Promise((res)=>{
+    try{
+      const tx = db.transaction('kv','readonly').objectStore('kv');
+      const out = {}; const c = tx.openCursor();
+      c.onsuccess = e=>{ const cur=e.target.result; if(cur){ out[cur.key]=cur.value; cur.continue(); } else res(out); };
+      c.onerror = ()=>res(out);
+    }catch(e){ res({}); }
+  });
+}
+function _idbPut(db,k,v){
+  return new Promise((res)=>{
+    try{ const tx=db.transaction('kv','readwrite'); tx.objectStore('kv').put(v,k); tx.oncomplete=()=>res(true); tx.onerror=()=>res(false); }
+    catch(e){ res(false); }
+  });
+}
+// Инициализация хранилища: грузим все ключи в _mem один раз, переносим старые данные из localStorage
+async function storageInit(){
+  try{
+    if(_CapPrefs){
+      // нативка: переносим из localStorage один раз, читаем все ключи
+      try{
+        const migFlag = (await _CapPrefs.get({key:'__migrated'})).value;
+        if(!migFlag){
+          for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k){ try{ await _CapPrefs.set({key:k,value:localStorage.getItem(k)}); }catch(e){} } }
+          await _CapPrefs.set({key:'__migrated',value:'1'});
+        }
+      }catch(e){}
+      try{ const ks=await _CapPrefs.keys(); const arr=(ks&&ks.keys)||[]; for(const k of arr){ try{ _mem[k]=(await _CapPrefs.get({key:k})).value; }catch(e){} } }catch(e){}
+      return;
+    }
+    _idb = await _idbOpen();
+    if(_idb){
+      const all = await _idbAll(_idb);
+      Object.assign(_mem, all);
+      // миграция из localStorage один раз
+      if(!_mem['__migrated']){
+        try{ for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k && _mem[k]==null){ const v=localStorage.getItem(k); _mem[k]=v; await _idbPut(_idb,k,v); } } }catch(e){}
+        _mem['__migrated']='1'; await _idbPut(_idb,'__migrated','1');
+      }
+      return;
+    }
+    // совсем запасной вариант — память + localStorage
+    try{ for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k) _mem[k]=localStorage.getItem(k); } }catch(e){}
+  }catch(e){}
+}
+async function sGet(k){
+  if(k in _mem) return _mem[k];
+  try{ const v=localStorage.getItem(k); if(v!=null) _mem[k]=v; return v; }catch(e){ return null; }
+}
+async function sSet(k,v){
+  _mem[k]=v;
+  // дублируем в localStorage как быстрый кэш (на случай если стойкое не успело)
+  try{ localStorage.setItem(k,v); }catch(e){}
+  try{
+    if(_CapPrefs){ await _CapPrefs.set({key:k,value:v}); return; }
+    if(_idb){ await _idbPut(_idb,k,v); return; }
+    _idb = await _idbOpen(); if(_idb) await _idbPut(_idb,k,v);
+  }catch(e){}
+}
 
 /* ---- distance ---- */
 function haversine(a,b){const R=6371,r=x=>x*Math.PI/180;const dLa=r(b[0]-a[0]),dLo=r(b[1]-a[1]);
@@ -1134,18 +1231,20 @@ function loadYmaps(key){
   });
 }
 function mapFail(msg){ $('map').className='map-fallback'; $('map').innerHTML=msg||'Карта не загрузилась — проверь интернет. Геопозиция и ручной ввод работают и без карты.'; }
-function centerOnUser(z, _hi){
-  if(!navigator.geolocation){ toast('Геолокация не поддерживается этим браузером'); return; }
+function centerOnUser(z, _hi, _silent){
+  if(!navigator.geolocation){ if(!_silent) toast('Геолокация не поддерживается этим браузером'); return; }
   const ok=p=>{
     const c=[p.coords.latitude,p.coords.longitude];
     const ready=(mapProvider==='yandex')?(!!ymap&&!!window.ymaps):!!lmap;
     if(!ready){ try{ if(mapProvider!=='yandex') initOSM(); }catch(e){} setTimeout(()=>{ mapSetView(c,z||15); setMyMarker(c,'Вы здесь'); }, 700); }
     mapSetView(c,z||15); setMyMarker(c,'Вы здесь');
-    toast('📍 Вы здесь');
+    if(!_silent) toast('📍 Вы здесь');
   };
   const fail=err=>{
     // если точный GPS не успел в помещении — пробуем сетевое определение
-    if(_hi && err && (err.code===3 || err.code===2)){ centerOnUser(z, false); return; }
+    if(_hi && err && (err.code===3 || err.code===2)){ centerOnUser(z, false, _silent); return; }
+    // тихий автоцентр на старте: не дёргаем модалку, просто молчим
+    if(_silent) return;
     let m='Не удалось определить место';
     if(err && err.code===1){ showPerm('geo'); return; }
     if(err){ if(err.code===2) m='Местоположение недоступно — включи геолокацию (GPS) в шторке телефона'; else if(err.code===3) m='Не успело определиться — нажми «Моё место» ещё раз'; }
@@ -1166,7 +1265,7 @@ function initOSM(){
     new LocateCtl({position:'topright'}).addTo(lmap);
     setTimeout(()=>{ try{lmap.invalidateSize();}catch(e){} },300);
     lmap.on('click', e=>{ if(appMode==='manual'){ mAddPoint([e.latlng.lat,e.latlng.lng]); } });
-    centerOnUser(14);
+    centerOnUser(14, false, true);
   }catch(e){ mapFail(); }
 }
 async function initYandex(){
@@ -1179,7 +1278,7 @@ async function initYandex(){
       $('map').className=''; $('map').innerHTML='';
       ymap=new ymaps.Map('map',{center:[55.751,37.618],zoom:12,controls:['zoomControl','geolocationControl']},{suppressMapOpenBlock:true});
       ymap.events.add('click', e=>{ if(appMode==='manual'){ mAddPoint(e.get('coords')); } });
-      centerOnUser(14);
+      centerOnUser(14, false, true);
       return;
     }catch(e){
       if(i<keys.length-1){ continue; }  // основной не ответил — пробуем резервный ключ
@@ -1188,7 +1287,7 @@ async function initYandex(){
   }
 }
 async function initMap(){
-  try{ const mp=localStorage.getItem(MAPPROV_KEY); if(mp==='yandex'||mp==='osm') mapProvider=mp; }catch(e){}
+  try{ const mp=(MAPPROV_KEY in _mem)?_mem[MAPPROV_KEY]:localStorage.getItem(MAPPROV_KEY); if(mp==='yandex'||mp==='osm') mapProvider=mp; }catch(e){}
   if($('mapOSM')) $('mapOSM').classList.toggle('on', mapProvider==='osm');
   if($('mapYA')) $('mapYA').classList.toggle('on', mapProvider==='yandex');
   if(mapProvider==='yandex') await initYandex(); else initOSM();
@@ -1266,17 +1365,33 @@ function mFullPath(){
   return path;
 }
 function mTotalKm(){ let d=0; for(let i=0;i<mLegs.length;i++) d+=(mLegs[i]&&mLegs[i].km)||0; return d; }
-async function snapLeg(a,b){
-  /* прокладка по дорогам через бесплатный OSRM OpenStreetMap; профиль по виду активности */
-  const prof = (activityType==='bike') ? 'bike' : 'foot';
-  const url = 'https://routing.openstreetmap.de/routed-'+prof+'/route/v1/driving/'+a[1]+','+a[0]+';'+b[1]+','+b[0]+'?overview=full&geometries=geojson';
+async function _fetchRoute(url){
+  // таймаут 6с, иначе зависший запрос держит "прямую" линию
+  const ctrl = (typeof AbortController!=='undefined') ? new AbortController() : null;
+  const t = ctrl ? setTimeout(()=>{ try{ctrl.abort();}catch(e){} }, 6000) : null;
   try{
-    const r=await fetch(url); const j=await r.json();
-    if(j&&j.routes&&j.routes[0]&&j.routes[0].geometry){
-      const coords=j.routes[0].geometry.coordinates.map(c=>[c[1],c[0]]);
+    const r = await fetch(url, ctrl?{signal:ctrl.signal}:{});
+    const j = await r.json();
+    if(t) clearTimeout(t);
+    if(j && j.routes && j.routes[0] && j.routes[0].geometry){
+      const coords = j.routes[0].geometry.coordinates.map(c=>[c[1],c[0]]);
       if(coords.length>=2) return { coords, km:(j.routes[0].distance||0)/1000, snapped:true };
     }
-  }catch(e){}
+  }catch(e){ if(t) clearTimeout(t); }
+  return null;
+}
+async function snapLeg(a,b){
+  /* прокладка по дорогам; профиль по виду активности. Два сервера + повтор → надёжнее. */
+  const prof = (activityType==='bike') ? 'bike' : 'foot';
+  const seg = a[1]+','+a[0]+';'+b[1]+','+b[0]+'?overview=full&geometries=geojson';
+  const urls = [
+    'https://routing.openstreetmap.de/routed-'+prof+'/route/v1/driving/'+seg,
+    'https://router.project-osrm.org/route/v1/'+(prof==='bike'?'bike':'foot')+'/'+seg
+  ];
+  for(let attempt=0; attempt<urls.length; attempt++){
+    const res = await _fetchRoute(urls[attempt]);
+    if(res) return res;
+  }
   return { coords:[a,b], km:haversine(a,b), snapped:false }; /* запасной вариант — прямая */
 }
 async function mAddPoint(latlng){
@@ -1710,12 +1825,39 @@ function coachOnHeartRate(hr, hrMax){
   if(hrMax && hr >= hrMax*0.95) speak('Остынь, приятель, пульс на максимуме');
 }
 
+function _haversineM(a,b){
+  const R=6371000, toR=Math.PI/180;
+  const dLat=(b[0]-a[0])*toR, dLng=(b[1]-a[1])*toR;
+  const la1=a[0]*toR, la2=b[0]*toR;
+  const x=Math.sin(dLat/2)**2 + Math.cos(la1)*Math.cos(la2)*Math.sin(dLng/2)**2;
+  return 2*R*Math.asin(Math.min(1,Math.sqrt(x)));
+}
+let _lastGpsT=0;
 function onGpsPoint(lat,lng,acc){
   const c=[lat,lng];
-  // фильтр точности: отбрасываем слишком неточную самую первую точку
-  if(acc && acc>50 && gpsPts.length===0){
-    $('gpsStatus').innerHTML='<span class="gps-dot"></span>Уточняю сигнал ('+Math.round(acc)+'м)...'; return;
+  const now=Date.now();
+  // 1) Фильтр точности на ВСЁМ треке (не только на первой точке).
+  //    Пока сигнал слабый — ждём, не портим линию неточными точками.
+  const ACC_LIMIT = gpsPts.length===0 ? 35 : 40;
+  if(acc && acc>ACC_LIMIT){
+    $('gpsStatus').innerHTML='<span class="gps-dot"></span>Уточняю сигнал ('+Math.round(acc)+'м)...';
+    return;
   }
+  // 2) Фильтр скачков: если точка «телепортируется» (нереальная скорость), это шум GPS.
+  if(gpsPts.length>0){
+    const prev=gpsPts[gpsPts.length-1];
+    const dist=_haversineM(prev,c);
+    const dt=Math.max(1,(now-_lastGpsT)/1000); // сек
+    const speed=dist/dt; // м/с
+    // отбрасываем явные телепорты (>22 м/с ≈ 80 км/ч для бега/вело) при заметном прыжке
+    if(speed>22 && dist>25){
+      $('gpsStatus').innerHTML='<span class="gps-dot"></span>Сигнал прыгает — пропускаю точку';
+      return;
+    }
+    // микродрожание на месте: точки ближе 3м не добавляем (но точность держим)
+    if(dist<3){ mapPanTo(c); _lastGpsT=now; return; }
+  }
+  _lastGpsT=now;
   gpsPts.push(c);
   trackLineUpdate();
   mapPanTo(c);
@@ -1777,7 +1919,7 @@ function setPauseLabel(){
 }
 
 $('startBtn').onclick=async()=>{
-  tracking=true; paused=false; pausedAccum=0; gpsPts=[]; startTime=Date.now(); lastSpokenKm=0; actLandmarks=[]; renderLmThumbs();
+  tracking=true; paused=false; pausedAccum=0; gpsPts=[]; _lastGpsT=0; startTime=Date.now(); lastSpokenKm=0; actLandmarks=[]; renderLmThumbs();
   $('startBtn').classList.add('hide'); $('pauseBtn').classList.add('on'); $('stopBtn').classList.add('on');
   $('lmRunBtn').style.display='inline-flex'; $('lmRunBtn').textContent='📷 Отметить место';
   setPauseLabel();
@@ -2490,19 +2632,35 @@ $('profEdit').onclick=()=>{
   pendingSex=(profile.sex==='f')?'f':'m';
   document.querySelectorAll('#sexPick button').forEach(x=>x.classList.toggle('on',x.dataset.sex===pendingSex));
   buildEmojiPick(); renderAvaPrev();
+  if(typeof updateProfYandex==='function') updateProfYandex();
   $('profModal').classList.add('show');
 };
 $('avaPhotoBtn').onclick=()=>$('avaFile').click();
 document.querySelectorAll('#sexPick button').forEach(b=>b.onclick=()=>{ pendingSex=b.dataset.sex; document.querySelectorAll('#sexPick button').forEach(x=>x.classList.toggle('on',x===b)); });
 if($('avaRandBtn')) $('avaRandBtn').onclick=()=>{ pendingAva=FUN_AVA[Math.floor(Math.random()*FUN_AVA.length)]; renderAvaPrev(); toast('Случайная аватарка'); };
+async function uploadAvatar(dataUrl){
+  // Заливаем фото на сервер, получаем постоянную ссылку. Доступно на любом устройстве.
+  const d=await apiFetch('/api/avatar',{method:'POST',body:JSON.stringify({image:dataUrl})});
+  if(d && d.url){
+    // абсолютный URL, чтобы открывался в нативной сборке
+    const srv=(cloudURL||DEFAULT_SERVER).replace(/\/+$/,'');
+    return d.url.indexOf('http')===0 ? d.url : srv+d.url;
+  }
+  throw new Error('Сервер не вернул ссылку на фото');
+}
 $('avaFile').onchange=e=>{
   const f=e.target.files&&e.target.files[0]; if(!f) return;
   const rd=new FileReader();
   rd.onload=()=>{ const img=new Image();
-    img.onload=()=>{ const s=Math.min(img.width,img.height); const cv=document.createElement('canvas'); cv.width=256; cv.height=256;
+    img.onload=async()=>{ const s=Math.min(img.width,img.height); const cv=document.createElement('canvas'); cv.width=256; cv.height=256;
       const sx=(img.width-s)/2, sy=(img.height-s)/2;
       cv.getContext('2d').drawImage(img, sx, sy, s, s, 0, 0, 256, 256);
       let data; try{ data=cv.toDataURL('image/jpeg',0.78); }catch(_){ data=rd.result; }
+      // Если вошёл в аккаунт — храним фото на сервере (будет на любом устройстве)
+      if(authToken && cloudURL){
+        try{ toast('Загружаю фото…'); const url=await uploadAvatar(data); pendingAva=url; renderAvaPrev(); toast('Фото добавлено ✓'); return; }
+        catch(err){ /* если сервер недоступен — оставляем локально */ }
+      }
       pendingAva=data; renderAvaPrev(); toast('Фото добавлено');
     };
     img.onerror=()=>toast('Не удалось обработать фото');
@@ -2871,27 +3029,48 @@ if($('authLogout')) $('authLogout').onclick=doLogout;
 if($('authSync')) $('authSync').onclick=cloudSyncInitial;
 const YA_CLIENT_ID='56d4c54c13f648938f52754b4b12b3b3';
 function yaAuthURL(){ const srv=(cloudURL||DEFAULT_SERVER).replace(/\/+$/,''); return 'https://oauth.yandex.ru/authorize?response_type=token&client_id='+YA_CLIENT_ID+'&redirect_uri='+encodeURIComponent(srv+'/yandex-callback'); }
+async function applyYandexProfile(u){
+  if(!u) return;
+  let changed=false;
+  // Имя: ставим из Яндекса, если у пользователя стоит дефолтное
+  const yaName=(u.name||u.real_name||u.display_name||'').trim();
+  if(yaName && (!profile.name || profile.name==='Бегун')){ profile.name=yaName; changed=true; }
+  // Аватарка: ставим из Яндекса, если пользователь не загрузил своё фото и не выбрал иконку вручную
+  const yaAva=(u.avatar||'').trim();
+  const noCustomAva = !profile.ava || profile.ava==='Я' || (typeof profile.ava==='string' && profile.ava.indexOf('svg:')===0);
+  if(yaAva && noCustomAva){ profile.ava=yaAva; changed=true; }
+  if(changed){ try{ await sSet(PROF_KEY,JSON.stringify(profile)); }catch(e){} if(typeof renderProfile==='function') renderProfile(); if(typeof render==='function') render(); }
+}
 async function yandexExchange(token){
   if(!token){ toast('Не получил токен от Яндекса'); return; }
   toast('Входим через Яндекс…');
   try{
     const d=await apiFetch('/api/yandex',{method:'POST',body:JSON.stringify({token:token})});
     authToken=d.token; authUser=d.user; await saveAuth();
+    await applyYandexProfile(d.user);
     storeMode='cloud'; await sSet(STORE_KEY,'cloud');
-    updateAuthUI(); await cloudSyncInitial(); toast('Готово ✓ вы вошли через Яндекс');
+    updateAuthUI(); if(typeof updateProfYandex==='function') updateProfYandex(); await cloudSyncInitial(); toast('Готово ✓ вы вошли через Яндекс');
   }catch(e){ toast(e.message||'Не удалось войти через Яндекс'); }
 }
 let yaWin=null;
-window.addEventListener('message',(ev)=>{
-  if(!ev||!ev.data||typeof ev.data!=='object') return;
-  if(ev.data.yandexToken){ if(yaWin){try{yaWin.close();}catch(_){}} yandexExchange(ev.data.yandexToken); }
-});
-if($('authYandexBtn')) $('authYandexBtn').onclick=()=>{
+function startYandexLogin(){
   if(!cloudURL){ toast('Сначала укажи адрес сервера ниже («Облачный ИИ»)'); return; }
   const url=yaAuthURL();
   yaWin=window.open(url,'yandex_login','width=520,height=680');
   if(!yaWin){ location.href=url; }
-};
+}
+function updateProfYandex(){
+  const inB=!!(authToken && authUser);
+  if($('profYandexWrap')) $('profYandexWrap').style.display=inB?'none':'';
+  if($('profYandexInWrap')) $('profYandexInWrap').style.display=inB?'':'none';
+  if(inB && $('profYandexWho')) $('profYandexWho').textContent=(authUser&&(authUser.email||authUser.name||authUser.login))||'';
+}
+window.addEventListener('message',(ev)=>{
+  if(!ev||!ev.data||typeof ev.data!=='object') return;
+  if(ev.data.yandexToken){ if(yaWin){try{yaWin.close();}catch(_){}} yandexExchange(ev.data.yandexToken); }
+});
+if($('authYandexBtn')) $('authYandexBtn').onclick=startYandexLogin;
+if($('profYandexBtn')) $('profYandexBtn').onclick=startYandexLogin;
 (function(){ try{
   const h=location.hash||'';
   if(h.indexOf('ytk=')>=0){
@@ -3222,6 +3401,7 @@ $('premiumActivate').onclick=async()=>{ isPremium=true; await sSet(PREMIUM_KEY,'
 
 /* ---- boot ---- */
 async function boot(){
+  await storageInit();
   const raw=await sGet(RUNS_KEY); runs=raw?JSON.parse(raw):[];
   const g=await sGet(GOAL_KEY); if(g) goal=+g;
   const pr=await sGet(PROF_KEY); if(pr){ try{profile=JSON.parse(pr);}catch(e){} } else { profile.ava=FUN_AVA[Math.floor(Math.random()*FUN_AVA.length)]; }
