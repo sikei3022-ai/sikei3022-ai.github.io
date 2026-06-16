@@ -1,0 +1,35 @@
+{
+  "project": "Vikings: Rollo (cut v3)",
+  "format": { "resolution": "1920x1080", "fps": 24, "aspect_ratio": "16:9" },
+  "cdn_base": "https://d8j0ntlcm91z4.cloudfront.net/user_3F5Banjnf4nEee92ijSAsD8BLH7/",
+  "approx_total_seconds": 109,
+  "timeline": [
+    { "order": 1,  "id": "47504000", "dur": 8, "label": "Title VIKINGS / ROLLO + raven", "file": "hf_20260616_153039_47504000-ad6d-439a-be5f-94546547911b.mp4" },
+    { "order": 2,  "id": "eecb5c90", "dur": 8, "label": "Card 793 A.D. NORTHUMBRIA", "file": "hf_20260616_140624_eecb5c90-024c-4df2-9eeb-a6b456f3d2c1.mp4" },
+    { "order": 3,  "id": "411513d0", "dur": 8, "label": "Drakkar reveal: lone hero -> many oarsmen, ship moves forward", "file": "hf_20260616_140635_411513d0-332a-4100-ac2d-577c7c854f59.mp4" },
+    { "order": 4,  "id": "bd21d009", "dur": 6, "label": "Card THREE DAYS LATER", "file": "hf_20260616_140645_bd21d009-489a-47eb-83e9-e8d2ffe6671d.mp4" },
+    { "order": 5,  "id": "df3897ae", "dur": 7, "label": "Aerial over the fleet nearing shore", "file": "hf_20260616_140651_df3897ae-98f9-4556-8079-782d28c2ef4c.mp4" },
+    { "order": 6,  "id": "173384e5", "dur": 6, "label": "Landing: hero leaps off drakkar", "file": "hf_20260616_140700_173384e5-1957-4c0f-ace8-84ea38f7751d.mp4" },
+    { "order": 7,  "id": "63e699e4", "dur": 6, "label": "Charge up from the beach (unified field, real-time)", "file": "hf_20260616_153049_63e699e4-bb23-4c7a-a62c-6bb0bbd62f1a.mp4" },
+    { "order": 8,  "id": "2fbc8716", "dur": 6, "label": "Shield walls collide (wide)", "file": "hf_20260616_153118_2fbc8716-2b52-4bf2-b953-28e5bf3ccf12.mp4" },
+    { "order": 9,  "id": "e5491bb3", "dur": 6, "label": "Main battle melee (hero)", "file": "hf_20260616_153058_e5491bb3-baa5-482e-a2c2-e801d1a76506.mp4" },
+    { "order": 10, "id": "f4b71644", "dur": 6, "label": "Close-up: axe splits enemy helmet, enemy drops", "file": "hf_20260616_153107_f4b71644-e703-4074-a2c0-c751a24f08f7.mp4" },
+    { "order": 11, "id": "bd62901e", "dur": 6, "label": "Duel: splits champion's helmet, strikes him down", "file": "hf_20260616_153128_bd62901e-cc40-41a3-bdf7-783acfe63119.mp4" },
+    { "order": 12, "id": "0d4fe9fa", "dur": 7, "label": "Aerial over the fallen enemies after the battle", "file": "hf_20260616_145024_0d4fe9fa-a6b1-4371-b70a-aa0dd12d7288.mp4" },
+    { "order": 13, "id": "a0c3216f", "dur": 7, "label": "Aftermath: hero walks the won field and sits", "file": "hf_20260616_142443_a0c3216f-b50d-445d-8017-42768a027e43.mp4" },
+    { "order": 14, "id": "dfed105c", "dur": 7, "label": "Throws off fur cloak, raises fist, warriors hail him as leader", "file": "hf_20260616_145039_dfed105c-fbc8-4e90-bddc-405c0f22bbca.mp4" },
+    { "order": 15, "id": "b7dd6d91", "dur": 6, "label": "Card 7 DAYS LATER (regenerated; original 633847ff never landed in library)", "file": "hf_20260616_173847_b7dd6d91-4bd8-4cf5-a99c-035326d1a46a.mp4" },
+    { "order": 16, "id": "4f533efd", "dur": 8, "label": "Finale: rides to hilltop, camera flies back, walled city of LONDON below", "file": "hf_20260616_163734_4f533efd-3b76-4d32-b118-68e1d7900c76.mp4" },
+    { "order": 17, "id": "ba2cff4c", "dur": 8, "label": "Teaser: raven over London -> hundreds of thousands of Vikings, hero on horse, text THIS IS ONLY THE BEGINNING / COMING THIS FALL", "file": "hf_20260616_163743_ba2cff4c-9ecd-4d11-a39b-2f6201a63b43.mp4" }
+  ],
+  "music": {
+    "primary": { "id": "18bb928a", "dur": 110, "label": "Nordic epic score v3 (~110s)", "file": "hf_20260616_163752_18bb928a-a1ff-4897-a97a-8012cac7ee28.m4a" },
+    "fallback": { "id": "701a2284", "dur": 78, "label": "Nordic epic score v2 (~78s)", "file": "hf_20260616_143001_701a2284-23db-4444-9ea3-dd3d1d5a5808.m4a" }
+  },
+  "narration": {
+    "ru": { "id": "cdfdb9e3", "voice": "Nikolai (deep)", "file": "hf_20260616_145542_cdfdb9e3-9781-4f87-8d98-f82d98cdd563.wav" },
+    "en": { "id": "38e49fec", "voice": "Hades (deep)", "file": "hf_20260616_145551_38e49fec-209b-41a8-a706-e8a414ddff45.wav" }
+  },
+  "pending_jobs_fill_when_ready": [],
+  "source_clip_reference": "5ec63b9f-4090-4140-9b57-3bd794528a4b"
+}
