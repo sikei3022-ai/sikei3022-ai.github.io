@@ -43,6 +43,16 @@ NARR_EN="$BASE/hf_20260616_145551_38e49fec-209b-41a8-a706-e8a414ddff45.wav"  # H
 
 for u in "${URLS[@]}"; do case "$u" in *PENDING_*) echo "ERROR: fill $u first."; exit 1;; esac; done
 
+echo ">> Pre-flight: checking CDN reachability..."
+if ! curl -fsS -I --max-time 30 "${URLS[0]}" >/dev/null 2>&1; then
+  echo "!! Cannot reach the CDN host ($(echo "${URLS[0]}" | awk -F/ '{print $3}'))."
+  echo "   On a normal network (e.g. Termux on a phone) this should just work."
+  echo "   On a Claude Code web sandbox, add the host to the environment's egress"
+  echo "   allowlist (Network access -> Custom/Full) and start a NEW session."
+  exit 2
+fi
+echo "   CDN reachable. Proceeding."
+
 echo ">> Downloading clips..."
 i=1; for u in "${URLS[@]}"; do o=$(printf "%02d.mp4" "$i"); echo "   $o"; curl -fSsL -o "$o" "$u"; i=$((i+1)); done
 echo ">> Downloading music..."
