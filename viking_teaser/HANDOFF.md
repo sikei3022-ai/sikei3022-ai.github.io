@@ -37,6 +37,27 @@ ffmpeg is NOT preinstalled. `build_film.sh` self-bootstraps it (apt, else `pip i
 which pulls a static build from github — works even on Trusted). Static build verified: libx264 + drawtext OK.
 
 ## 3. Assets that PERSIST (already in the Higgsfield library — reference by job_id, no upload needed)
+
+### BEST identity method — TRAINED SOUL CHARACTERS (use these!)
+The user already trained Soul V2 characters — identity is rock-solid. Generate per-character shots
+with `model: soul_2` + `soul_id` (ONE soul per image; for multi-person frames use Elements instead).
+- **Volodia = KING ALFRED** — soul_id `93a5ea3a-1e84-42bf-93d1-9b78501b1132`  ✅ likeness CONFIRMED by user
+- **Serezha = ROLLO** — soul_id `54e1de1a-9b53-49e0-9d89-2ecf3b62a443` (alt **Serezha2** `f3f7e1c0-67ad-4276-94e5-12f6ca82aafd`)
+- (No Soul for Edward yet — use the Element below, or train one from his photo.)
+Confirmed working call: `generate_image {model:"soul_2", soul_id:..., aspect_ratio:"16:9", prompt:...}`.
+Example results: Alfred `3323c5aa-...` (confirmed), Rollo `a055833b-...`.
+
+### Reference ELEMENTS (for multi-character frames / non-Soul models: nano_banana_pro, seedance_2_0, kling3_0)
+Embed `<<<element_id>>>` in the prompt (multiple allowed in one shot).
+- Alfred: `51fa91d3-742c-44ce-9e00-2e3dc3a94e27`
+- Rollo: `00318f6d-54a0-45f5-9cf6-cba72073194a` (alt Rollo2 `93d628e0-da94-4cb4-b599-d2d549618b17`)
+- **Vlad = EDWARD**: `0eca8a4a-d897-4762-a3c4-54e8310acfed`
+Uploaded Volodia photos (media_input): `c385e619-cf5a-47f7-a1ef-3c711ed8bac1`, `11e63413-4eda-471d-a32a-14ab63c00e55`.
+
+NOTE: Rollo in the palace scene must MATCH the reference clips (`bd62901e`, `4f533efd`) — same chainmail +
+cream/brown fur cloak + braided beard — because the palace scene is a continuation of that storyline.
+
+
 **Rollo identity:**
 - still portrait (image_job): `332c821c-141e-4f45-b0c6-f1209743b795`  ← best image reference
 - clips: `bd62901e-cc40-41a3-bdf7-783acfe63119` (duel), `4f533efd-3b76-4d32-b118-68e1d7900c76` (hilltop)
