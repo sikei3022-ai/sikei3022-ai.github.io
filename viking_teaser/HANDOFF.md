@@ -47,11 +47,18 @@ which pulls a static build from github — works even on Trusted). Static build 
 - `42f3b756-c635-4a3b-94a8-df96ec6d48ea`
 - `1f473471-89a8-4f96-908f-b803c9296379`
 
-**Palace keyframes already generated (WIP, nano_banana_pro, 16:9 2k, Alfred+Rollo refs):**
-- `0ab58132-0473-40dd-aafa-38eae3bc32c2`
-- `bb755ac1-d3e5-47c5-8044-8db7fbb7bd44`
-Inspect with `job_display`. If faces are off (esp. Alfred), regenerate with the same two refs.
-Edward in these is described-only (no real ref was usable yet — see §4).
+**Palace keyframes (WIP, nano_banana_pro, 16:9 2k):**
+- `da0b285b-2651-4013-8714-616682059219`  (current — Rollo ref only)
+- `cc990618-fe27-4975-b45a-d18e651f7362`  (current — Rollo ref only)
+- (`0ab58132…` and `bb755ac1…` FAILED — see note below.)
+Inspect with `job_display`. In these, only **Rollo's** face is ref-locked (`332c821c`); **Alfred** and
+**Edward** are described-only — lock their faces at the video/lip-sync stage (Alfred via his video ref;
+Edward via his photo once uploaded), or regenerate the still once you have Alfred/Edward STILL images.
+
+**LEARNING:** `nano_banana_pro` (image model) REJECTS a **video** job_id as an image reference (the Alfred
+clips are `.mp4`) → those jobs fail. To use Alfred's face in a still you need an Alfred **still image**
+(extract a frame from his clip and bring it in via `media_upload_widget`/`media_import_url`, then ref it).
+`wan2_7`/`seedance_2_0` DO accept a `video` role for identity, so Alfred's clips work directly at the video stage.
 
 **Teaser clips + audio:** all resolved — see `viking_teaser/clips.json` (real CDN filenames baked in).
 The "7 DAYS LATER" card (`633847ff`) never rendered on Higgsfield → `build_film.sh` draws it locally.
