@@ -54,8 +54,13 @@ Embed `<<<element_id>>>` in the prompt (multiple allowed in one shot).
 - **Vlad = EDWARD**: `0eca8a4a-d897-4762-a3c4-54e8310acfed`
 Uploaded Volodia photos (media_input): `c385e619-cf5a-47f7-a1ef-3c711ed8bac1`, `11e63413-4eda-471d-a32a-14ab63c00e55`.
 
-NOTE: Rollo in the palace scene must MATCH the reference clips (`bd62901e`, `4f533efd`) — same chainmail +
-cream/brown fur cloak + braided beard — because the palace scene is a continuation of that storyline.
+ROLLO identity method — CONFIRMED by user: use **seedance_2_0 with a VIDEO reference** of the close-up
+clip `f4b71644-e703-4074-a2c0-c751a24f08f7` (role `video`) — this transfers his EXACT face, beard and
+build, no upload needed. (Also usable: `bd62901e`, `4f533efd`.) His look: LARGE, broad-shouldered, burly,
+thick arms; SHORT neatly trimmed dark full beard (NOT braided); short cropped hair, faded short sides;
+long steel chainmail hauberk + tan/grey fur mantle on one shoulder + studded leather bracers. The palace
+scene is a continuation of that storyline, so keep it identical. (Soul "Serezha" gives the face but its
+beard/build drift — prefer the video-reference route for Rollo.) Rollo throne test: `2273f258-...`.
 
 
 **Rollo identity:**
@@ -110,10 +115,21 @@ Setting: candlelit Anglo-Saxon throne room, cold cinematic grade. Tense siege pa
 Identity mapping for any generation: Alfred = seated king (refs in §3); Rollo = standing Viking in
 chainmail + cream/brown fur cloak (refs in §3); Edward = young prince (ref in §4).
 
-## 6. Voice plan (ElevenLabs)
-- Create/instant-clone 3 voices from the user's samples (Alfred, Rollo, Edward).
-- Render each of the 8 lines with its character's cloned voice → 8 wavs (keep order/IDs).
-- Russian source text from §5. Keep takes; the user may want re-rolls.
+## 6. Voice plan (ElevenLabs) — user clones on THEIR side
+ElevenLabs is NOT reachable from the sandbox (api.elevenlabs.io 403, no key, no connector) — verified again.
+The USER has ElevenLabs working on their own account. Plan: user clones the 3 voices (Serezha=Rollo,
+Volodia=Alfred, Vlad=Edward) and renders the 8 lines, then sends the 8 audio files (open an audio
+`media_upload_widget`, or `media_import_url` if they're at a URL). Numbered script (RU), filename → text:
+```
+01_rollo : Твой город уже мой, Альфред. Стены — это просто камни, которые ещё не упали. Открой ворота — и твои люди доживут до утра.
+02_alfred: Мои люди молятся. Твои — грызут конину под дождём. Голод осаждает осаждающего, конунг. Я могу ждать. А ты?
+03_edward: У нас хлеба на три дня. Три, отец!
+04_alfred: Значит, на день дольше, чем у него терпения.
+05_rollo : Ты отказываешь мне, сидя в клетке, которую я построил вокруг тебя за одну ночь.
+06_alfred: Я отказываю тебе, потому что король, что сдаёт город ради лишнего рассвета, теряет оба.
+07_rollo : Твои стены простоят до рассвета.
+08_rollo : Ты — нет.
+```
 
 ## 7. Scene build (visual + lip-sync)
 - For each character, produce a clean throne-room shot (start frame) from the approved keyframe
