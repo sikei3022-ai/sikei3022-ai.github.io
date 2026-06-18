@@ -3213,20 +3213,29 @@ if($('cloudVoiceSel')) $('cloudVoiceSel').onchange=async(e)=>{ unlockAudio(); tt
 /* ---- голосовой ввод: говоришь вопрос — тренер отвечает (как с Алисой) ---- */
 /* ---- нативное распознавание речи (Android-приложение) как «переходник» к Web Speech API ---- */
 const NATIVE_SR=(window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.SpeechRecognition) || null;
+let _micOK=false;  // разрешение микрофона выдано в этой сессии — повторно не запрашивать (иначе окно лезет каждый круг)
 class NativeSpeechRec{
   constructor(){ this.lang='ru-RU'; this.interimResults=false; this.maxAlternatives=1; this.onstart=this.onresult=this.onerror=this.onend=null; }
   async _perm(SR){
-    // пытаемся получить разрешение, но НЕ блокируем старт если формат ответа неясен
+    // разрешение запрашиваем ОДИН раз за сессию; если уже выдано — не дёргаем (иначе окно лезет каждый круг и рвёт разговор)
     try{
-      if(SR.requestPermissions){ await SR.requestPermissions(); }
-      else if(SR.requestPermission){ await SR.requestPermission(); }
+      if(_micOK) return true;
+      if(SR.checkPermissions){
+        const c=await SR.checkPermissions();
+        if(c && c.speechRecognition==='granted'){ _micOK=true; return true; }
+        const r=await SR.requestPermissions();
+        if(r && r.speechRecognition==='granted'){ _micOK=true; return true; }
+        return false;
+      }
+      if(SR.requestPermission){ await SR.requestPermission(); _micOK=true; return true; }
     }catch(e){}
-    return true; // решение о доступе примет сам SR.start()
+    return true;
   }
   async start(){
     const SR=window.Capacitor.Plugins.SpeechRecognition;
     try{
-      await this._perm(SR);
+      const ok=await this._perm(SR);
+      if(!ok){ this.onerror&&this.onerror({error:'not-allowed'}); this.onend&&this.onend(); return; }
       this.onstart&&this.onstart();
       const res=await SR.start({ language:this.lang||'ru-RU', maxResults:1, partialResults:false, popup:false });
       const t=(res&&res.matches&&res.matches[0])||'';
@@ -3251,9 +3260,10 @@ async function ensureMicNative(){
     if(!SR) return true;
     if(SR.checkPermissions){
       let p=await pTimeout(SR.checkPermissions(), 4000);
-      if(p && p!=='__timeout__' && p.speechRecognition==='granted') return true;
-      p=await pTimeout(SR.requestPermissions(), 12000);   // показывает системное окно; не ждём дольше 12с
-      return !!(p && p!=='__timeout__' && p.speechRecognition==='granted');
+      if(p && p!=='__timeout__' && p.speechRecognition==='granted'){ _micOK=true; return true; }
+      p=await pTimeout(SR.requestPermissions(), 12000);   // системное окно ОДИН раз; не ждём дольше 12с
+      if(p && p!=='__timeout__' && p.speechRecognition==='granted'){ _micOK=true; return true; }
+      return false;
     }
     if(SR.requestPermission){ try{ await pTimeout(SR.requestPermission(), 12000); }catch(e){} if(SR.hasPermission){ const h=await pTimeout(SR.hasPermission(), 4000); return !!(h && h!=='__timeout__' && (h.permission===true||h.permission==='granted')); } }
     return true;
