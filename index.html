@@ -1614,9 +1614,29 @@ function mSpeedToDist(){
   if(sec>0 && $('mDist')) $('mDist').value=(v*sec/3600).toFixed(2);
 }
 ['mSpeed','mH','mM','mS'].forEach(id=>{ const el=$(id); if(el) el.addEventListener('input', mSpeedToDist); });
+const FTMS_SVC='00001826-0000-1000-8000-00805f9b34fb';   // Fitness Machine Service (дорожка/эллипс/велотренажёр)
+const TREAD_CHR='00002acd-0000-1000-8000-00805f9b34fb';  // Treadmill Data
+function treadSpeed(bytes){ if(!bytes||bytes.length<4) return null; const sp=(bytes[2]|(bytes[3]<<8))/100; return isFinite(sp)?sp:null; }
 $('treadBt').onclick=async()=>{
   if(!requirePremium()) return;
-  if(!navigator.bluetooth){ toast('Bluetooth недоступен. Нужен Chrome на Android (https).'); return; }
+  if(BLE){ /* ---- нативное приложение Skride: BLE-плагин ---- */
+    try{
+      if($('treadState')) $('treadState').textContent='включаю Bluetooth…';
+      if(!bleInited){ await BLE.initialize({ androidNeverForLocation:true }); bleInited=true; }
+      if($('treadState')) $('treadState').textContent='выбор дорожки…';
+      const dev=await BLE.requestDevice({ services:[FTMS_SVC], optionalServices:[FTMS_SVC] });
+      const id=dev.deviceId, name=dev.name||'дорожка';
+      await BLE.connect({ deviceId:id });
+      const keys=new Set(['notification|'+id+'|'+FTMS_SVC+'|'+TREAD_CHR, ('notification|'+id+'|'+FTMS_SVC+'|'+TREAD_CHR).toLowerCase()]);
+      keys.forEach(k=>{ BLE.addListener(k,(e)=>{ const sp=treadSpeed(bleBytes(e&&e.value)); if(sp!=null && $('treadState')) $('treadState').textContent='дорожка: '+sp.toFixed(1)+' км/ч — по финишу впиши итог'; }); });
+      await BLE.startNotifications({ deviceId:id, service:FTMS_SVC, characteristic:TREAD_CHR });
+      if($('treadState')) $('treadState').textContent='подключено: '+name;
+      toast('Дорожка подключена');
+    }catch(e){ const msg=((e&&(e.message||e.errorMessage))||e)+''; if($('treadState'))$('treadState').textContent='не подключилось: '+msg; toast('Не подключилось: '+msg+' — можно сфотографировать табло'); }
+    return;
+  }
+  /* ---- браузер / PWA: Web Bluetooth ---- */
+  if(!navigator.bluetooth){ toast('Bluetooth доступен в приложении Skride или в Chrome (https).'); return; }
   try{
     toast('Поиск дорожки...');
     const dev=await navigator.bluetooth.requestDevice({ filters:[{services:['fitness_machine']}] });
@@ -3240,7 +3260,7 @@ function showPerm(kind){
   if($('permText')){
     const standalone = isNative || !!(window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || (document.referrer||'').startsWith('android-app://');
     const perm = isMic ? 'Микрофон' : 'Местоположение';
-    const base = isMic ? 'Голосовой ввод заработает после следующего обновления приложения. Сейчас пиши тренеру текстом — он отвечает так же.' : 'Чтобы показать тебя на карте, разреши доступ к геолокации.';
+    const base = isMic ? 'Чтобы говорить с тренером голосом — разреши доступ к микрофону. Потом просто говори, он ответит вслух.' : 'Чтобы показать тебя на карте, разреши доступ к геолокации.';
     const help = standalone
       ? ('Нажми «Разрешить» — появится системное окно, выбери в нём «Разрешить». Если окно не появляется (доступ был запрещён ранее), открой: <b>Настройки телефона → Приложения → Skride → Разрешения → '+perm+' → Разрешить</b>, затем вернись в приложение.')
       : ('Нажми «Разрешить» ниже. Если окно не появилось — доступ заблокирован, открой: <b>значок слева от адреса → Настройки сайта → '+perm+' → Разрешить</b>, затем вернись и нажми «Разрешить» ещё раз.');
