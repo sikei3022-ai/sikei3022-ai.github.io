@@ -3237,8 +3237,7 @@ class NativeSpeechRec{
       const ok=await this._perm(SR);
       if(!ok){ this.onerror&&this.onerror({error:'not-allowed'}); this.onend&&this.onend(); return; }
       this.onstart&&this.onstart();
-      const res=await SR.start({ language:this.lang||'ru-RU', maxResults:1, partialResults:false, popup:true });
-      try{ toast('Распознал: '+JSON.stringify(res).slice(0,140)); }catch(_){}   // ДИАГНОСТИКА (временно)
+      const res=await SR.start({ language:this.lang||'ru-RU', maxResults:1, partialResults:false, popup:false });
       let t='';
       if(res){ if(Array.isArray(res.matches)) t=res.matches[0]||''; else if(Array.isArray(res)) t=res[0]||''; else if(typeof res==='string') t=res; else if(res.text) t=res.text; }
       if(t) this.onresult&&this.onresult({ results:[[{transcript:t}]] });
@@ -3367,12 +3366,15 @@ function convoListen(){
 }
 function convoAsk(q){
   chatPush('me', q);
-  const after=()=>{ if(convoMode) setTimeout(convoListen, 350); };
+  let resumed=false;
+  const after=()=>{ if(resumed) return; resumed=true; if(convoMode) setTimeout(convoListen, 300); };  // дальше слушаем сами, без кнопки
+  const guard=setTimeout(after, 15000);   // подстраховка: продолжаем, даже если озвучка не вызвала callback
+  const done=()=>{ clearTimeout(guard); after(); };
   if(cloudURL && hasAccess()){
     chatPush('coach','…',false);
-    cloudCoach().then(a=>{ if(chatMsgs.length&&chatMsgs[chatMsgs.length-1].text==='…')chatMsgs.pop(); chatPush('coach',a); say(a, after); })
-      .catch(()=>{ if(chatMsgs.length&&chatMsgs[chatMsgs.length-1].text==='…')chatMsgs.pop(); const a=coachAnswer(q); chatPush('coach',a); say(a, after); });
-  } else { const a=coachAnswer(q); chatPush('coach',a); say(a, after); }
+    cloudCoach().then(a=>{ if(chatMsgs.length&&chatMsgs[chatMsgs.length-1].text==='…')chatMsgs.pop(); chatPush('coach',a); say(a, done); })
+      .catch(()=>{ if(chatMsgs.length&&chatMsgs[chatMsgs.length-1].text==='…')chatMsgs.pop(); const a=coachAnswer(q); chatPush('coach',a); say(a, done); });
+  } else { const a=coachAnswer(q); chatPush('coach',a); say(a, done); }
 }
 if($('coachConvo')) $('coachConvo').onclick=()=>{ convoMode?stopConvo():startConvo(); };
 if($('coachPlay')) $('coachPlay').onclick=()=>playLastCoach();
