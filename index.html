@@ -3237,7 +3237,7 @@ class NativeSpeechRec{
       const ok=await this._perm(SR);
       if(!ok){ this.onerror&&this.onerror({error:'not-allowed'}); this.onend&&this.onend(); return; }
       this.onstart&&this.onstart();
-      const res=await SR.start({ language:this.lang||'ru-RU', maxResults:1, partialResults:false, popup:false });
+      const res=await SR.start({ language:this.lang||'ru-RU', maxResults:1, partialResults:false, popup:true });
       const t=(res&&res.matches&&res.matches[0])||'';
       if(t) this.onresult&&this.onresult({ results:[[{transcript:t}]] });
       else this.onerror&&this.onerror({error:'no-speech'});
@@ -3341,11 +3341,14 @@ function setConvoUI(on){ const b=$('coachConvo'); if(b){ b.classList.toggle('on'
 async function startConvo(){
   if(!SpeechRec){ toast('Голосовой ввод не поддерживается'); return; }
   if(isNative){
+    // диагностика среды распознавания (чтобы не было молчаливого «не пашет»)
+    if(!NATIVE_SR){ alert('Распознавание: нет нативного модуля в сборке. Нужно поставить свежий APK (Skride-test.apk).'); return; }
+    try{ if(NATIVE_SR.available){ const av=await NATIVE_SR.available(); if(av && av.available===false){ alert('На телефоне нет службы распознавания речи.\n\nУстанови/включи приложение «Google» (Google Speech Recognition) в Play Маркете, затем попробуй снова.'); return; } } }catch(e){}
     toast('Разреши доступ к микрофону…');
     const ok=await ensureMicNative();
     if(!ok){ showPerm('mic'); return; }   // не зависаем: показываем окно с кнопкой настроек телефона
   }
-  convoMode=true; setConvoUI(true); unlockAudio(); toast('Режим разговора: просто говори'); convoListen();
+  convoMode=true; setConvoUI(true); unlockAudio(); toast('Скажи фразу — тренер ответит'); convoListen();
 }
 function stopConvo(){ convoMode=false; setConvoUI(false); try{recog&&recog.stop();}catch(e){} stopSpeaking(); const b=$('coachMic'); if(b)b.classList.remove('rec'); }
 function convoListen(){
