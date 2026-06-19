@@ -621,7 +621,6 @@
       <!-- GPS tracking -->
       <div class="track-panel">
         <div class="track-mode-note" id="trackModeNote">Автозапись по GPS — нажми «Старт» и беги</div>
-        <button class="chip" id="voiceBtn" style="margin:0 auto 12px;display:inline-flex"><svg class="svic" aria-hidden="true"><use href="#ic-headphones"></use></svg> Голос ИИ-тренера: выкл</button>
         <div class="track-live" id="trackLive">
           <div class="tl"><div class="tv accent" id="liveDist">0.00</div><div class="tu">км</div></div>
           <div class="tl"><div class="tv" id="liveTime">0:00</div><div class="tu">время</div></div>
@@ -754,7 +753,7 @@
     <div class="sec-h"><h2 data-i18n="sec_coach">ИИ-тренер</h2><span id="coachSub" style="font-size:11px;font-weight:600;color:var(--muted)">анализ твоего бега</span></div>
     <div class="card" id="coachCard"></div>
     <div class="card coach-chat" id="coachChat" style="margin-top:12px">
-      <div class="coach-chat-h">💬 Спроси тренера</div>
+      <div class="coach-chat-h" style="display:flex;align-items:center;justify-content:space-between;gap:8px"><span>💬 Спроси тренера</span><button id="voiceBtn" type="button" aria-label="Голос тренера вкл/выкл"></button></div>
       <div class="coach-ctrls">
         <button id="coachConvo" type="button">🎙️ Поговорить с тренером</button>
         <button id="coachStop" type="button" style="display:none"><svg class="svic" aria-hidden="true"><use href="#ic-stop"></use></svg> Стоп</button>
@@ -2777,7 +2776,7 @@ $('keySave').onclick=async()=>{await sSet(YKEY,$('keyInput').value.trim());$('se
 /* ---- голосовой тренер: переключатель в настройках + кнопка на панели ---- */
 function syncVoiceUI(){
   const b=$('voiceBtn');
-  if(b){ b.innerHTML='<svg class="svic" aria-hidden="true"><use href="#ic-headphones"></use></svg> Голос ИИ-тренера: '+(voiceCoach?'вкл':'выкл'); b.style.borderColor=voiceCoach?'var(--orange)':'var(--line2)'; b.style.color=voiceCoach?'var(--orange)':'var(--ink2)'; }
+  if(b){ b.innerHTML='<svg class="svic" aria-hidden="true"><use href="#ic-volume"></use></svg> '+(voiceCoach?'Голос вкл':'Голос выкл'); b.style.cssText='flex:none;display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border-radius:999px;font-size:12px;font-weight:700;cursor:pointer;background:#fff;border:1px solid '+(voiceCoach?'var(--orange)':'var(--line2)')+';color:'+(voiceCoach?'var(--orange)':'var(--muted)'); }
   if($('voiceToggle')) $('voiceToggle').checked=voiceCoach;
 }
 async function setVoice(v, announce){
@@ -2954,11 +2953,13 @@ function renderCoach(){
       ? 'Советы — по принципам велоподготовки и анализа твоих данных. Не заменяют врача или личного тренера.'
       : 'Советы — на основе принципов беговой подготовки («Natural Running», методические пособия по лёгкой атлетике) и анализа твоих данных. Не заменяют врача или личного тренера.');
   c.innerHTML=BANNER+'<div class="coach-intro" style="padding-top:12px">'+
-    '<div style="font-family:var(--num);font-weight:800;font-size:15px;line-height:1.2">'+esc(a.head)+'</div></div>'+
+    '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px">'+
+    '<div style="font-family:var(--num);font-weight:800;font-size:15px;line-height:1.2">'+esc(a.head)+'</div>'+
+    '<button id="coachSpeak" type="button" aria-label="Послушать совет голосом" title="Послушать совет" style="flex:none;width:36px;height:36px;border-radius:50%;border:1px solid var(--line2);background:#fff;color:var(--orange);display:flex;align-items:center;justify-content:center;cursor:pointer"><svg class="svic" aria-hidden="true"><use href="#ic-volume"></use></svg></button>'+
+    '</div></div>'+
     a.tips.map(t=>'<div class="coach-tip">'+esc(t)+'</div>').join('')+
     '<div class="coach-tip"><b style="color:var(--orange)">Тренировка:</b> '+esc(train)+'</div>'+
     '<div class="coach-tip"><b style="color:var(--orange)">'+techLabel+'</b> '+esc(tech)+'</div>'+
-    '<button class="lg-btn" id="coachSpeak" style="margin:12px 0 0"><svg class="svic" aria-hidden="true"><use href="#ic-volume"></use></svg> Послушать совет</button>'+
     '<div class="coach-note">'+coachNote+'</div>';
   const speakText=a.tips[0]+'. По тренировкам: '+train+' По технике: '+tech;
   $('coachSpeak').onclick=()=>{ say(speakText); toast('Озвучиваю совет 🔊'); };
