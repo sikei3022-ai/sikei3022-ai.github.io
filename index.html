@@ -756,9 +756,9 @@
     <div class="card coach-chat" id="coachChat" style="margin-top:12px">
       <div class="coach-chat-h">💬 Спроси тренера</div>
       <div class="coach-ctrls">
-        <button id="coachConvo" type="button">🎙️ Разговор</button>
-        <button id="coachPlay" type="button"><svg class="svic" aria-hidden="true"><use href="#ic-play"></use></svg> Озвучить</button>
-        <button id="coachStop" type="button"><svg class="svic" aria-hidden="true"><use href="#ic-stop"></use></svg> Стоп</button>
+        <button id="coachConvo" type="button">🎙️ Поговорить с тренером</button>
+        <button id="coachStop" type="button" style="display:none"><svg class="svic" aria-hidden="true"><use href="#ic-stop"></use></svg> Стоп</button>
+        <button id="coachPlay" type="button" style="display:none"><svg class="svic" aria-hidden="true"><use href="#ic-play"></use></svg> Озвучить</button>
       </div>
       <div class="coach-thread" id="coachThread"></div>
       <div class="coach-chips" id="coachChips"></div>
@@ -3338,7 +3338,7 @@ if($('permRetry')) $('permRetry').onclick=async()=>{
 
 /* ---- режим разговора (hands-free, как с Алисой): слушает → отвечает → снова слушает ---- */
 let convoMode=false;
-function setConvoUI(on){ const b=$('coachConvo'); if(b){ b.classList.toggle('on',on); b.textContent= on?'⏸ Остановить разговор':'🎙️ Разговор'; } }
+function setConvoUI(on){ const b=$('coachConvo'); if(b){ b.classList.toggle('on',on); b.textContent= on?'⏸ Остановить разговор':'🎙️ Поговорить с тренером'; } }
 async function startConvo(){
   if(!SpeechRec){ toast('Голосовой ввод не поддерживается'); return; }
   if(isNative){
