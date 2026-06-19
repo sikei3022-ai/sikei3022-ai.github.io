@@ -3238,7 +3238,9 @@ class NativeSpeechRec{
       if(!ok){ this.onerror&&this.onerror({error:'not-allowed'}); this.onend&&this.onend(); return; }
       this.onstart&&this.onstart();
       const res=await SR.start({ language:this.lang||'ru-RU', maxResults:1, partialResults:false, popup:true });
-      const t=(res&&res.matches&&res.matches[0])||'';
+      try{ toast('Распознал: '+JSON.stringify(res).slice(0,140)); }catch(_){}   // ДИАГНОСТИКА (временно)
+      let t='';
+      if(res){ if(Array.isArray(res.matches)) t=res.matches[0]||''; else if(Array.isArray(res)) t=res[0]||''; else if(typeof res==='string') t=res; else if(res.text) t=res.text; }
       if(t) this.onresult&&this.onresult({ results:[[{transcript:t}]] });
       else this.onerror&&this.onerror({error:'no-speech'});
       this.onend&&this.onend();
