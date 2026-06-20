@@ -3440,18 +3440,28 @@ const SpeechRec = NATIVE_SR ? NativeSpeechRec : (window.SpeechRecognition || win
 // гонка с таймаутом — чтобы запрос разрешения не подвисал навсегда
 function pTimeout(p, ms){ return Promise.race([ Promise.resolve(p), new Promise(res=>setTimeout(()=>res('__timeout__'), ms)) ]); }
 async function ensureMicNative(){
+  if(_micOK) return true;
+  // 1) САМЫЙ НАДЁЖНЫЙ способ: getUserMedia — показывает системное окно «Разрешить микрофон» ПРЯМО В ПРИЛОЖЕНИИ
+  //    (Capacitor пробрасывает это в runtime-разрешение RECORD_AUDIO). Работает и в браузере, и в нативке.
+  try{
+    if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
+      const st=await pTimeout(navigator.mediaDevices.getUserMedia({audio:true}), 20000);
+      if(st && st!=='__timeout__'){ try{ st.getTracks().forEach(t=>t.stop()); }catch(e){} _micOK=true; return true; }
+    }
+  }catch(e){ /* отказ или нет API — пробуем нативный плагин ниже */ }
+  // 2) Запасной путь — нативный плагин распознавания (его собственный запрос разрешения)
   try{
     const SR=(window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins.SpeechRecognition)||null;
-    if(!SR) return true;
+    if(!SR) return false;
     if(SR.checkPermissions){
       let p=await pTimeout(SR.checkPermissions(), 4000);
       if(p && p!=='__timeout__' && p.speechRecognition==='granted'){ _micOK=true; return true; }
-      p=await pTimeout(SR.requestPermissions(), 12000);   // системное окно ОДИН раз; не ждём дольше 12с
+      p=await pTimeout(SR.requestPermissions(), 12000);
       if(p && p!=='__timeout__' && p.speechRecognition==='granted'){ _micOK=true; return true; }
       return false;
     }
     if(SR.requestPermission){ try{ await pTimeout(SR.requestPermission(), 12000); }catch(e){} if(SR.hasPermission){ const h=await pTimeout(SR.hasPermission(), 4000); return !!(h && h!=='__timeout__' && (h.permission===true||h.permission==='granted')); } }
-    return true;
+    return false;
   }catch(e){ return false; }
 }
 let _permKind=null;
@@ -3477,7 +3487,8 @@ async function startVoiceAsk(){
   if(isNative){
     if(!NATIVE_SR){ toast('Нет нативного модуля распознавания — обнови сборку приложения'); return; }
     try{ if(NATIVE_SR.available){ const av=await NATIVE_SR.available(); if(av && av.available===false){ toast('На телефоне нет службы распознавания речи (включи Google)'); return; } } }catch(e){}
-    // разрешение запросит сам плагин при start(); не блокируем заранее
+    const okMic=await ensureMicNative();   // системное окно «Разрешить микрофон» прямо в приложении
+    if(!okMic){ showPerm('mic'); return; }
   }
   else if(await permState('microphone')==='denied'){ showPerm('mic'); return; }
   if(recOn){ try{recog.stop();}catch(e){} return; }
@@ -3508,8 +3519,7 @@ if($('permRetry')) $('permRetry').onclick=async()=>{
     if(isNative){
       const ok=await ensureMicNative();
       if(ok){ startVoiceAsk(); return; }
-      if(openNativeSettings()) return;
-      toast('Разреши доступ к микрофону в настройках телефона'); return;
+      toast('Если окно «Разрешить» не появилось — переустанови приложение (скачай заново с сайта), при первом запуске оно спросит доступ.'); return;
     }
     // TWA/браузер: голосовой ввод недоступен — просто закрываем, без повторного показа окна
     try{ const st=await navigator.mediaDevices.getUserMedia({audio:true}); st.getTracks().forEach(t=>t.stop()); startVoiceAsk(); }
