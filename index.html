@@ -474,6 +474,37 @@
   .switch input:checked + .slider{background:var(--orange)}
   .switch .slider::before{content:'';position:absolute;height:22px;width:22px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
   .switch input:checked + .slider::before{transform:translateX(22px)}
+
+  /* ===== GLASS UI — матовое стекло, объём, прозрачность ===== */
+  .card{
+    background:linear-gradient(180deg, rgba(255,255,255,.52), rgba(255,255,255,.4));
+    -webkit-backdrop-filter:blur(15px) saturate(1.5); backdrop-filter:blur(15px) saturate(1.5);
+    border:1px solid rgba(255,255,255,.6);
+    box-shadow:0 8px 22px rgba(20,60,40,.12), inset 0 1px 0 rgba(255,255,255,.7);
+  }
+  .btn-pri, .coach-ctrls #coachConvo, .act-opt.on, .coach-input button{
+    background:linear-gradient(180deg, rgba(46,210,128,.58), rgba(13,165,84,.68));
+    -webkit-backdrop-filter:blur(11px) saturate(1.7); backdrop-filter:blur(11px) saturate(1.7);
+    border:1px solid rgba(255,255,255,.45);
+    box-shadow:0 10px 22px rgba(10,120,68,.30), inset 0 2px 0 rgba(255,255,255,.6), inset 0 -8px 14px rgba(6,84,47,.32);
+    color:#fff; text-shadow:0 1px 2px rgba(5,60,35,.4);
+  }
+  .btn-pri:active, .coach-ctrls #coachConvo:active, .act-opt.on:active, .coach-input button:active{
+    transform:translateY(2px);
+    box-shadow:0 4px 12px rgba(10,120,68,.26), inset 0 2px 0 rgba(255,255,255,.5), inset 0 -4px 10px rgba(6,84,47,.3);
+  }
+  .act-opt, .chip, .lg-btn{
+    background:linear-gradient(180deg, rgba(255,255,255,.46), rgba(255,255,255,.28));
+    -webkit-backdrop-filter:blur(13px) saturate(1.4); backdrop-filter:blur(13px) saturate(1.4);
+    border:1px solid rgba(255,255,255,.6);
+    box-shadow:0 5px 14px rgba(20,60,40,.10), inset 0 1px 0 rgba(255,255,255,.75);
+  }
+  .act-opt:active, .chip:active, .lg-btn:active{ transform:translateY(1px); }
+  @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+    .card{ background:rgba(255,255,255,.94); }
+    .act-opt, .chip, .lg-btn{ background:rgba(255,255,255,.92); }
+    .btn-pri, .coach-ctrls #coachConvo, .act-opt.on, .coach-input button{ background:var(--grad); }
+  }
 </style>
 </head>
 <body>
