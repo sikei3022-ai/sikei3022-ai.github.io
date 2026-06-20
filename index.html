@@ -3418,11 +3418,10 @@ class NativeSpeechRec{
       try{
         t=await this._recognize(SR, _srPopup);   // тихий режим (hands-free) либо системное окно, если уже переключились
       }catch(e1){
-        // тихий режим не поддержан этой прошивкой → один раз переключаемся на системное окно Google и повторяем
-        if(!_srPopup && !/denied|permission|not-allowed/i.test(((e1&&(e1.message||e1.errorMessage))||e1)+'')){
-          _srPopup=true;
-          t=await this._recognize(SR, true);
-        } else { throw e1; }
+        // ЛЮБАЯ неудача тихого режима (в т.ч. "insufficient permissions" / error 9 на части прошивок)
+        // → переключаемся на системное окно голосового ввода Google: оно использует своё разрешение и обходит проблему
+        if(!_srPopup){ _srPopup=true; t=await this._recognize(SR, true); }
+        else { throw e1; }
       }
       if(t) this.onresult&&this.onresult({ results:[[{transcript:t}]] });
       else this.onerror&&this.onerror({error:'no-speech'});
