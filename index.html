@@ -509,7 +509,27 @@
     .card, .dev-card, .st-box, .st-card, .qboard, .act{ background:rgba(255,255,255,.95); }
     .act-opt, .chip, .lg-btn, .btn-sec, .bq-opt, .map-toggle .mt-opt, .prof .edit, .goal .edit, .qb-spk, .screen-back, .iconbtn{ background:rgba(255,255,255,.93); }
     .btn-pri, .coach-ctrls #coachConvo, .act-opt.on, .map-toggle .mt-opt.on, .bq-opt.on, .coach-input button, .ob-next{ background:var(--grad); }
+    .ym-bar{ background:linear-gradient(135deg,#36A96B,#258654) !important; }
   }
+
+  /* ===== Единый стеклянный плеер (радио + Яндекс) ===== */
+  .ym-bar{
+    background:linear-gradient(180deg, rgba(46,182,114,.66), rgba(31,134,84,.80)) !important;
+    -webkit-backdrop-filter:blur(18px) saturate(1.5); backdrop-filter:blur(18px) saturate(1.5);
+    border:1px solid rgba(255,255,255,.42);
+    box-shadow:0 12px 34px rgba(8,70,45,.34), inset 0 1px 0 rgba(255,255,255,.55) !important;
+    max-width:560px; gap:11px; padding:calc(11px + env(safe-area-inset-top)) 14px 13px;
+    border-radius:0 0 20px 20px;
+  }
+  .ym-bar iframe{ height:80px !important; }
+  .ym-radioview{ display:none; }
+  .ym-bar.rad .ym-radioview{ display:flex; flex:1; align-items:center; gap:12px; }
+  .ym-bar.rad .ym-lbl, .ym-bar.rad .ym-frame, .ym-bar.rad #ymToggle, .ym-bar.rad #ymOpenExt, .ym-bar.rad .ym-eq{ display:none !important; }
+  .ym-rad-play{ flex:none; width:46px; height:46px; border-radius:50%; border:none; background:rgba(255,255,255,.92); color:#1f8654; font-size:17px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,.2) }
+  .ym-rad-play:active{ transform:scale(.94) }
+  .ym-rad-txt{ display:flex; flex-direction:column; line-height:1.2; color:#fff }
+  .ym-rad-txt b{ font-size:16px; font-weight:800 }
+  .ym-rad-txt small{ font-size:11.5px; opacity:.92; font-weight:600 }
 </style>
 </head>
 <body>
@@ -570,6 +590,10 @@
 
 <div id="ymBar" class="ym-bar ym-min" style="display:none">
   <div class="ym-eq"><i></i><i></i><i></i><i></i></div>
+  <div id="ymRadioView" class="ym-radioview">
+    <button id="ymRadioToggle" class="ym-rad-play" type="button" aria-label="пауза или играть">⏸</button>
+    <span class="ym-rad-txt"><b id="ymRadioName">Радио</b><small>Бесплатное радио</small></span>
+  </div>
   <button id="ymExpand" class="ym-lbl" type="button"><svg class="svic" aria-hidden="true"><use href="#ic-music"></use></svg><span>Яндекс Музыка</span><b class="ym-play">▶ открыть</b></button>
   <iframe id="ymIframe" class="ym-frame" frameborder="0" allow="autoplay"></iframe>
   <button id="ymToggle" class="ym-bar-x" aria-label="свернуть плеер">▴</button>
@@ -817,11 +841,7 @@
       </div>
 
       <div style="font-size:12.5px;font-weight:700;color:var(--muted);margin:2px 0 7px">🎧 Бесплатное радио — играет без подписки</div>
-      <div id="radioPick" style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:8px"></div>
-      <div id="radioNow" style="display:none;align-items:center;gap:10px;font-size:12.5px;font-weight:700;color:var(--accent);margin-bottom:12px">
-        <span id="radioNowName"></span>
-        <button id="radioStop" class="chip" type="button" style="padding:5px 11px;flex:none"><svg class="svic" aria-hidden="true"><use href="#ic-stop"></use></svg> Стоп</button>
-      </div>
+      <div id="radioPick" style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px"></div>
 
       <div id="ymDayCard" style="background:var(--grad);color:#fff;border-radius:14px;padding:14px 15px;margin-bottom:12px">
         <div style="font-size:11px;font-weight:800;letter-spacing:.5px;opacity:.95;text-transform:uppercase">Плейлист дня от Skride</div>
@@ -2496,9 +2516,9 @@ function ymToIframe(u){
   m=u.match(/track\/(\d+)/); if(m) return 'https://music.yandex.ru/iframe/#track/'+m[1];
   return '';
 }
-async function ymSet(url){ try{if(typeof radioStop==='function')radioStop();}catch(e){} const f=ymToIframe(url); if(!f){ toast('Не похоже на ссылку Яндекс Музыки'); return; } if($('ymIframe'))$('ymIframe').src=f; if($('ymBar')){$('ymBar').style.display='flex';$('ymBar').classList.add('ym-min');} if($('ymToggle'))$('ymToggle').textContent='▴'; document.body.classList.add('has-player'); setYmBarTop(); await sSet(MUSIC_KEY, f); toast('Играет 🎵'); }
+async function ymSet(url){ try{if(typeof radioStop==='function')radioStop();}catch(e){} const f=ymToIframe(url); if(!f){ toast('Не похоже на ссылку Яндекс Музыки'); return; } if($('ymIframe'))$('ymIframe').src=f; if($('ymBar')){$('ymBar').style.display='flex';$('ymBar').classList.remove('rad');$('ymBar').classList.add('ym-min');} if($('ymToggle'))$('ymToggle').textContent='▴'; document.body.classList.add('has-player'); setYmBarTop(); await sSet(MUSIC_KEY, f); toast('Играет 🎵'); }
 async function ymPlay(){ const inp=($('ymLink')&&$('ymLink').value||'').trim(); if(inp){ ymSet(inp); return; } const saved=await sGet(MUSIC_KEY); if(saved){ if($('ymIframe'))$('ymIframe').src=saved; if($('ymBar')){$('ymBar').style.display='flex';$('ymBar').classList.add('ym-min');} if($('ymToggle'))$('ymToggle').textContent='▴'; toast('Играет 🎵'); } else toast('Вставь ссылку на плейлист Яндекс Музыки'); }
-function ymStop(){ if($('ymIframe'))$('ymIframe').src=''; if($('ymBar'))$('ymBar').style.display='none'; document.body.classList.remove('has-player'); setYmBarTop(); toast('Остановлено ⏹'); }
+function ymStop(){ try{ if(radioAudio){ radioAudio.pause(); radioAudio.src=''; } }catch(e){} if($('ymIframe'))$('ymIframe').src=''; if($('ymBar')){$('ymBar').style.display='none';$('ymBar').classList.remove('rad');} document.querySelectorAll('#radioPick button').forEach(b=>b.classList.remove('on')); document.body.classList.remove('has-player'); setYmBarTop(); toast('Остановлено ⏹'); }
 if($('ymLoad')) $('ymLoad').onclick=ymPlay;
 if($('ymStop')) $('ymStop').onclick=ymStop;
 if($('ymBarClose')) $('ymBarClose').onclick=ymStop;
@@ -2515,28 +2535,30 @@ const RADIO=[
   {n:'The Trip',u:'https://ice.somafm.com/thetrip-128-mp3'}
 ];
 let radioAudio=null;
-function radioStop(){ if(radioAudio){ try{radioAudio.pause();}catch(e){} radioAudio.src=''; } document.querySelectorAll('#radioPick button').forEach(b=>b.classList.remove('on')); if($('radioNow'))$('radioNow').style.display='none'; }
+function showRadioBar(name, sub, icon){ const bar=$('ymBar'); if(!bar) return; bar.style.display='flex'; bar.classList.add('rad'); bar.classList.remove('ym-min'); if($('ymRadioName'))$('ymRadioName').textContent=name; const sm=bar.querySelector('.ym-rad-txt small'); if(sm&&sub)sm.textContent=sub; if($('ymRadioToggle'))$('ymRadioToggle').textContent=icon; document.body.classList.add('has-player'); setYmBarTop(); }
+function radioToggle(){ if(!radioAudio||!radioAudio.src){ return; } if(radioAudio.paused){ radioAudio.play().then(()=>{ if($('ymRadioToggle'))$('ymRadioToggle').textContent='⏸'; }).catch(()=>{}); } else { radioAudio.pause(); if($('ymRadioToggle'))$('ymRadioToggle').textContent='▶'; } }
+function radioStop(){ if(radioAudio){ try{radioAudio.pause();}catch(e){} radioAudio.src=''; } document.querySelectorAll('#radioPick button').forEach(b=>b.classList.remove('on')); const b=$('ymBar'); if(b&&b.classList.contains('rad')){ b.style.display='none'; b.classList.remove('rad'); document.body.classList.remove('has-player'); setYmBarTop(); } }
 function radioPlay(s, btn){
   try{ if(typeof unlockAudio==='function') unlockAudio(); }catch(e){}
-  try{ if($('ymIframe'))$('ymIframe').src=''; if($('ymBar'))$('ymBar').style.display='none'; document.body.classList.remove('has-player'); }catch(e){}
+  try{ if($('ymIframe'))$('ymIframe').src=''; }catch(e){}
   if(!radioAudio){ radioAudio=new Audio(); radioAudio.preload='none'; radioAudio.crossOrigin=null; }
-  radioAudio.onerror=function(){ const c=radioAudio&&radioAudio.error?radioAudio.error.code:'-'; if($('radioNowName'))$('radioNowName').textContent='✗ '+s.n+' (audio '+c+')'; };
+  radioAudio.onerror=function(){ const c=radioAudio&&radioAudio.error?radioAudio.error.code:'-'; showRadioBar('✗ '+s.n,'ошибка ('+c+')','▶'); };
   radioAudio.src=s.u;
-  if($('radioNowName'))$('radioNowName').textContent='⏳ '+s.n+'…';
-  if($('radioNow'))$('radioNow').style.display='flex';
+  showRadioBar(s.n,'Загрузка…','⏳');
   radioAudio.play().then(()=>{
     document.querySelectorAll('#radioPick button').forEach(b=>b.classList.remove('on'));
     if(btn) btn.classList.add('on');
-    if($('radioNowName'))$('radioNowName').textContent='▶ '+s.n;
+    showRadioBar(s.n,'Бесплатное радио','⏸');
     try{ if('mediaSession' in navigator){ navigator.mediaSession.metadata=new MediaMetadata({title:s.n, artist:'Skride · радио'}); } }catch(e){}
   }).catch(err=>{
     const c=radioAudio&&radioAudio.error?radioAudio.error.code:'-';
-    if($('radioNowName'))$('radioNowName').textContent='✗ '+s.n;
+    showRadioBar('✗ '+s.n,'не включилось','▶');
     alert('РАДИО не включилось.\nСтанция: '+s.n+'\nПричина: '+((err&&err.name)||'?')+' — '+((err&&err.message)||'')+'\nКод аудио: '+c);
   });
 }
 function buildRadio(){ const w=$('radioPick'); if(!w) return; w.innerHTML=''; RADIO.forEach(s=>{ const b=document.createElement('button'); b.type='button'; b.className='chip'; b.innerHTML='<svg class="svic" aria-hidden="true"><use href="#ic-music"></use></svg> '+s.n; b.onclick=()=>radioPlay(s,b); w.appendChild(b); }); }
 if($('radioStop')) $('radioStop').onclick=radioStop;
+if($('ymRadioToggle')) $('ymRadioToggle').onclick=radioToggle;
 buildRadio();
 const YM_LISTS=[
  {n:'⚡ Энергия для бега', u:'music.partners/1169'},
@@ -3639,7 +3661,7 @@ async function boot(){
   const au=await sGet(AUTH_KEY); if(au){ try{ const a=JSON.parse(au); authToken=a.token||''; authUser=a.user||null; }catch(e){} }
   const sm=await sGet(STORE_KEY); if(sm==='cloud'||sm==='local') storeMode=sm;
   const lm=await sGet(LISTEN_KEY); if(lm==='coach'||lm==='music'||lm==='both') listenMode=lm;
-  const mu=await sGet(MUSIC_KEY); if(mu){ if($('ymIframe'))$('ymIframe').src=mu; if($('ymBar'))$('ymBar').style.display='flex'; document.body.classList.add('has-player'); }
+  /* плеер на старте НЕ показываем — открывается только когда пользователь включит радио или Яндекс Музыку */
   applyLang(curLang); updatePremiumUI(); updateAuthUI();
   syncVoiceUI(); renderHr();
   renderProfile();
