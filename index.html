@@ -3385,6 +3385,7 @@ if($('cloudVoiceSel')) $('cloudVoiceSel').onchange=async(e)=>{ unlockAudio(); tt
 /* ---- нативное распознавание речи (Android-приложение) как «переходник» к Web Speech API ---- */
 const NATIVE_SR=(window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.SpeechRecognition) || null;
 let _micOK=false;  // разрешение микрофона выдано в этой сессии — повторно не запрашивать (иначе окно лезет каждый круг)
+let _srPopup=false; // тихий режим распознавания не поддержан прошивкой → переключились на системное окно Google
 class NativeSpeechRec{
   constructor(){ this.lang='ru-RU'; this.interimResults=false; this.maxAlternatives=1; this.onstart=this.onresult=this.onerror=this.onend=null; }
   async _perm(SR){
@@ -3402,15 +3403,27 @@ class NativeSpeechRec{
     }catch(e){}
     return true;
   }
+  async _recognize(SR, popup){
+    const res=await SR.start({ language:this.lang||'ru-RU', maxResults:1, partialResults:false, popup:popup });
+    if(res){ if(Array.isArray(res.matches)) return res.matches[0]||''; if(Array.isArray(res)) return res[0]||''; if(typeof res==='string') return res; if(res.text) return res.text; }
+    return '';
+  }
   async start(){
     const SR=window.Capacitor.Plugins.SpeechRecognition;
     try{
       const ok=await this._perm(SR);
       if(!ok){ this.onerror&&this.onerror({error:'not-allowed'}); this.onend&&this.onend(); return; }
       this.onstart&&this.onstart();
-      const res=await SR.start({ language:this.lang||'ru-RU', maxResults:1, partialResults:false, popup:false });
       let t='';
-      if(res){ if(Array.isArray(res.matches)) t=res.matches[0]||''; else if(Array.isArray(res)) t=res[0]||''; else if(typeof res==='string') t=res; else if(res.text) t=res.text; }
+      try{
+        t=await this._recognize(SR, _srPopup);   // тихий режим (hands-free) либо системное окно, если уже переключились
+      }catch(e1){
+        // тихий режим не поддержан этой прошивкой → один раз переключаемся на системное окно Google и повторяем
+        if(!_srPopup && !/denied|permission|not-allowed/i.test(((e1&&(e1.message||e1.errorMessage))||e1)+'')){
+          _srPopup=true;
+          t=await this._recognize(SR, true);
+        } else { throw e1; }
+      }
       if(t) this.onresult&&this.onresult({ results:[[{transcript:t}]] });
       else this.onerror&&this.onerror({error:'no-speech'});
       this.onend&&this.onend();
