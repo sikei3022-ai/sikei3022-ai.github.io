@@ -189,8 +189,9 @@
   .f.full{grid-column:1/-1}
   label{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.6px;text-transform:uppercase}
   input,textarea{font-family:var(--body);font-size:16px;font-weight:600;color:var(--ink);
-    background:#f6f6f9;border:1.5px solid #f6f6f9;border-radius:11px;padding:12px 13px;width:100%;outline:none}
-  input:focus,textarea:focus{border-color:var(--orange);background:#fff}
+    background:#fff;border:1.5px solid #e7eae8;border-radius:12px;padding:12px 13px;width:100%;outline:none;
+    box-shadow:inset 0 2px 5px rgba(20,60,40,.06);transition:.15s}
+  input:focus,textarea:focus{border-color:#34b06f;background:#fff;box-shadow:inset 0 1px 3px rgba(20,60,40,.05),0 0 0 3px rgba(52,176,111,.16)}
   textarea{resize:none;min-height:44px;font-weight:500}
   .time{display:flex;gap:8px}.time input{text-align:center}
   .pace-row{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;padding:2px 2px 0}
@@ -483,23 +484,21 @@
     box-shadow:0 8px 22px rgba(20,60,40,.12), inset 0 1px 0 rgba(255,255,255,.7);
   }
   .btn-pri, .coach-ctrls #coachConvo, .act-opt.on, .map-toggle .mt-opt.on, .bq-opt.on, .coach-input button, .ob-next{
-    background:linear-gradient(180deg, rgba(46,200,124,.93), rgba(13,160,82,.97));
-    -webkit-backdrop-filter:blur(5px) saturate(1.4); backdrop-filter:blur(5px) saturate(1.4);
-    border:1px solid rgba(255,255,255,.45);
-    box-shadow:0 10px 22px rgba(10,120,68,.30), inset 0 2px 0 rgba(255,255,255,.6), inset 0 -8px 14px rgba(6,84,47,.32);
-    color:#fff; text-shadow:0 1px 2px rgba(5,60,35,.4);
+    background:linear-gradient(180deg, #34b06f, #1f9458);
+    border:1px solid rgba(255,255,255,.30);
+    box-shadow:0 4px 11px rgba(15,120,70,.22), inset 0 1px 0 rgba(255,255,255,.34);
+    color:#fff; text-shadow:0 1px 1px rgba(5,60,35,.28);
   }
   .btn-pri:active, .coach-ctrls #coachConvo:active, .act-opt.on:active, .map-toggle .mt-opt.on:active, .bq-opt.on:active, .coach-input button:active, .ob-next:active{
-    transform:translateY(2px);
-    box-shadow:0 4px 12px rgba(10,120,68,.26), inset 0 2px 0 rgba(255,255,255,.5), inset 0 -4px 10px rgba(6,84,47,.3);
+    transform:translateY(1px);
+    box-shadow:0 2px 7px rgba(15,120,70,.20), inset 0 1px 0 rgba(255,255,255,.3);
   }
   .act-opt, .chip, .lg-btn, .btn-sec, .bq-opt, .map-toggle .mt-opt, .prof .edit, .goal .edit, .qb-spk, .screen-back, .iconbtn{
-    background:linear-gradient(180deg, rgba(255,255,255,.83), rgba(255,255,255,.69));
-    -webkit-backdrop-filter:blur(8px) saturate(1.3); backdrop-filter:blur(8px) saturate(1.3);
-    border:1px solid rgba(255,255,255,.6);
-    box-shadow:0 5px 14px rgba(20,60,40,.10), inset 0 1px 0 rgba(255,255,255,.75);
+    background:linear-gradient(180deg, #ffffff, #f2f4f6);
+    border:1px solid rgba(255,255,255,.9);
+    box-shadow:0 9px 20px rgba(20,60,40,.15), inset 0 2px 0 rgba(255,255,255,.95), inset 0 -4px 9px rgba(20,60,40,.05);
   }
-  .act-opt:active, .chip:active, .lg-btn:active, .btn-sec:active, .bq-opt:active, .map-toggle .mt-opt:active, .prof .edit:active, .goal .edit:active, .qb-spk:active, .screen-back:active, .iconbtn:active{ transform:translateY(1px); }
+  .act-opt:active, .chip:active, .lg-btn:active, .btn-sec:active, .bq-opt:active, .map-toggle .mt-opt:active, .prof .edit:active, .goal .edit:active, .qb-spk:active, .screen-back:active, .iconbtn:active{ transform:translateY(2px); box-shadow:0 4px 11px rgba(20,60,40,.13), inset 0 2px 0 rgba(255,255,255,.9); }
   .btn-start, .btn-pause, .btn-stop{
     border:1px solid rgba(255,255,255,.3);
     box-shadow:0 8px 18px rgba(20,60,40,.18), inset 0 2px 0 rgba(255,255,255,.4), inset 0 -6px 12px rgba(0,0,0,.14);
@@ -533,22 +532,26 @@
   .ym-rad-nav{ flex:none; width:38px; height:38px; border-radius:50%; border:none; background:rgba(255,255,255,.18); color:#fff; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center }
   .ym-rad-nav:active{ transform:scale(.92); background:rgba(255,255,255,.34) }
 
-  /* ===== Радио-панель в разделе «Музыка» ===== */
-  .radio-box{ background:var(--grad); border-radius:16px; padding:13px 14px; margin-bottom:14px; color:#fff; box-shadow:0 6px 18px rgba(54,169,107,.30) }
-  .radio-box .rb-top{ display:flex; align-items:center; gap:7px; font-size:11px; font-weight:800; letter-spacing:.5px; text-transform:uppercase; opacity:.95; margin-bottom:9px }
+  /* ===== Радио-плеер в разделе «Музыка» ===== */
+  .radio-box{ background:linear-gradient(180deg,#34b06f,#1f8b52); border-radius:18px; padding:14px; margin-bottom:14px; color:#fff; box-shadow:0 8px 20px rgba(31,139,82,.26) }
+  .radio-box .rb-top{ display:flex; align-items:center; gap:7px; font-size:11px; font-weight:800; letter-spacing:.5px; text-transform:uppercase; opacity:.9; margin-bottom:10px }
   .radio-box .rb-top .svic{ width:16px; height:16px }
-  .radio-marq{ overflow:hidden; white-space:nowrap; background:rgba(255,255,255,.16); border-radius:10px; padding:8px 0; margin-bottom:12px }
-  .radio-marq b{ display:inline-block; padding-left:100%; font-size:14px; font-weight:800; animation:marq 14s linear infinite }
+  .rb-player{ display:flex; align-items:center; gap:13px; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.16); border-radius:15px; padding:11px 13px; margin-bottom:11px }
+  .rb-info{ flex:1; min-width:0 }
+  .rb-name{ font-size:15.5px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; line-height:1.2 }
+  .radio-marq{ overflow:hidden; white-space:nowrap; margin-top:3px }
+  .radio-marq b{ display:inline-block; padding-left:100%; font-size:12.5px; font-weight:600; opacity:.9; animation:marq 14s linear infinite }
   @keyframes marq{ from{transform:translateX(0)} to{transform:translateX(-100%)} }
-  .rb-ctrls{ display:flex; align-items:center; justify-content:center; gap:12px; margin-bottom:12px }
-  .rb-btn{ flex:none; border:none; cursor:pointer; color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; transition:.15s; background:rgba(255,255,255,.18) }
-  .rb-btn:active{ transform:scale(.92); background:rgba(255,255,255,.32) }
-  .rb-btn.sm{ width:44px; height:44px; font-size:16px }
-  .rb-btn.big{ width:58px; height:58px; font-size:22px; background:#fff; color:#1f8654; box-shadow:0 4px 12px rgba(0,0,0,.18) }
+  .rb-ctrls{ display:flex; align-items:center; justify-content:center; gap:14px; margin-bottom:12px }
+  .rb-btn{ flex:none; border:none; cursor:pointer; color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; transition:.15s }
+  .rb-btn.sm{ width:42px; height:42px; font-size:15px; background:rgba(255,255,255,.14) }
+  .rb-btn.sm:active{ transform:scale(.93); background:rgba(255,255,255,.26) }
+  .rb-btn.big{ width:56px; height:56px; font-size:21px; background:linear-gradient(180deg,#fff,#eef3ef); color:#1f8b52; box-shadow:0 7px 16px rgba(0,0,0,.22), inset 0 2px 0 rgba(255,255,255,.95) }
+  .rb-btn.big:active{ transform:scale(.95); box-shadow:0 3px 9px rgba(0,0,0,.2), inset 0 2px 0 rgba(255,255,255,.9) }
   .radio-box #radioPick{ display:flex; flex-wrap:wrap; gap:7px; justify-content:center }
-  .radio-box .chip{ background:rgba(255,255,255,.92); border-color:transparent; color:#1f7a4d }
+  .radio-box .chip{ background:rgba(255,255,255,.92); border-color:transparent; color:#1f7a4d; box-shadow:0 2px 6px rgba(0,0,0,.10) }
   .radio-box .chip svg{ stroke:#1f7a4d }
-  .radio-box .chip.on{ background:#fff; color:#15813f; font-weight:800; box-shadow:0 0 0 2px rgba(255,255,255,.92), 0 3px 8px rgba(0,0,0,.18) }
+  .radio-box .chip.on{ background:#fff; color:#15813f; font-weight:800; box-shadow:0 0 0 2px rgba(255,255,255,.92), 0 4px 9px rgba(0,0,0,.18) }
 </style>
 </head>
 <body>
@@ -863,10 +866,15 @@
 
       <div class="radio-box">
         <div class="rb-top"><svg class="svic" aria-hidden="true"><use href="#ic-music"></use></svg> Радио</div>
-        <div class="radio-marq"><b id="radioMarq">Выбери станцию ниже</b></div>
+        <div class="rb-player">
+          <button id="rbPlay" class="rb-btn big" type="button" aria-label="играть или пауза">▶</button>
+          <div class="rb-info">
+            <div class="rb-name" id="radioName">Радио Skride</div>
+            <div class="radio-marq"><b id="radioMarq">Выбери станцию ниже</b></div>
+          </div>
+        </div>
         <div class="rb-ctrls">
           <button id="rbPrev" class="rb-btn sm" type="button" aria-label="предыдущая станция">⏮</button>
-          <button id="rbPlay" class="rb-btn big" type="button" aria-label="играть или пауза">▶</button>
           <button id="rbStop" class="rb-btn sm" type="button" aria-label="стоп">⏹</button>
           <button id="rbNext" class="rb-btn sm" type="button" aria-label="следующая станция">⏭</button>
         </div>
@@ -2548,7 +2556,7 @@ function ymToIframe(u){
 }
 async function ymSet(url){ try{if(typeof radioStop==='function')radioStop();}catch(e){} const f=ymToIframe(url); if(!f){ toast('Не похоже на ссылку Яндекс Музыки'); return; } if($('ymIframe'))$('ymIframe').src=f; if($('ymBar')){$('ymBar').style.display='flex';$('ymBar').classList.remove('rad');$('ymBar').classList.add('ym-min');} if($('ymToggle'))$('ymToggle').textContent='▴'; document.body.classList.add('has-player'); setYmBarTop(); await sSet(MUSIC_KEY, f); toast('Играет 🎵'); }
 async function ymPlay(){ const inp=($('ymLink')&&$('ymLink').value||'').trim(); if(inp){ ymSet(inp); return; } const saved=await sGet(MUSIC_KEY); if(saved){ if($('ymIframe'))$('ymIframe').src=saved; if($('ymBar')){$('ymBar').style.display='flex';$('ymBar').classList.add('ym-min');} if($('ymToggle'))$('ymToggle').textContent='▴'; toast('Играет 🎵'); } else toast('Вставь ссылку на плейлист Яндекс Музыки'); }
-function ymStop(){ try{ if(radioAudio){ radioAudio.pause(); radioAudio.src=''; } }catch(e){} if($('ymIframe'))$('ymIframe').src=''; if($('ymBar')){$('ymBar').style.display='none';$('ymBar').classList.remove('rad');} document.querySelectorAll('#radioPick button').forEach(b=>b.classList.remove('on')); document.body.classList.remove('has-player'); setYmBarTop(); toast('Остановлено ⏹'); }
+function ymStop(){ try{ if(typeof radioNowStop==='function')radioNowStop(); }catch(e){} try{ if(radioAudio){ radioAudio.pause(); radioAudio.src=''; } }catch(e){} if($('ymIframe'))$('ymIframe').src=''; if($('ymBar')){$('ymBar').style.display='none';$('ymBar').classList.remove('rad');} document.querySelectorAll('#radioPick button').forEach(b=>b.classList.remove('on')); document.body.classList.remove('has-player'); setYmBarTop(); toast('Остановлено ⏹'); }
 if($('ymLoad')) $('ymLoad').onclick=ymPlay;
 if($('ymStop')) $('ymStop').onclick=ymStop;
 if($('ymBarClose')) $('ymBarClose').onclick=ymStop;
@@ -2558,29 +2566,39 @@ if($('ymOpenExt')) $('ymOpenExt').onclick=()=>{ const u=_ymExternal||(($('ymLink
 
 /* ===== Бесплатное радио (электроника/хаус) — играет у всех без подписки ===== */
 const RADIO=[
-  {n:'Record',g:'танцевальные хиты',u:'https://radiorecord.hostingradio.ru/rr_main96.aacp'},
-  {n:'Record Club',g:'клубный хаус',u:'https://radiorecord.hostingradio.ru/club96.aacp'},
-  {n:'Trancemission',g:'транс',u:'https://radiorecord.hostingradio.ru/tm96.aacp'},
-  {n:'Beat Blender',g:'даунтемпо · хаус',u:'https://ice.somafm.com/beatblender-128-mp3'},
-  {n:'The Trip',g:'прог-хаус',u:'https://ice.somafm.com/thetrip-128-mp3'}
+  {n:'Record',g:'танцевальные хиты',u:'https://radiorecord.hostingradio.ru/rr_main96.aacp',rr:'record'},
+  {n:'Record Club',g:'клубный хаус',u:'https://radiorecord.hostingradio.ru/club96.aacp',rr:'club'},
+  {n:'Trancemission',g:'транс',u:'https://radiorecord.hostingradio.ru/tm96.aacp',rr:'trancemission'},
+  {n:'Beat Blender',g:'даунтемпо · хаус',u:'https://ice.somafm.com/beatblender-128-mp3',soma:'beatblender'},
+  {n:'The Trip',g:'прог-хаус',u:'https://ice.somafm.com/thetrip-128-mp3',soma:'thetrip'}
 ];
-let radioAudio=null, radioIdx=-1;
+let radioAudio=null, radioIdx=-1, radioNowTimer=null;
 function setRadioMarq(t){ if($('radioMarq'))$('radioMarq').textContent=t; }
+function setRadioName(t){ if($('radioName'))$('radioName').textContent=t; }
+/* Бегущая строка трека: сначала жанр, затем (если станция отдаёт) — реальное название песни */
+function radioMarqDefault(s){ return s.g+'      ·      Skride радио'; }
+function radioNowApply(s, track){ if(RADIO[radioIdx]!==s||!radioAudio||radioAudio.paused) return; const t=(track||'').trim(); const txt=t?('♪  '+t):radioMarqDefault(s); setRadioMarq(txt); if($('ymRadioSub'))$('ymRadioSub').textContent=t?t:s.g; }
+function radioNowFetch(){ const s=RADIO[radioIdx]; if(!s) return; try{
+    if(s.soma){ fetch('https://somafm.com/songs/'+s.soma+'.json',{cache:'no-store'}).then(r=>r.json()).then(d=>{ const x=d&&d.songs&&d.songs[0]; if(x){ radioNowApply(s, (x.artist?x.artist+' — ':'')+(x.title||'')); } }).catch(()=>{}); }
+    else if(s.rr){ fetch('https://www.radiorecord.ru/api/stations/now/?tz=180',{cache:'no-store'}).then(r=>r.json()).then(d=>{ const list=(d&&d.result)||[]; const it=list.find(x=>x&&(x.prefix===s.rr||x.id===s.rr)); const tr=it&&it.track; if(tr){ radioNowApply(s, (tr.artist?tr.artist+' — ':'')+(tr.song||tr.title||'')); } }).catch(()=>{}); }
+  }catch(e){} }
+function radioNowStart(){ if(radioNowTimer)clearInterval(radioNowTimer); radioNowFetch(); radioNowTimer=setInterval(radioNowFetch, 20000); }
+function radioNowStop(){ if(radioNowTimer){ clearInterval(radioNowTimer); radioNowTimer=null; } }
 function setRadioPlayIcon(ic){ if($('rbPlay'))$('rbPlay').textContent=ic; if($('ymRadioToggle'))$('ymRadioToggle').textContent=ic; }
 function hlRadioChip(){ document.querySelectorAll('#radioPick button').forEach((b,i)=>b.classList.toggle('on', i===radioIdx)); }
 function showRadioBar(name, sub, icon){ const bar=$('ymBar'); if(!bar) return; bar.style.display='flex'; bar.classList.add('rad'); bar.classList.remove('ym-min'); if($('ymRadioName'))$('ymRadioName').textContent=name; if($('ymRadioSub')&&sub)$('ymRadioSub').textContent=sub; setRadioPlayIcon(icon); document.body.classList.add('has-player'); setYmBarTop(); }
-function radioStop(){ if(radioAudio){ try{radioAudio.pause();}catch(e){} radioAudio.src=''; } radioIdx=-1; hlRadioChip(); setRadioPlayIcon('▶'); setRadioMarq('Выбери станцию ниже'); const b=$('ymBar'); if(b&&b.classList.contains('rad')){ b.style.display='none'; b.classList.remove('rad'); document.body.classList.remove('has-player'); setYmBarTop(); } }
-function radioToggle(){ if(!radioAudio||!radioAudio.src){ radioPlayIdx(radioIdx<0?0:radioIdx); return; } const s=RADIO[radioIdx]; if(radioAudio.paused){ radioAudio.play().then(()=>{ setRadioPlayIcon('⏸'); if(s)setRadioMarq('▶  '+s.n+' — '+s.g+'      ·      Skride радио'); }).catch(()=>{}); } else { radioAudio.pause(); setRadioPlayIcon('▶'); if(s)setRadioMarq('⏸  пауза — '+s.n); } }
+function radioStop(){ radioNowStop(); if(radioAudio){ try{radioAudio.pause();}catch(e){} radioAudio.src=''; } radioIdx=-1; hlRadioChip(); setRadioPlayIcon('▶'); setRadioName('Радио Skride'); setRadioMarq('Выбери станцию ниже'); const b=$('ymBar'); if(b&&b.classList.contains('rad')){ b.style.display='none'; b.classList.remove('rad'); document.body.classList.remove('has-player'); setYmBarTop(); } }
+function radioToggle(){ if(!radioAudio||!radioAudio.src){ radioPlayIdx(radioIdx<0?0:radioIdx); return; } const s=RADIO[radioIdx]; if(radioAudio.paused){ radioAudio.play().then(()=>{ setRadioPlayIcon('⏸'); if(s){ setRadioMarq(radioMarqDefault(s)); radioNowStart(); } }).catch(()=>{}); } else { radioNowStop(); radioAudio.pause(); setRadioPlayIcon('▶'); if(s)setRadioMarq('⏸  пауза — '+s.n); } }
 function radioPlay(s){
   try{ if(typeof unlockAudio==='function') unlockAudio(); }catch(e){}
   try{ if($('ymIframe'))$('ymIframe').src=''; }catch(e){}
   if(!radioAudio){ radioAudio=new Audio(); radioAudio.preload='none'; radioAudio.crossOrigin=null; }
-  radioAudio.onerror=function(){ const c=radioAudio&&radioAudio.error?radioAudio.error.code:'-'; showRadioBar('✗ '+s.n,'ошибка ('+c+')','▶'); setRadioMarq('✗  '+s.n+' не открылось ('+c+')'); };
+  radioAudio.onerror=function(){ const c=radioAudio&&radioAudio.error?radioAudio.error.code:'-'; showRadioBar('✗ '+s.n,'ошибка ('+c+')','▶'); setRadioName(s.n); setRadioMarq('✗  '+s.n+' не открылось ('+c+')'); };
   radioAudio.src=s.u;
-  showRadioBar(s.n,'загрузка…','⏳'); setRadioMarq('⏳  '+s.n+' — загрузка…'); hlRadioChip();
+  showRadioBar(s.n,'загрузка…','⏳'); setRadioName(s.n); setRadioMarq('⏳  '+s.n+' — загрузка…'); hlRadioChip();
   radioAudio.play().then(()=>{
-    showRadioBar(s.n, s.g, '⏸'); setRadioPlayIcon('⏸');
-    setRadioMarq('▶  '+s.n+' — '+s.g+'      ·      Skride радио'); hlRadioChip();
+    showRadioBar(s.n, s.g, '⏸'); setRadioPlayIcon('⏸'); setRadioName(s.n);
+    setRadioMarq(radioMarqDefault(s)); hlRadioChip(); radioNowStart();
     try{ if('mediaSession' in navigator){ navigator.mediaSession.metadata=new MediaMetadata({title:s.n, artist:'Skride · радио'}); } }catch(e){}
   }).catch(err=>{
     const c=radioAudio&&radioAudio.error?radioAudio.error.code:'-';
