@@ -816,6 +816,13 @@
         <button class="act-opt" data-listen="both" type="button"><svg class="svic" aria-hidden="true"><use href="#ic-headphones"></use></svg> Оба</button>
       </div>
 
+      <div style="font-size:12.5px;font-weight:700;color:var(--muted);margin:2px 0 7px">🎧 Бесплатное радио — играет без подписки</div>
+      <div id="radioPick" style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:8px"></div>
+      <div id="radioNow" style="display:none;align-items:center;gap:10px;font-size:12.5px;font-weight:700;color:var(--accent);margin-bottom:12px">
+        <span id="radioNowName"></span>
+        <button id="radioStop" class="chip" type="button" style="padding:5px 11px;flex:none"><svg class="svic" aria-hidden="true"><use href="#ic-stop"></use></svg> Стоп</button>
+      </div>
+
       <div id="ymDayCard" style="background:var(--grad);color:#fff;border-radius:14px;padding:14px 15px;margin-bottom:12px">
         <div style="font-size:11px;font-weight:800;letter-spacing:.5px;opacity:.95;text-transform:uppercase">Плейлист дня от Skride</div>
         <div id="ymDayName" style="font-family:var(--num);font-weight:800;font-size:18px;margin:3px 0 10px"></div>
@@ -2489,7 +2496,7 @@ function ymToIframe(u){
   m=u.match(/track\/(\d+)/); if(m) return 'https://music.yandex.ru/iframe/#track/'+m[1];
   return '';
 }
-async function ymSet(url){ const f=ymToIframe(url); if(!f){ toast('Не похоже на ссылку Яндекс Музыки'); return; } if($('ymIframe'))$('ymIframe').src=f; if($('ymBar')){$('ymBar').style.display='flex';$('ymBar').classList.add('ym-min');} if($('ymToggle'))$('ymToggle').textContent='▴'; document.body.classList.add('has-player'); setYmBarTop(); await sSet(MUSIC_KEY, f); toast('Играет 🎵'); }
+async function ymSet(url){ try{if(typeof radioStop==='function')radioStop();}catch(e){} const f=ymToIframe(url); if(!f){ toast('Не похоже на ссылку Яндекс Музыки'); return; } if($('ymIframe'))$('ymIframe').src=f; if($('ymBar')){$('ymBar').style.display='flex';$('ymBar').classList.add('ym-min');} if($('ymToggle'))$('ymToggle').textContent='▴'; document.body.classList.add('has-player'); setYmBarTop(); await sSet(MUSIC_KEY, f); toast('Играет 🎵'); }
 async function ymPlay(){ const inp=($('ymLink')&&$('ymLink').value||'').trim(); if(inp){ ymSet(inp); return; } const saved=await sGet(MUSIC_KEY); if(saved){ if($('ymIframe'))$('ymIframe').src=saved; if($('ymBar')){$('ymBar').style.display='flex';$('ymBar').classList.add('ym-min');} if($('ymToggle'))$('ymToggle').textContent='▴'; toast('Играет 🎵'); } else toast('Вставь ссылку на плейлист Яндекс Музыки'); }
 function ymStop(){ if($('ymIframe'))$('ymIframe').src=''; if($('ymBar'))$('ymBar').style.display='none'; document.body.classList.remove('has-player'); setYmBarTop(); toast('Остановлено ⏹'); }
 if($('ymLoad')) $('ymLoad').onclick=ymPlay;
@@ -2498,6 +2505,34 @@ if($('ymBarClose')) $('ymBarClose').onclick=ymStop;
 if($('ymToggle')) $('ymToggle').onclick=()=>{ const b=$('ymBar'); const min=b.classList.toggle('ym-min'); $('ymToggle').textContent=min?'▴':'▾'; setYmBarTop(); };
 if($('ymExpand')) $('ymExpand').onclick=()=>{ const b=$('ymBar'); b.classList.remove('ym-min'); if($('ymToggle'))$('ymToggle').textContent='▾'; setYmBarTop(); };
 if($('ymOpenExt')) $('ymOpenExt').onclick=()=>{ const u=_ymExternal||(($('ymLink')&&$('ymLink').value.trim())||'https://music.yandex.ru/'); window.open(u,'_blank'); };
+
+/* ===== Бесплатное радио (электроника/хаус) — играет у всех без подписки ===== */
+const RADIO=[
+  {n:'Record',u:'https://radiorecord.hostingradio.ru/rr_main96.aacp'},
+  {n:'Record Club',u:'https://radiorecord.hostingradio.ru/club96.aacp'},
+  {n:'Trancemission',u:'https://radiorecord.hostingradio.ru/tm96.aacp'},
+  {n:'Beat Blender',u:'https://ice.somafm.com/beatblender-128-mp3'},
+  {n:'The Trip',u:'https://ice.somafm.com/thetrip-128-mp3'}
+];
+let radioAudio=null;
+function radioStop(){ if(radioAudio){ try{radioAudio.pause();}catch(e){} radioAudio.src=''; } document.querySelectorAll('#radioPick button').forEach(b=>b.classList.remove('on')); if($('radioNow'))$('radioNow').style.display='none'; }
+function radioPlay(s, btn){
+  try{ if(typeof unlockAudio==='function') unlockAudio(); }catch(e){}
+  try{ if($('ymIframe'))$('ymIframe').src=''; if($('ymBar'))$('ymBar').style.display='none'; document.body.classList.remove('has-player'); }catch(e){}
+  if(!radioAudio){ radioAudio=new Audio(); radioAudio.preload='none'; }
+  radioAudio.src=s.u;
+  if($('radioNowName'))$('radioNowName').textContent='⏳ '+s.n+'…';
+  if($('radioNow'))$('radioNow').style.display='flex';
+  radioAudio.play().then(()=>{
+    document.querySelectorAll('#radioPick button').forEach(b=>b.classList.remove('on'));
+    if(btn) btn.classList.add('on');
+    if($('radioNowName'))$('radioNowName').textContent='▶ '+s.n;
+    try{ if('mediaSession' in navigator){ navigator.mediaSession.metadata=new MediaMetadata({title:s.n, artist:'Skride · радио'}); } }catch(e){}
+  }).catch(e=>{ if($('radioNowName'))$('radioNowName').textContent='не включилось: '+s.n; toast('Радио не включилось — проверь интернет'); });
+}
+function buildRadio(){ const w=$('radioPick'); if(!w) return; w.innerHTML=''; RADIO.forEach(s=>{ const b=document.createElement('button'); b.type='button'; b.className='chip'; b.innerHTML='<svg class="svic" aria-hidden="true"><use href="#ic-music"></use></svg> '+s.n; b.onclick=()=>radioPlay(s,b); w.appendChild(b); }); }
+if($('radioStop')) $('radioStop').onclick=radioStop;
+buildRadio();
 const YM_LISTS=[
  {n:'⚡ Энергия для бега', u:'music.partners/1169'},
  {n:'🔥 Интенсивная тренировка', u:'music-blog/2398'},
