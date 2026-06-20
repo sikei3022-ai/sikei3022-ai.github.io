@@ -523,9 +523,9 @@
 
   /* ===== Единый стеклянный плеер (радио + Яндекс) ===== */
   .ym-bar{
-    background:linear-gradient(180deg, rgba(46,182,114,.66), rgba(31,134,84,.80)) !important;
-    -webkit-backdrop-filter:blur(18px) saturate(1.5); backdrop-filter:blur(18px) saturate(1.5);
-    border:1px solid rgba(255,255,255,.42);
+    background:linear-gradient(180deg, rgba(46,190,118,.50), rgba(31,140,86,.62)) !important;
+    -webkit-backdrop-filter:blur(20px) saturate(1.6); backdrop-filter:blur(20px) saturate(1.6);
+    will-change:auto; transform:none; -webkit-transform:none; backface-visibility:visible; border:1px solid rgba(255,255,255,.42);
     box-shadow:0 12px 34px rgba(8,70,45,.34), inset 0 1px 0 rgba(255,255,255,.55) !important;
     max-width:470px; gap:11px; padding:calc(11px + env(safe-area-inset-top)) 14px 13px;
     border-radius:0 0 20px 20px;
@@ -544,7 +544,8 @@
   .ym-rad-nav{ width:40px; height:40px; font-size:14px }
   .ym-rad-txt{ display:flex; flex-direction:column; justify-content:center; line-height:1.22; color:#fff; flex:1; min-width:0; padding-left:3px }
   .ym-rad-txt b{ font-size:16.5px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
-  .ym-rad-txt small{ font-size:12px; opacity:.92; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+  .ym-rad-marq{ overflow:hidden; white-space:nowrap; width:100%; margin-top:1px }
+  .ym-rad-marq small{ display:inline-block; padding-left:100%; font-size:12px; opacity:.92; font-weight:600; animation:marq 15s linear infinite }
 
   /* ===== Радио-плеер в разделе «Музыка» ===== */
   .radio-box{ background:linear-gradient(180deg,#34b06f,#1f8b52); border-radius:18px; padding:14px; margin-bottom:14px; color:#fff; box-shadow:0 8px 20px rgba(31,139,82,.26) }
@@ -630,7 +631,7 @@
     <button id="ymRadioPrev" class="ym-rad-nav" type="button" aria-label="предыдущая станция">⏮</button>
     <button id="ymRadioToggle" class="ym-rad-play" type="button" aria-label="пауза или играть">⏸</button>
     <button id="ymRadioNext" class="ym-rad-nav" type="button" aria-label="следующая станция">⏭</button>
-    <span class="ym-rad-txt"><b id="ymRadioName">Радио</b><small id="ymRadioSub">радио</small></span>
+    <span class="ym-rad-txt"><b id="ymRadioName">Радио</b><span class="ym-rad-marq"><small id="ymRadioSub">радио</small></span></span>
   </div>
   <button id="ymExpand" class="ym-lbl" type="button"><svg class="svic" aria-hidden="true"><use href="#ic-music"></use></svg><span>Яндекс Музыка</span><b class="ym-play">▶ открыть</b></button>
   <iframe id="ymIframe" class="ym-frame" frameborder="0" allow="autoplay"></iframe>
