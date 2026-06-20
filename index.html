@@ -527,9 +527,28 @@
   .ym-bar.rad .ym-lbl, .ym-bar.rad .ym-frame, .ym-bar.rad #ymToggle, .ym-bar.rad #ymOpenExt, .ym-bar.rad .ym-eq{ display:none !important; }
   .ym-rad-play{ flex:none; width:46px; height:46px; border-radius:50%; border:none; background:rgba(255,255,255,.92); color:#1f8654; font-size:17px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,.2) }
   .ym-rad-play:active{ transform:scale(.94) }
-  .ym-rad-txt{ display:flex; flex-direction:column; line-height:1.2; color:#fff }
-  .ym-rad-txt b{ font-size:16px; font-weight:800 }
+  .ym-rad-txt{ display:flex; flex-direction:column; line-height:1.2; color:#fff; flex:1; min-width:0 }
+  .ym-rad-txt b{ font-size:16px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
   .ym-rad-txt small{ font-size:11.5px; opacity:.92; font-weight:600 }
+  .ym-rad-nav{ flex:none; width:38px; height:38px; border-radius:50%; border:none; background:rgba(255,255,255,.18); color:#fff; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center }
+  .ym-rad-nav:active{ transform:scale(.92); background:rgba(255,255,255,.34) }
+
+  /* ===== Радио-панель в разделе «Музыка» ===== */
+  .radio-box{ background:var(--grad); border-radius:16px; padding:13px 14px; margin-bottom:14px; color:#fff; box-shadow:0 6px 18px rgba(54,169,107,.30) }
+  .radio-box .rb-top{ display:flex; align-items:center; gap:7px; font-size:11px; font-weight:800; letter-spacing:.5px; text-transform:uppercase; opacity:.95; margin-bottom:9px }
+  .radio-box .rb-top .svic{ width:16px; height:16px }
+  .radio-marq{ overflow:hidden; white-space:nowrap; background:rgba(255,255,255,.16); border-radius:10px; padding:8px 0; margin-bottom:12px }
+  .radio-marq b{ display:inline-block; padding-left:100%; font-size:14px; font-weight:800; animation:marq 14s linear infinite }
+  @keyframes marq{ from{transform:translateX(0)} to{transform:translateX(-100%)} }
+  .rb-ctrls{ display:flex; align-items:center; justify-content:center; gap:12px; margin-bottom:12px }
+  .rb-btn{ flex:none; border:none; cursor:pointer; color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; transition:.15s; background:rgba(255,255,255,.18) }
+  .rb-btn:active{ transform:scale(.92); background:rgba(255,255,255,.32) }
+  .rb-btn.sm{ width:44px; height:44px; font-size:16px }
+  .rb-btn.big{ width:58px; height:58px; font-size:22px; background:#fff; color:#1f8654; box-shadow:0 4px 12px rgba(0,0,0,.18) }
+  .radio-box #radioPick{ display:flex; flex-wrap:wrap; gap:7px; justify-content:center }
+  .radio-box .chip{ background:rgba(255,255,255,.92); border-color:transparent; color:#1f7a4d }
+  .radio-box .chip svg{ stroke:#1f7a4d }
+  .radio-box .chip.on{ background:#fff; color:#15813f; font-weight:800; box-shadow:0 0 0 2px rgba(255,255,255,.92), 0 3px 8px rgba(0,0,0,.18) }
 </style>
 </head>
 <body>
@@ -591,8 +610,10 @@
 <div id="ymBar" class="ym-bar ym-min" style="display:none">
   <div class="ym-eq"><i></i><i></i><i></i><i></i></div>
   <div id="ymRadioView" class="ym-radioview">
+    <button id="ymRadioPrev" class="ym-rad-nav" type="button" aria-label="предыдущая станция">⏮</button>
     <button id="ymRadioToggle" class="ym-rad-play" type="button" aria-label="пауза или играть">⏸</button>
-    <span class="ym-rad-txt"><b id="ymRadioName">Радио</b><small>Бесплатное радио</small></span>
+    <button id="ymRadioNext" class="ym-rad-nav" type="button" aria-label="следующая станция">⏭</button>
+    <span class="ym-rad-txt"><b id="ymRadioName">Радио</b><small id="ymRadioSub">радио</small></span>
   </div>
   <button id="ymExpand" class="ym-lbl" type="button"><svg class="svic" aria-hidden="true"><use href="#ic-music"></use></svg><span>Яндекс Музыка</span><b class="ym-play">▶ открыть</b></button>
   <iframe id="ymIframe" class="ym-frame" frameborder="0" allow="autoplay"></iframe>
@@ -840,8 +861,17 @@
         <button class="act-opt" data-listen="both" type="button"><svg class="svic" aria-hidden="true"><use href="#ic-headphones"></use></svg> Оба</button>
       </div>
 
-      <div style="font-size:12.5px;font-weight:700;color:var(--muted);margin:2px 0 7px">🎧 Бесплатное радио — играет без подписки</div>
-      <div id="radioPick" style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px"></div>
+      <div class="radio-box">
+        <div class="rb-top"><svg class="svic" aria-hidden="true"><use href="#ic-music"></use></svg> Радио</div>
+        <div class="radio-marq"><b id="radioMarq">Выбери станцию ниже</b></div>
+        <div class="rb-ctrls">
+          <button id="rbPrev" class="rb-btn sm" type="button" aria-label="предыдущая станция">⏮</button>
+          <button id="rbPlay" class="rb-btn big" type="button" aria-label="играть или пауза">▶</button>
+          <button id="rbStop" class="rb-btn sm" type="button" aria-label="стоп">⏹</button>
+          <button id="rbNext" class="rb-btn sm" type="button" aria-label="следующая станция">⏭</button>
+        </div>
+        <div id="radioPick"></div>
+      </div>
 
       <div id="ymDayCard" style="background:var(--grad);color:#fff;border-radius:14px;padding:14px 15px;margin-bottom:12px">
         <div style="font-size:11px;font-weight:800;letter-spacing:.5px;opacity:.95;text-transform:uppercase">Плейлист дня от Skride</div>
@@ -2528,37 +2558,48 @@ if($('ymOpenExt')) $('ymOpenExt').onclick=()=>{ const u=_ymExternal||(($('ymLink
 
 /* ===== Бесплатное радио (электроника/хаус) — играет у всех без подписки ===== */
 const RADIO=[
-  {n:'Record',u:'https://radiorecord.hostingradio.ru/rr_main96.aacp'},
-  {n:'Record Club',u:'https://radiorecord.hostingradio.ru/club96.aacp'},
-  {n:'Trancemission',u:'https://radiorecord.hostingradio.ru/tm96.aacp'},
-  {n:'Beat Blender',u:'https://ice.somafm.com/beatblender-128-mp3'},
-  {n:'The Trip',u:'https://ice.somafm.com/thetrip-128-mp3'}
+  {n:'Record',g:'танцевальные хиты',u:'https://radiorecord.hostingradio.ru/rr_main96.aacp'},
+  {n:'Record Club',g:'клубный хаус',u:'https://radiorecord.hostingradio.ru/club96.aacp'},
+  {n:'Trancemission',g:'транс',u:'https://radiorecord.hostingradio.ru/tm96.aacp'},
+  {n:'Beat Blender',g:'даунтемпо · хаус',u:'https://ice.somafm.com/beatblender-128-mp3'},
+  {n:'The Trip',g:'прог-хаус',u:'https://ice.somafm.com/thetrip-128-mp3'}
 ];
-let radioAudio=null;
-function showRadioBar(name, sub, icon){ const bar=$('ymBar'); if(!bar) return; bar.style.display='flex'; bar.classList.add('rad'); bar.classList.remove('ym-min'); if($('ymRadioName'))$('ymRadioName').textContent=name; const sm=bar.querySelector('.ym-rad-txt small'); if(sm&&sub)sm.textContent=sub; if($('ymRadioToggle'))$('ymRadioToggle').textContent=icon; document.body.classList.add('has-player'); setYmBarTop(); }
-function radioToggle(){ if(!radioAudio||!radioAudio.src){ return; } if(radioAudio.paused){ radioAudio.play().then(()=>{ if($('ymRadioToggle'))$('ymRadioToggle').textContent='⏸'; }).catch(()=>{}); } else { radioAudio.pause(); if($('ymRadioToggle'))$('ymRadioToggle').textContent='▶'; } }
-function radioStop(){ if(radioAudio){ try{radioAudio.pause();}catch(e){} radioAudio.src=''; } document.querySelectorAll('#radioPick button').forEach(b=>b.classList.remove('on')); const b=$('ymBar'); if(b&&b.classList.contains('rad')){ b.style.display='none'; b.classList.remove('rad'); document.body.classList.remove('has-player'); setYmBarTop(); } }
-function radioPlay(s, btn){
+let radioAudio=null, radioIdx=-1;
+function setRadioMarq(t){ if($('radioMarq'))$('radioMarq').textContent=t; }
+function setRadioPlayIcon(ic){ if($('rbPlay'))$('rbPlay').textContent=ic; if($('ymRadioToggle'))$('ymRadioToggle').textContent=ic; }
+function hlRadioChip(){ document.querySelectorAll('#radioPick button').forEach((b,i)=>b.classList.toggle('on', i===radioIdx)); }
+function showRadioBar(name, sub, icon){ const bar=$('ymBar'); if(!bar) return; bar.style.display='flex'; bar.classList.add('rad'); bar.classList.remove('ym-min'); if($('ymRadioName'))$('ymRadioName').textContent=name; if($('ymRadioSub')&&sub)$('ymRadioSub').textContent=sub; setRadioPlayIcon(icon); document.body.classList.add('has-player'); setYmBarTop(); }
+function radioStop(){ if(radioAudio){ try{radioAudio.pause();}catch(e){} radioAudio.src=''; } radioIdx=-1; hlRadioChip(); setRadioPlayIcon('▶'); setRadioMarq('Выбери станцию ниже'); const b=$('ymBar'); if(b&&b.classList.contains('rad')){ b.style.display='none'; b.classList.remove('rad'); document.body.classList.remove('has-player'); setYmBarTop(); } }
+function radioToggle(){ if(!radioAudio||!radioAudio.src){ radioPlayIdx(radioIdx<0?0:radioIdx); return; } const s=RADIO[radioIdx]; if(radioAudio.paused){ radioAudio.play().then(()=>{ setRadioPlayIcon('⏸'); if(s)setRadioMarq('▶  '+s.n+' — '+s.g+'      ·      Skride радио'); }).catch(()=>{}); } else { radioAudio.pause(); setRadioPlayIcon('▶'); if(s)setRadioMarq('⏸  пауза — '+s.n); } }
+function radioPlay(s){
   try{ if(typeof unlockAudio==='function') unlockAudio(); }catch(e){}
   try{ if($('ymIframe'))$('ymIframe').src=''; }catch(e){}
   if(!radioAudio){ radioAudio=new Audio(); radioAudio.preload='none'; radioAudio.crossOrigin=null; }
-  radioAudio.onerror=function(){ const c=radioAudio&&radioAudio.error?radioAudio.error.code:'-'; showRadioBar('✗ '+s.n,'ошибка ('+c+')','▶'); };
+  radioAudio.onerror=function(){ const c=radioAudio&&radioAudio.error?radioAudio.error.code:'-'; showRadioBar('✗ '+s.n,'ошибка ('+c+')','▶'); setRadioMarq('✗  '+s.n+' не открылось ('+c+')'); };
   radioAudio.src=s.u;
-  showRadioBar(s.n,'Загрузка…','⏳');
+  showRadioBar(s.n,'загрузка…','⏳'); setRadioMarq('⏳  '+s.n+' — загрузка…'); hlRadioChip();
   radioAudio.play().then(()=>{
-    document.querySelectorAll('#radioPick button').forEach(b=>b.classList.remove('on'));
-    if(btn) btn.classList.add('on');
-    showRadioBar(s.n,'Бесплатное радио','⏸');
+    showRadioBar(s.n, s.g, '⏸'); setRadioPlayIcon('⏸');
+    setRadioMarq('▶  '+s.n+' — '+s.g+'      ·      Skride радио'); hlRadioChip();
     try{ if('mediaSession' in navigator){ navigator.mediaSession.metadata=new MediaMetadata({title:s.n, artist:'Skride · радио'}); } }catch(e){}
   }).catch(err=>{
     const c=radioAudio&&radioAudio.error?radioAudio.error.code:'-';
-    showRadioBar('✗ '+s.n,'не включилось','▶');
+    showRadioBar('✗ '+s.n,'не включилось','▶'); setRadioMarq('✗  '+s.n+' не включилось');
     alert('РАДИО не включилось.\nСтанция: '+s.n+'\nПричина: '+((err&&err.name)||'?')+' — '+((err&&err.message)||'')+'\nКод аудио: '+c);
   });
 }
-function buildRadio(){ const w=$('radioPick'); if(!w) return; w.innerHTML=''; RADIO.forEach(s=>{ const b=document.createElement('button'); b.type='button'; b.className='chip'; b.innerHTML='<svg class="svic" aria-hidden="true"><use href="#ic-music"></use></svg> '+s.n; b.onclick=()=>radioPlay(s,b); w.appendChild(b); }); }
+function radioPlayIdx(i){ radioIdx=((i%RADIO.length)+RADIO.length)%RADIO.length; radioPlay(RADIO[radioIdx]); }
+function radioPrev(){ radioPlayIdx((radioIdx<0?0:radioIdx)-1); }
+function radioNext(){ radioPlayIdx((radioIdx<0?-1:radioIdx)+1); }
+function buildRadio(){ const w=$('radioPick'); if(!w) return; w.innerHTML=''; RADIO.forEach((s,i)=>{ const b=document.createElement('button'); b.type='button'; b.className='chip'; b.innerHTML='<svg class="svic" aria-hidden="true"><use href="#ic-music"></use></svg> '+s.n; b.onclick=()=>radioPlayIdx(i); w.appendChild(b); }); }
 if($('radioStop')) $('radioStop').onclick=radioStop;
+if($('rbStop')) $('rbStop').onclick=radioStop;
+if($('rbPlay')) $('rbPlay').onclick=radioToggle;
+if($('rbPrev')) $('rbPrev').onclick=radioPrev;
+if($('rbNext')) $('rbNext').onclick=radioNext;
 if($('ymRadioToggle')) $('ymRadioToggle').onclick=radioToggle;
+if($('ymRadioPrev')) $('ymRadioPrev').onclick=radioPrev;
+if($('ymRadioNext')) $('ymRadioNext').onclick=radioNext;
 buildRadio();
 const YM_LISTS=[
  {n:'⚡ Энергия для бега', u:'music.partners/1169'},
