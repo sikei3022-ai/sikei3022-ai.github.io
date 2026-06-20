@@ -517,37 +517,41 @@
     -webkit-backdrop-filter:blur(18px) saturate(1.5); backdrop-filter:blur(18px) saturate(1.5);
     border:1px solid rgba(255,255,255,.42);
     box-shadow:0 12px 34px rgba(8,70,45,.34), inset 0 1px 0 rgba(255,255,255,.55) !important;
-    max-width:560px; gap:11px; padding:calc(11px + env(safe-area-inset-top)) 14px 13px;
+    max-width:470px; gap:11px; padding:calc(11px + env(safe-area-inset-top)) 14px 13px;
     border-radius:0 0 20px 20px;
   }
   .ym-bar iframe{ height:80px !important; }
   .ym-radioview{ display:none; }
-  .ym-bar.rad .ym-radioview{ display:flex; flex:1; align-items:center; gap:12px; }
+  .ym-bar.rad{ position:relative; padding-right:46px !important; }
+  .ym-bar.rad .ym-radioview{ display:flex; flex:1; align-items:center; gap:10px; }
   .ym-bar.rad .ym-lbl, .ym-bar.rad .ym-frame, .ym-bar.rad #ymToggle, .ym-bar.rad #ymOpenExt, .ym-bar.rad .ym-eq{ display:none !important; }
-  .ym-rad-play{ flex:none; width:46px; height:46px; border-radius:50%; border:none; background:rgba(255,255,255,.92); color:#1f8654; font-size:17px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,.2) }
-  .ym-rad-play:active{ transform:scale(.94) }
-  .ym-rad-txt{ display:flex; flex-direction:column; line-height:1.2; color:#fff; flex:1; min-width:0 }
-  .ym-rad-txt b{ font-size:16px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
-  .ym-rad-txt small{ font-size:11.5px; opacity:.92; font-weight:600 }
-  .ym-rad-nav{ flex:none; width:38px; height:38px; border-radius:50%; border:none; background:rgba(255,255,255,.18); color:#fff; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center }
-  .ym-rad-nav:active{ transform:scale(.92); background:rgba(255,255,255,.34) }
+  .ym-bar.rad #ymBarClose{ position:absolute; top:calc(9px + env(safe-area-inset-top)); right:11px; }
+  .ym-rad-play, .ym-rad-nav{ flex:none; border:none; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#1f8b52; transition:.12s;
+    background:linear-gradient(180deg,#ffffff,#eef2ef);
+    box-shadow:0 5px 12px rgba(0,40,22,.24), inset 0 2px 0 rgba(255,255,255,.95), inset 0 -3px 6px rgba(0,40,22,.08) }
+  .ym-rad-play:active, .ym-rad-nav:active{ transform:translateY(2px); box-shadow:0 3px 7px rgba(0,40,22,.2), inset 0 2px 0 rgba(255,255,255,.9) }
+  .ym-rad-play{ width:46px; height:46px; font-size:17px }
+  .ym-rad-nav{ width:40px; height:40px; font-size:14px }
+  .ym-rad-txt{ display:flex; flex-direction:column; justify-content:center; line-height:1.22; color:#fff; flex:1; min-width:0; padding-left:3px }
+  .ym-rad-txt b{ font-size:16.5px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+  .ym-rad-txt small{ font-size:12px; opacity:.92; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
 
   /* ===== Радио-плеер в разделе «Музыка» ===== */
   .radio-box{ background:linear-gradient(180deg,#34b06f,#1f8b52); border-radius:18px; padding:14px; margin-bottom:14px; color:#fff; box-shadow:0 8px 20px rgba(31,139,82,.26) }
   .radio-box .rb-top{ display:flex; align-items:center; gap:7px; font-size:11px; font-weight:800; letter-spacing:.5px; text-transform:uppercase; opacity:.9; margin-bottom:10px }
   .radio-box .rb-top .svic{ width:16px; height:16px }
-  .rb-player{ display:flex; align-items:center; gap:13px; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.16); border-radius:15px; padding:11px 13px; margin-bottom:11px }
-  .rb-info{ flex:1; min-width:0 }
-  .rb-name{ font-size:15.5px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; line-height:1.2 }
-  .radio-marq{ overflow:hidden; white-space:nowrap; margin-top:3px }
+  .rb-screen{ background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.16); border-radius:13px; padding:8px 13px; margin-bottom:11px }
+  .rb-name{ font-size:15px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; line-height:1.25 }
+  .radio-marq{ overflow:hidden; white-space:nowrap; margin-top:2px }
   .radio-marq b{ display:inline-block; padding-left:100%; font-size:12.5px; font-weight:600; opacity:.9; animation:marq 14s linear infinite }
   @keyframes marq{ from{transform:translateX(0)} to{transform:translateX(-100%)} }
-  .rb-ctrls{ display:flex; align-items:center; justify-content:center; gap:14px; margin-bottom:12px }
-  .rb-btn{ flex:none; border:none; cursor:pointer; color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; transition:.15s }
-  .rb-btn.sm{ width:42px; height:42px; font-size:15px; background:rgba(255,255,255,.14) }
-  .rb-btn.sm:active{ transform:scale(.93); background:rgba(255,255,255,.26) }
-  .rb-btn.big{ width:56px; height:56px; font-size:21px; background:linear-gradient(180deg,#fff,#eef3ef); color:#1f8b52; box-shadow:0 7px 16px rgba(0,0,0,.22), inset 0 2px 0 rgba(255,255,255,.95) }
-  .rb-btn.big:active{ transform:scale(.95); box-shadow:0 3px 9px rgba(0,0,0,.2), inset 0 2px 0 rgba(255,255,255,.9) }
+  .rb-ctrls{ display:flex; align-items:center; justify-content:center; gap:11px; margin-bottom:12px }
+  .rb-btn{ flex:none; border:none; cursor:pointer; border-radius:50%; display:flex; align-items:center; justify-content:center; transition:.12s;
+    background:linear-gradient(180deg,#ffffff,#eef2ef); color:#1f8b52;
+    box-shadow:0 6px 14px rgba(0,40,22,.22), inset 0 2px 0 rgba(255,255,255,.95), inset 0 -3px 7px rgba(0,40,22,.08) }
+  .rb-btn:active{ transform:translateY(2px); box-shadow:0 3px 8px rgba(0,40,22,.2), inset 0 2px 0 rgba(255,255,255,.9) }
+  .rb-btn.sm{ width:46px; height:46px; font-size:15px }
+  .rb-btn.big{ width:54px; height:54px; font-size:19px }
   .radio-box #radioPick{ display:flex; flex-wrap:wrap; gap:7px; justify-content:center }
   .radio-box .chip{ background:rgba(255,255,255,.92); border-color:transparent; color:#1f7a4d; box-shadow:0 2px 6px rgba(0,0,0,.10) }
   .radio-box .chip svg{ stroke:#1f7a4d }
@@ -866,15 +870,13 @@
 
       <div class="radio-box">
         <div class="rb-top"><svg class="svic" aria-hidden="true"><use href="#ic-music"></use></svg> Радио</div>
-        <div class="rb-player">
-          <button id="rbPlay" class="rb-btn big" type="button" aria-label="играть или пауза">▶</button>
-          <div class="rb-info">
-            <div class="rb-name" id="radioName">Радио Skride</div>
-            <div class="radio-marq"><b id="radioMarq">Выбери станцию ниже</b></div>
-          </div>
+        <div class="rb-screen">
+          <div class="rb-name" id="radioName">Радио Skride</div>
+          <div class="radio-marq"><b id="radioMarq">Выбери станцию ниже</b></div>
         </div>
         <div class="rb-ctrls">
           <button id="rbPrev" class="rb-btn sm" type="button" aria-label="предыдущая станция">⏮</button>
+          <button id="rbPlay" class="rb-btn big" type="button" aria-label="играть или пауза">▶</button>
           <button id="rbStop" class="rb-btn sm" type="button" aria-label="стоп">⏹</button>
           <button id="rbNext" class="rb-btn sm" type="button" aria-label="следующая станция">⏭</button>
         </div>
