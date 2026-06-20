@@ -475,35 +475,40 @@
   .switch .slider::before{content:'';position:absolute;height:22px;width:22px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
   .switch input:checked + .slider::before{transform:translateX(22px)}
 
-  /* ===== GLASS UI — матовое стекло, объём, прозрачность ===== */
-  .card{
+  /* ===== GLASS UI — матовое стекло на всё: кнопки, разделы, рамки ===== */
+  .card, .dev-card, .st-box, .st-card, .qboard, .act{
     background:linear-gradient(180deg, rgba(255,255,255,.86), rgba(255,255,255,.76));
     -webkit-backdrop-filter:blur(9px) saturate(1.3); backdrop-filter:blur(9px) saturate(1.3);
     border:1px solid rgba(255,255,255,.6);
     box-shadow:0 8px 22px rgba(20,60,40,.12), inset 0 1px 0 rgba(255,255,255,.7);
   }
-  .btn-pri, .coach-ctrls #coachConvo, .act-opt.on, .coach-input button{
+  .btn-pri, .coach-ctrls #coachConvo, .act-opt.on, .map-toggle .mt-opt.on, .bq-opt.on, .coach-input button, .ob-next{
     background:linear-gradient(180deg, rgba(46,200,124,.93), rgba(13,160,82,.97));
     -webkit-backdrop-filter:blur(5px) saturate(1.4); backdrop-filter:blur(5px) saturate(1.4);
     border:1px solid rgba(255,255,255,.45);
     box-shadow:0 10px 22px rgba(10,120,68,.30), inset 0 2px 0 rgba(255,255,255,.6), inset 0 -8px 14px rgba(6,84,47,.32);
     color:#fff; text-shadow:0 1px 2px rgba(5,60,35,.4);
   }
-  .btn-pri:active, .coach-ctrls #coachConvo:active, .act-opt.on:active, .coach-input button:active{
+  .btn-pri:active, .coach-ctrls #coachConvo:active, .act-opt.on:active, .map-toggle .mt-opt.on:active, .bq-opt.on:active, .coach-input button:active, .ob-next:active{
     transform:translateY(2px);
     box-shadow:0 4px 12px rgba(10,120,68,.26), inset 0 2px 0 rgba(255,255,255,.5), inset 0 -4px 10px rgba(6,84,47,.3);
   }
-  .act-opt, .chip, .lg-btn{
+  .act-opt, .chip, .lg-btn, .btn-sec, .bq-opt, .map-toggle .mt-opt, .prof .edit, .goal .edit, .qb-spk, .screen-back, .iconbtn{
     background:linear-gradient(180deg, rgba(255,255,255,.83), rgba(255,255,255,.69));
     -webkit-backdrop-filter:blur(8px) saturate(1.3); backdrop-filter:blur(8px) saturate(1.3);
     border:1px solid rgba(255,255,255,.6);
     box-shadow:0 5px 14px rgba(20,60,40,.10), inset 0 1px 0 rgba(255,255,255,.75);
   }
-  .act-opt:active, .chip:active, .lg-btn:active{ transform:translateY(1px); }
+  .act-opt:active, .chip:active, .lg-btn:active, .btn-sec:active, .bq-opt:active, .map-toggle .mt-opt:active, .prof .edit:active, .goal .edit:active, .qb-spk:active, .screen-back:active, .iconbtn:active{ transform:translateY(1px); }
+  .btn-start, .btn-pause, .btn-stop{
+    border:1px solid rgba(255,255,255,.3);
+    box-shadow:0 8px 18px rgba(20,60,40,.18), inset 0 2px 0 rgba(255,255,255,.4), inset 0 -6px 12px rgba(0,0,0,.14);
+  }
+  .btn-start:active, .btn-pause:active, .btn-stop:active{ transform:translateY(2px); }
   @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
-    .card{ background:rgba(255,255,255,.94); }
-    .act-opt, .chip, .lg-btn{ background:rgba(255,255,255,.92); }
-    .btn-pri, .coach-ctrls #coachConvo, .act-opt.on, .coach-input button{ background:var(--grad); }
+    .card, .dev-card, .st-box, .st-card, .qboard, .act{ background:rgba(255,255,255,.95); }
+    .act-opt, .chip, .lg-btn, .btn-sec, .bq-opt, .map-toggle .mt-opt, .prof .edit, .goal .edit, .qb-spk, .screen-back, .iconbtn{ background:rgba(255,255,255,.93); }
+    .btn-pri, .coach-ctrls #coachConvo, .act-opt.on, .map-toggle .mt-opt.on, .bq-opt.on, .coach-input button, .ob-next{ background:var(--grad); }
   }
 </style>
 </head>
