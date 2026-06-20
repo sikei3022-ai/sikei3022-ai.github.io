@@ -3357,13 +3357,12 @@ async function cloudTTS(text, onDone){
 }
 function coachSendText(q){
   q=(q||'').trim(); if(!q) return; chatPush('me',q); if($('coachQ'))$('coachQ').value='';
-  if(cloudURL && hasAccess()){
+  if(cloudURL){   // умный тренер доступен ВСЕМ (бесплатно); платной будет только история тренировок
     chatPush('coach','…',false);
     cloudCoach().then(ans=>{ if(chatMsgs.length&&chatMsgs[chatMsgs.length-1].text==='…')chatMsgs.pop(); chatPush('coach',ans); if(voiceCoach) say(ans); })
       .catch(e=>{ if(chatMsgs.length&&chatMsgs[chatMsgs.length-1].text==='…')chatMsgs.pop(); toast('Облачный тренер недоступен ('+((e&&e.message)||'ошибка')+') — отвечаю офлайн'); const ans=coachAnswer(q); chatPush('coach',ans); if(voiceCoach) say(ans); });
   } else {
-    if(!cloudURL) toast('Облачный ИИ не подключён — отвечаю офлайн. Подключи сервер в Настройках');
-    else if(!hasAccess()) toast('Умный ИИ-тренер — после пробного периода в Premium. Сейчас отвечаю офлайн');
+    toast('Облачный ИИ не подключён — отвечаю офлайн. Подключи сервер в Настройках');
     const ans=coachAnswer(q); setTimeout(()=>{ chatPush('coach',ans); if(voiceCoach) say(ans); },180);
   }
 }
@@ -3563,7 +3562,7 @@ function convoAsk(q){
   const after=()=>{ if(resumed) return; resumed=true; if(convoMode) setTimeout(convoListen, 300); };  // дальше слушаем сами, без кнопки
   const guard=setTimeout(after, 15000);   // подстраховка: продолжаем, даже если озвучка не вызвала callback
   const done=()=>{ clearTimeout(guard); after(); };
-  if(cloudURL && hasAccess()){
+  if(cloudURL){   // умный тренер доступен всем; платная только история
     chatPush('coach','…',false);
     cloudCoach().then(a=>{ if(chatMsgs.length&&chatMsgs[chatMsgs.length-1].text==='…')chatMsgs.pop(); chatPush('coach',a); say(a, done); })
       .catch(()=>{ if(chatMsgs.length&&chatMsgs[chatMsgs.length-1].text==='…')chatMsgs.pop(); const a=coachAnswer(q); chatPush('coach',a); say(a, done); });
