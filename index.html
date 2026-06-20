@@ -3528,23 +3528,53 @@ let trialStart=0; const TRIAL_KEY='stride:trialstart'; const TRIAL_DAYS=14;
 function trialMsLeft(){ if(!trialStart) return TRIAL_DAYS*86400000; return (trialStart + TRIAL_DAYS*86400000) - Date.now(); }
 function trialDaysLeft(){ return Math.max(0, Math.ceil(trialMsLeft()/86400000)); }
 function trialActive(){ return trialMsLeft() > 0; }
-function hasAccess(){ return isPremium || trialActive(); }
+// доступ: вошёл в аккаунт → статус premium с сервера (с обратной совместимостью); иначе локальный пробный период
+function accessInfo(){
+  if(authToken && authUser && (authUser.premium!==undefined || authUser.premium_until!==undefined || authUser.trial_until!==undefined)){
+    const now=Date.now();
+    const pu=authUser.premium_until?Date.parse(authUser.premium_until):0;
+    const tu=authUser.trial_until?Date.parse(authUser.trial_until):0;
+    if(pu>now) return {state:'paid', days:Math.max(0,Math.ceil((pu-now)/86400000))};
+    if(tu>now) return {state:'trial', days:Math.max(0,Math.ceil((tu-now)/86400000))};
+    return {state:'expired', days:0};
+  }
+  if(isPremium) return {state:'paid', days:0};
+  if(trialActive()) return {state:'trial', days:trialDaysLeft()};
+  return {state:'expired', days:0};
+}
+function hasAccess(){ return accessInfo().state!=='expired'; }
+function _plD(n){ return n%10===1&&n%100!==11?'день':(n%10>=2&&n%10<=4&&(n%100<10||n%100>=20)?'дня':'дней'); }
 function updatePremiumUI(){
-  const dl=trialDaysLeft();
+  const ai=accessInfo(); const paid=ai.state==='paid';
   let statusTxt;
-  if(isPremium) statusTxt='Premium включён ✓';
-  else if(trialActive()) statusTxt='Пробный период: осталось '+dl+' '+(dl%10===1&&dl%100!==11?'день':(dl%10>=2&&dl%10<=4&&(dl%100<10||dl%100>=20)?'дня':'дней'));
+  if(paid) statusTxt='Premium включён ✓';
+  else if(ai.state==='trial') statusTxt='Пробный период: осталось '+ai.days+' '+_plD(ai.days);
   else statusTxt='Пробный период завершён';
   if($('premiumStatus')) $('premiumStatus').textContent = statusTxt;
-  if($('premiumActivate')) $('premiumActivate').style.display = isPremium?'none':'block';
-  if($('premiumBtn')) $('premiumBtn').textContent = isPremium? '⭐ Premium' : (trialActive()? '⭐ '+dl+' дн. бесплатно' : '⭐ Включить Premium');
+  if($('premiumActivate')) $('premiumActivate').style.display = paid?'none':'block';
+  if($('premiumBtn')) $('premiumBtn').textContent = paid? '⭐ Premium' : (ai.state==='trial'? '⭐ '+ai.days+' дн. бесплатно' : '⭐ Включить Premium');
 }
 function openPremium(){ updatePremiumUI(); $('premiumModal').classList.add('show'); }
 function requirePremium(){ if(hasAccess()) return true; toast('Пробный период завершён — оформи Premium, чтобы продолжить'); openPremium(); return false; }
 $('premiumBtn').onclick=openPremium;
 $('premiumClose').onclick=()=>$('premiumModal').classList.remove('show');
 $('premiumModal').onclick=e=>{ if(e.target===$('premiumModal')) $('premiumModal').classList.remove('show'); };
-$('premiumActivate').onclick=async()=>{ isPremium=true; await sSet(PREMIUM_KEY,'1'); updatePremiumUI(); toast(t('prem_activated')); };
+// РЕАЛЬНАЯ оплата ЮKassa: премиум привязывается к аккаунту на сервере
+$('premiumActivate').onclick=async()=>{
+  if(!authToken){ toast('Сначала войди в аккаунт — премиум привязывается к нему'); $('premiumModal').classList.remove('show'); if(typeof gotoAccount==='function'){ gotoAccount(); } return; }
+  if(!cloudURL){ toast('Не указан адрес сервера'); return; }
+  toast('Создаю платёж…');
+  try{
+    const d=await apiFetch('/api/pay/create',{method:'POST',body:JSON.stringify({})});
+    if(d&&d.confirmation_url){ location.href=d.confirmation_url; }
+    else toast('Не удалось получить ссылку на оплату');
+  }catch(e){ toast(e.message||'Оплата недоступна'); }
+};
+// подтянуть актуальный статус премиума с сервера (после входа / возврата с оплаты)
+async function refreshMe(){
+  if(!(authToken&&cloudURL)) return;
+  try{ const d=await apiFetch('/api/me'); if(d&&d.user){ authUser=d.user; if(typeof saveAuth==='function') await saveAuth(); updatePremiumUI(); if(typeof updateAuthUI==='function') updateAuthUI(); } }catch(e){}
+}
 
 /* ---- boot ---- */
 async function boot(){
@@ -3576,6 +3606,8 @@ async function boot(){
   render(); initMap();
   applyMode(); applyActivity(); initChat(); initMusic();
   if(storeMode==='cloud' && authToken && cloudURL) cloudSyncInitial();
+  if(authToken && cloudURL){ refreshMe(); }
+  if(/[?&]paid=1/.test(location.search)){ toast('Проверяю оплату…'); setTimeout(refreshMe,1500); setTimeout(refreshMe,5000); }
   const seen=await sGet(ONB_KEY); if(seen!=='1') obStart();
   renderBoard(pickQuoteDaily());
   // АВТООБНОВЛЕНИЕ: чистим старый SW и проверяем, не вышла ли новая версия
