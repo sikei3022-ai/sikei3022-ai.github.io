@@ -1647,7 +1647,7 @@ async function connectHr(stateId, label){
       hrSetState(stateId,'включаю Bluetooth…',false);
       if(!bleInited){ await BLE.initialize({ androidNeverForLocation:true }); bleInited=true; }
       hrSetState(stateId,'выбор устройства…',false);
-      const dev=await BLE.requestDevice({ services:[HR_SVC], optionalServices:[HR_SVC] });
+      const dev=await BLE.requestDevice({ optionalServices:[HR_SVC] });   // показываем ВСЕ устройства рядом — часы часто не «вещают» сервис пульса, но имеют его
       const id=dev.deviceId, name=dev.name||label;
       hrSetState(stateId,'подключаюсь к '+name+'…',false);
       await BLE.connect({ deviceId:id });
@@ -1669,7 +1669,7 @@ async function connectHr(stateId, label){
   if(!navigator.bluetooth){ hrSetState(stateId,'Bluetooth доступен в приложении Skride или в Chrome (https)',false); toast('Bluetooth доступен в приложении Skride или Chrome (https).'); return; }
   try{
     hrSetState(stateId,'поиск устройства…',false);
-    const dev=await navigator.bluetooth.requestDevice({ filters:[{services:['heart_rate']}] });
+    const dev=await navigator.bluetooth.requestDevice({ acceptAllDevices:true, optionalServices:['heart_rate'] });
     const srv=await dev.gatt.connect();
     const s=await srv.getPrimaryService('heart_rate');
     const ch=await s.getCharacteristic('heart_rate_measurement');
