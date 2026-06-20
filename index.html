@@ -3357,12 +3357,13 @@ async function cloudTTS(text, onDone){
 }
 function coachSendText(q){
   q=(q||'').trim(); if(!q) return; chatPush('me',q); if($('coachQ'))$('coachQ').value='';
-  if(cloudURL){   // умный тренер доступен ВСЕМ (бесплатно); платной будет только история тренировок
+  if(cloudURL && hasAccess()){   // первые 21 день (пробный период) — всё включено; дальше Premium
     chatPush('coach','…',false);
     cloudCoach().then(ans=>{ if(chatMsgs.length&&chatMsgs[chatMsgs.length-1].text==='…')chatMsgs.pop(); chatPush('coach',ans); if(voiceCoach) say(ans); })
       .catch(e=>{ if(chatMsgs.length&&chatMsgs[chatMsgs.length-1].text==='…')chatMsgs.pop(); toast('Облачный тренер недоступен ('+((e&&e.message)||'ошибка')+') — отвечаю офлайн'); const ans=coachAnswer(q); chatPush('coach',ans); if(voiceCoach) say(ans); });
   } else {
-    toast('Облачный ИИ не подключён — отвечаю офлайн. Подключи сервер в Настройках');
+    if(!cloudURL) toast('Облачный ИИ не подключён — отвечаю офлайн. Подключи сервер в Настройках');
+    else if(!hasAccess()) toast('Пробный период (21 день) завершён — умный тренер в Premium. Сейчас отвечаю офлайн');
     const ans=coachAnswer(q); setTimeout(()=>{ chatPush('coach',ans); if(voiceCoach) say(ans); },180);
   }
 }
@@ -3562,7 +3563,7 @@ function convoAsk(q){
   const after=()=>{ if(resumed) return; resumed=true; if(convoMode) setTimeout(convoListen, 300); };  // дальше слушаем сами, без кнопки
   const guard=setTimeout(after, 15000);   // подстраховка: продолжаем, даже если озвучка не вызвала callback
   const done=()=>{ clearTimeout(guard); after(); };
-  if(cloudURL){   // умный тренер доступен всем; платная только история
+  if(cloudURL && hasAccess()){   // первые 21 день — всё включено; дальше Premium
     chatPush('coach','…',false);
     cloudCoach().then(a=>{ if(chatMsgs.length&&chatMsgs[chatMsgs.length-1].text==='…')chatMsgs.pop(); chatPush('coach',a); say(a, done); })
       .catch(()=>{ if(chatMsgs.length&&chatMsgs[chatMsgs.length-1].text==='…')chatMsgs.pop(); const a=coachAnswer(q); chatPush('coach',a); say(a, done); });
@@ -3679,21 +3680,20 @@ $('langSel').onchange=async()=>{ await sSet(LANG_KEY,$('langSel').value); applyL
 
 /* ===== Premium (бесплатно / платно) ===== */
 let isPremium=false; const PREMIUM_KEY='stride:premium';
-let trialStart=0; const TRIAL_KEY='stride:trialstart'; const TRIAL_DAYS=14;
+let trialStart=0; const TRIAL_KEY='stride:trialstart'; const TRIAL_DAYS=21;  // первые 3 недели — всё бесплатно
 function trialMsLeft(){ if(!trialStart) return TRIAL_DAYS*86400000; return (trialStart + TRIAL_DAYS*86400000) - Date.now(); }
 function trialDaysLeft(){ return Math.max(0, Math.ceil(trialMsLeft()/86400000)); }
 function trialActive(){ return trialMsLeft() > 0; }
-// доступ: вошёл в аккаунт → статус premium с сервера (с обратной совместимостью); иначе локальный пробный период
+// доступ: первые 21 день — пробный период (всё включено, и залогиненным тоже); оплата на сервере = апгрейд в Premium
 function accessInfo(){
-  if(authToken && authUser && (authUser.premium!==undefined || authUser.premium_until!==undefined || authUser.trial_until!==undefined)){
-    const now=Date.now();
+  const now=Date.now();
+  // оплаченный Premium (статус с сервера после оплаты ЮKassa) — высший приоритет
+  if(authToken && authUser){
     const pu=authUser.premium_until?Date.parse(authUser.premium_until):0;
-    const tu=authUser.trial_until?Date.parse(authUser.trial_until):0;
-    if(pu>now) return {state:'paid', days:Math.max(0,Math.ceil((pu-now)/86400000))};
-    if(tu>now) return {state:'trial', days:Math.max(0,Math.ceil((tu-now)/86400000))};
-    return {state:'expired', days:0};
+    if(authUser.premium===true || pu>now) return {state:'paid', days:pu>now?Math.max(0,Math.ceil((pu-now)/86400000)):0};
   }
   if(isPremium) return {state:'paid', days:0};
+  // иначе — общий локальный пробный период 21 день с первого запуска
   if(trialActive()) return {state:'trial', days:trialDaysLeft()};
   return {state:'expired', days:0};
 }
