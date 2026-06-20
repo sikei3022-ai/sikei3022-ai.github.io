@@ -2519,7 +2519,8 @@ function radioStop(){ if(radioAudio){ try{radioAudio.pause();}catch(e){} radioAu
 function radioPlay(s, btn){
   try{ if(typeof unlockAudio==='function') unlockAudio(); }catch(e){}
   try{ if($('ymIframe'))$('ymIframe').src=''; if($('ymBar'))$('ymBar').style.display='none'; document.body.classList.remove('has-player'); }catch(e){}
-  if(!radioAudio){ radioAudio=new Audio(); radioAudio.preload='none'; }
+  if(!radioAudio){ radioAudio=new Audio(); radioAudio.preload='none'; radioAudio.crossOrigin=null; }
+  radioAudio.onerror=function(){ const c=radioAudio&&radioAudio.error?radioAudio.error.code:'-'; if($('radioNowName'))$('radioNowName').textContent='✗ '+s.n+' (audio '+c+')'; };
   radioAudio.src=s.u;
   if($('radioNowName'))$('radioNowName').textContent='⏳ '+s.n+'…';
   if($('radioNow'))$('radioNow').style.display='flex';
@@ -2528,7 +2529,11 @@ function radioPlay(s, btn){
     if(btn) btn.classList.add('on');
     if($('radioNowName'))$('radioNowName').textContent='▶ '+s.n;
     try{ if('mediaSession' in navigator){ navigator.mediaSession.metadata=new MediaMetadata({title:s.n, artist:'Skride · радио'}); } }catch(e){}
-  }).catch(e=>{ if($('radioNowName'))$('radioNowName').textContent='не включилось: '+s.n; toast('Радио не включилось — проверь интернет'); });
+  }).catch(err=>{
+    const c=radioAudio&&radioAudio.error?radioAudio.error.code:'-';
+    if($('radioNowName'))$('radioNowName').textContent='✗ '+s.n;
+    alert('РАДИО не включилось.\nСтанция: '+s.n+'\nПричина: '+((err&&err.name)||'?')+' — '+((err&&err.message)||'')+'\nКод аудио: '+c);
+  });
 }
 function buildRadio(){ const w=$('radioPick'); if(!w) return; w.innerHTML=''; RADIO.forEach(s=>{ const b=document.createElement('button'); b.type='button'; b.className='chip'; b.innerHTML='<svg class="svic" aria-hidden="true"><use href="#ic-music"></use></svg> '+s.n; b.onclick=()=>radioPlay(s,b); w.appendChild(b); }); }
 if($('radioStop')) $('radioStop').onclick=radioStop;
@@ -3431,10 +3436,10 @@ function convoListen(){
     let got=false;
     recog.onstart=()=>{ const b=$('coachMic'); if(b)b.classList.add('rec'); };
     recog.onresult=(ev)=>{ got=true; const t=ev.results[0][0].transcript; if(t) convoAsk(t); };
-    recog.onerror=(ev)=>{ const er=(ev&&ev.error)||'?'; const m=(ev&&ev.message)?(' — '+ev.message):''; if(er==='not-allowed'){ toast('Микрофон не разрешён'+m); } else if(er==='no-speech'){ /* тишина, просто слушаем дальше */ } else { toast('Распознавание: '+er+m); } };
+    recog.onerror=(ev)=>{ const er=(ev&&ev.error)||'?'; const m=(ev&&ev.message)?(' — '+ev.message):''; if(er==='no-speech'||er==='no-match'){ /* тишина, слушаем дальше */ } else { alert('МИКРОФОН: распознавание не сработало.\nОшибка: '+er+m); } };
     recog.onend=()=>{ const b=$('coachMic'); if(b)b.classList.remove('rec'); if(convoMode && !got){ setTimeout(convoListen, 500); } };
     recog.start();
-  }catch(e){ if(convoMode) setTimeout(convoListen, 900); }
+  }catch(e){ alert('МИКРОФОН: не удалось запустить распознавание.\n'+((e&&e.message)||e)); if(convoMode) setTimeout(convoListen, 900); }
 }
 function convoAsk(q){
   chatPush('me', q);
