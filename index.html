@@ -852,17 +852,14 @@
     <div class="sec-h"><h2 data-i18n="sec_coach">ИИ-тренер</h2><span id="coachSub" style="font-size:11px;font-weight:600;color:var(--muted)">анализ твоего бега</span></div>
     <div class="card" id="coachCard"></div>
     <div class="card coach-chat" id="coachChat" style="margin-top:12px">
-      <div class="coach-chat-h" style="display:flex;align-items:center;justify-content:space-between;gap:8px"><span>💬 Спроси тренера</span><button id="voiceBtn" type="button" aria-label="Голос тренера вкл/выкл"></button></div>
+      <div class="coach-chat-h">💬 Спроси тренера</div>
       <div class="coach-ctrls">
         <button id="coachConvo" type="button">🎙️ Поговорить с тренером</button>
-        <button id="coachStop" type="button" style="display:none"><svg class="svic" aria-hidden="true"><use href="#ic-stop"></use></svg> Стоп</button>
-        <button id="coachPlay" type="button" style="display:none"><svg class="svic" aria-hidden="true"><use href="#ic-play"></use></svg> Озвучить</button>
       </div>
       <div class="coach-thread" id="coachThread"></div>
       <div class="coach-chips" id="coachChips"></div>
       <div class="coach-input">
         <input id="coachQ" type="text" placeholder="Тренировки, пульс, травмы, питание, техника..." autocomplete="off">
-        <button id="coachMic" type="button" aria-label="говорить" title="Спросить голосом"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
         <button id="coachSend" type="button" aria-label="отправить"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 12h15M13 6l6 6-6 6"/></svg></button>
       </div>
     </div>
@@ -2962,7 +2959,7 @@ async function setVoice(v, announce){
   toast(v?'Тренер включён 🎧':'Тренер выключен');
 }
 $('voiceToggle').onchange=()=>setVoice($('voiceToggle').checked,true);
-$('voiceBtn').onclick=()=>setVoice(!voiceCoach,true);
+if($('voiceBtn')) $('voiceBtn').onclick=()=>setVoice(!voiceCoach,true);
 $('voiceSel').onchange=async()=>{ voiceURI=$('voiceSel').value; await sSet(VOICE_URI_KEY,voiceURI); say('Привет! Я твой тренер. Побежали — держи ровный темп, у тебя отлично получается.'); };
 $('voiceTest').onclick=()=>say('Отличный темп! Дыши ровно, плечи расслаблены. Ты молодец — так держать.');
 
