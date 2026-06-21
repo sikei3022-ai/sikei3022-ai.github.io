@@ -1647,13 +1647,20 @@ async function connectHr(stateId, label){
       hrSetState(stateId,'включаю Bluetooth…',false);
       if(!bleInited){ await BLE.initialize({ androidNeverForLocation:true }); bleInited=true; }
       hrSetState(stateId,'выбор устройства…',false);
-      const dev=await BLE.requestDevice({ optionalServices:[HR_SVC] });   // показываем ВСЕ устройства рядом — часы часто не «вещают» сервис пульса, но имеют его
+      const dev=await BLE.requestDevice({ optionalServices:[HR_SVC] });   // показываем ВСЕ устройства рядом — часы (Garmin и др.) часто не «вещают» сервис пульса, но имеют его
       const id=dev.deviceId, name=dev.name||label;
       hrSetState(stateId,'подключаюсь к '+name+'…',false);
-      await BLE.connect({ deviceId:id });
+      await BLE.connect({ deviceId:id, timeout:15000 });
+      try{ if(BLE.discoverServices) await BLE.discoverServices({ deviceId:id }); }catch(e){}  // у части часов сервисы появляются только после явного discover
       const keys=new Set(['notification|'+id+'|'+HR_SVC+'|'+HR_CHR, ('notification|'+id+'|'+HR_SVC+'|'+HR_CHR).toLowerCase()]);
       keys.forEach(k=>{ BLE.addListener(k,(e)=>{ const bpm=hrFromBytes(bleBytes(e&&e.value)); if(bpm!=null) pushHr(bpm); }); });
-      await BLE.startNotifications({ deviceId:id, service:HR_SVC, characteristic:HR_CHR });
+      // Garmin/часы готовы не сразу — пауза + до 4 попыток подписки на пульс
+      let subOk=false, lastErr=null;
+      for(let a=0; a<4 && !subOk; a++){
+        try{ await BLE.startNotifications({ deviceId:id, service:HR_SVC, characteristic:HR_CHR }); subOk=true; }
+        catch(se){ lastErr=se; hrSetState(stateId,'настраиваю пульс… ('+(a+1)+')',false); await new Promise(r=>setTimeout(r, 800)); }
+      }
+      if(!subOk) throw new Error('у устройства нет трансляции пульса (на Garmin включи «Трансляция ЧСС»): '+((lastErr&&(lastErr.message||lastErr.errorMessage))||lastErr||''));
       hrDeviceId=id;
       hrSetState(stateId,'подключено: '+name+' · пульс идёт',true);
       toast(label+' подключено ❤️');
@@ -2269,7 +2276,7 @@ async function drawMini(c,track){
   ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(e[0],e[1],6,0,7);ctx.fill();
   ctx.fillStyle='#258654';ctx.beginPath();ctx.arc(e[0],e[1],4,0,7);ctx.fill();
 }
-function esc(s){return s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 
 /* ---- streak (последовательные дни с пробежкой) ---- */
 function calcStreak(){
