@@ -26,6 +26,7 @@
 })();
 </script>
 <meta name="theme-color" content="#36A96B">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Skride">
@@ -3691,13 +3692,15 @@ function trialActive(){ return trialMsLeft() > 0; }
 // доступ: первые 21 день — пробный период (всё включено, и залогиненным тоже); оплата на сервере = апгрейд в Premium
 function accessInfo(){
   const now=Date.now();
-  // оплаченный Premium (статус с сервера после оплаты ЮKassa) — высший приоритет
-  if(authToken && authUser){
+  // статус с сервера (после входа): ОТДЕЛЬНО оплачено и пробный (поле premium=true бывает и в триале!)
+  if(authToken && authUser && (authUser.paid!==undefined || authUser.trial!==undefined)){
     const pu=authUser.premium_until?Date.parse(authUser.premium_until):0;
-    if(authUser.premium===true || pu>now) return {state:'paid', days:pu>now?Math.max(0,Math.ceil((pu-now)/86400000)):0};
+    if(authUser.paid===true || pu>now) return {state:'paid', days:pu>now?Math.max(0,Math.ceil((pu-now)/86400000)):0};
+    const tu=authUser.trial_until?Date.parse(authUser.trial_until):0;
+    if(authUser.trial===true || tu>now) return {state:'trial', days:tu>now?Math.max(0,Math.ceil((tu-now)/86400000)):trialDaysLeft()};
   }
   if(isPremium) return {state:'paid', days:0};
-  // иначе — общий локальный пробный период 21 день с первого запуска
+  // не вошёл или сервер не дал статус — общий локальный пробный период
   if(trialActive()) return {state:'trial', days:trialDaysLeft()};
   return {state:'expired', days:0};
 }
