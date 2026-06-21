@@ -909,6 +909,13 @@
         <button class="btn-pri" id="ymLoad"><svg class="svic" aria-hidden="true"><use href="#ic-play"></use></svg> Играть</button>
       </div>
       <p style="font-size:11.5px;color:var(--muted);line-height:1.5;margin:10px 2px 0">▶ Плей и пауза — также внутри самого плеера. 🔊 Громкость — кнопками громкости телефона или наушников. Совет: открой Яндекс Музыку, найди плейлист (можно свой «Плейлист дня»), «Поделиться» → скопируй ссылку и вставь сюда. Для полного воспроизведения нужна активная Яндекс Музыка (подписка/вход) в этом браузере.</p>
+
+      <div style="font-size:13.5px;font-weight:800;margin:18px 0 4px">📚 Аудиокниги на тренировке</div>
+      <div style="font-size:12px;color:var(--muted);line-height:1.55;margin-bottom:9px">Книги из Яндекс Музыки играют прямо здесь: открой каталог, выбери книгу → «Поделиться» → скопируй ссылку → вставь в поле «🎵 Свои плейлисты» выше и нажми «Играть» (нужна подписка Яндекс Плюс). ЛитРес откроется в своём приложении.</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">
+        <button class="chip" id="abYandex" type="button"><svg class="svic" aria-hidden="true"><use href="#ic-music"></use></svg> Аудиокниги Яндекса</button>
+        <button class="chip" id="abLitres" type="button"><svg class="svic" aria-hidden="true"><use href="#ic-headphones"></use></svg> Слушать в ЛитРес</button>
+      </div>
     </div>
   </div>
 
@@ -2581,6 +2588,9 @@ if($('ymBarClose')) $('ymBarClose').onclick=ymStop;
 if($('ymToggle')) $('ymToggle').onclick=()=>{ const b=$('ymBar'); const min=b.classList.toggle('ym-min'); $('ymToggle').textContent=min?'▴':'▾'; setYmBarTop(); };
 if($('ymExpand')) $('ymExpand').onclick=()=>{ const b=$('ymBar'); b.classList.remove('ym-min'); if($('ymToggle'))$('ymToggle').textContent='▾'; setYmBarTop(); };
 if($('ymOpenExt')) $('ymOpenExt').onclick=()=>{ const u=_ymExternal||(($('ymLink')&&$('ymLink').value.trim())||'https://music.yandex.ru/'); window.open(u,'_blank'); };
+/* Аудиокниги: Яндекс (каталог → ссылку играть в нашем плеере) + ЛитРес (открыть приложение) */
+if($('abYandex')) $('abYandex').onclick=()=>{ window.open('https://music.yandex.ru/non-music/audiobooks','_blank'); toast('Выбери книгу → «Поделиться» → ссылку вставь в поле выше'); };
+if($('abLitres')) $('abLitres').onclick=()=>{ window.open('https://www.litres.ru/audioknigi/','_blank'); };
 
 /* ===== Бесплатное радио (электроника/хаус) — играет у всех без подписки ===== */
 const RADIO=[
