@@ -133,7 +133,7 @@
   .ym-lbl .svic{width:19px;height:19px}
   .ym-lbl .ym-play{margin-left:auto;font-size:11.5px;font-weight:700;background:rgba(255,255,255,.22);padding:5px 10px;border-radius:20px;white-space:nowrap}
   .ym-lbl-marq{flex:1;min-width:0;overflow:hidden;white-space:nowrap}
-  .ym-lbl-marq b{display:inline-block;white-space:nowrap;font-weight:800;animation:mqroll 16s linear infinite;will-change:transform}
+  .ym-lbl-marq b{display:inline-block;white-space:nowrap;font-weight:800;will-change:transform}
   .ym-bar.ym-min .ym-frame{display:none}
   .ym-bar:not(.ym-min) .ym-lbl{display:none}
   .ym-bar-x:active{background:rgba(255,255,255,.4)}
@@ -548,7 +548,7 @@
   .ym-rad-txt{ display:flex; flex-direction:column; justify-content:center; line-height:1.22; color:#fff; flex:1; min-width:0; padding-left:3px }
   .ym-rad-txt b{ font-size:16.5px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
   .ym-rad-marq{ overflow:hidden; white-space:nowrap; width:100%; margin-top:1px }
-  .ym-rad-marq small{ display:inline-block; white-space:nowrap; font-size:12px; opacity:.92; font-weight:600; animation:mqroll 16s linear infinite; will-change:transform }
+  .ym-rad-marq small{ display:inline-block; white-space:nowrap; font-size:12px; opacity:.92; font-weight:600; will-change:transform }
 
   /* ===== Радио-плеер в разделе «Музыка» ===== */
   .radio-box{ background:linear-gradient(180deg,#34b06f,#1f8b52); border-radius:18px; padding:14px; margin-bottom:14px; color:#fff; box-shadow:0 8px 20px rgba(31,139,82,.26) }
@@ -557,8 +557,7 @@
   .rb-screen{ background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.16); border-radius:13px; padding:8px 13px; margin-bottom:11px }
   .rb-name{ font-size:15px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; line-height:1.25 }
   .radio-marq{ overflow:hidden; white-space:nowrap; margin-top:2px }
-  .radio-marq b{ display:inline-block; white-space:nowrap; font-size:12.5px; font-weight:600; opacity:.9; animation:mqroll 18s linear infinite; will-change:transform }
-  @keyframes mqroll{ from{transform:translateX(0)} to{transform:translateX(-50%)} }
+  .radio-marq b{ display:inline-block; white-space:nowrap; font-size:12.5px; font-weight:600; opacity:.9; will-change:transform }
   .rb-ctrls{ display:flex; align-items:center; justify-content:center; gap:11px; margin-bottom:12px }
   .rb-btn{ flex:none; border:none; cursor:pointer; border-radius:50%; display:flex; align-items:center; justify-content:center; transition:.12s;
     background:linear-gradient(180deg,#ffffff,#eef2ef); color:#1f8b52;
@@ -2656,6 +2655,24 @@ const RADIO=[
 let radioAudio=null, radioIdx=-1, radioNowTimer=null;
 function setRadioMarq(t){ const d=t+'  '+t+'  '; if($('radioMarq'))$('radioMarq').textContent=d; if($('ymRadioSub'))$('ymRadioSub').textContent=d; }
 function setRadioName(t){ if($('radioName'))$('radioName').textContent=t; }
+/* ===== JS-движок бегущих строк ===== не CSS-анимация (её глушит энергосбережение/«Удалить анимации» на телефоне), а ручной сдвиг кадр за кадром — едет на любом устройстве */
+(function(){
+  var IDS=['ymRadioSub','radioMarq','ymLblMarq'];
+  var offs={}, last=0; var SPEED=34; /* px/сек */
+  function frame(now){
+    var dt=last?Math.min((now-last)/1000,0.1):0; last=now;
+    for(var i=0;i<IDS.length;i++){
+      var id=IDS[i]; var el=document.getElementById(id); if(!el) continue;
+      if(!el.getClientRects().length){ offs[id]=0; el.style.transform=''; continue; }
+      var half=el.scrollWidth/2;
+      if(half<4){ el.style.transform=''; continue; }
+      var o=(offs[id]||0)+SPEED*dt; if(o>=half) o-=half;
+      offs[id]=o; el.style.transform='translateX('+(-o)+'px)';
+    }
+    requestAnimationFrame(frame);
+  }
+  if(typeof requestAnimationFrame==='function') requestAnimationFrame(frame);
+})();
 /* Бегущая строка трека: сначала жанр, затем (если станция отдаёт) — реальное название песни */
 function radioMarqDefault(s){ return s.n+'  ·  '+s.g+'  ·  Skride радио  ·  '+s.n+'  ·  '+s.g+'  ·  '; }
 function radioNowApply(s, track){ if(RADIO[radioIdx]!==s||!radioAudio||radioAudio.paused) return; const t=(track||'').trim(); const txt=t?('♪  '+t+'  ·  '+s.n+'  '):radioMarqDefault(s); setRadioMarq(txt); }
