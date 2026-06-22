@@ -26,7 +26,6 @@
 })();
 </script>
 <meta name="theme-color" content="#36A96B">
-<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Skride">
@@ -190,9 +189,8 @@
   .f.full{grid-column:1/-1}
   label{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.6px;text-transform:uppercase}
   input,textarea{font-family:var(--body);font-size:16px;font-weight:600;color:var(--ink);
-    background:#fff;border:1.5px solid #e7eae8;border-radius:12px;padding:12px 13px;width:100%;outline:none;
-    box-shadow:inset 0 2px 5px rgba(20,60,40,.06);transition:.15s}
-  input:focus,textarea:focus{border-color:#34b06f;background:#fff;box-shadow:inset 0 1px 3px rgba(20,60,40,.05),0 0 0 3px rgba(52,176,111,.16)}
+    background:#f6f6f9;border:1.5px solid #f6f6f9;border-radius:11px;padding:12px 13px;width:100%;outline:none}
+  input:focus,textarea:focus{border-color:var(--orange);background:#fff}
   textarea{resize:none;min-height:44px;font-weight:500}
   .time{display:flex;gap:8px}.time input{text-align:center}
   .pace-row{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;padding:2px 2px 0}
@@ -476,98 +474,6 @@
   .switch input:checked + .slider{background:var(--orange)}
   .switch .slider::before{content:'';position:absolute;height:22px;width:22px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
   .switch input:checked + .slider::before{transform:translateX(22px)}
-
-  /* ===== GLASS UI — матовое стекло на всё: кнопки, разделы, рамки ===== */
-  .card, .dev-card, .st-box, .st-card, .qboard, .act{
-    background:linear-gradient(180deg, rgba(255,255,255,.86), rgba(255,255,255,.76));
-    -webkit-backdrop-filter:blur(9px) saturate(1.3); backdrop-filter:blur(9px) saturate(1.3);
-    border:1px solid rgba(255,255,255,.6);
-    box-shadow:0 8px 22px rgba(20,60,40,.12), inset 0 1px 0 rgba(255,255,255,.7);
-  }
-  .btn-pri, .coach-ctrls #coachConvo, .act-opt.on, .map-toggle .mt-opt.on, .bq-opt.on, .coach-input button, .ob-next{
-    background:linear-gradient(180deg, #34b06f, #1f9458);
-    border:1px solid rgba(255,255,255,.30);
-    box-shadow:0 4px 11px rgba(15,120,70,.22), inset 0 1px 0 rgba(255,255,255,.34);
-    color:#fff; text-shadow:0 1px 1px rgba(5,60,35,.28);
-  }
-  .btn-pri:active, .coach-ctrls #coachConvo:active, .act-opt.on:active, .map-toggle .mt-opt.on:active, .bq-opt.on:active, .coach-input button:active, .ob-next:active{
-    transform:translateY(1px);
-    box-shadow:0 2px 7px rgba(15,120,70,.20), inset 0 1px 0 rgba(255,255,255,.3);
-  }
-  .act-opt, .chip, .lg-btn, .btn-sec, .bq-opt, .map-toggle .mt-opt, .prof .edit, .goal .edit, .qb-spk, .screen-back, .iconbtn{
-    background:linear-gradient(180deg, #ffffff, #f2f4f6);
-    border:1px solid rgba(255,255,255,.9);
-    box-shadow:0 9px 20px rgba(20,60,40,.15), inset 0 2px 0 rgba(255,255,255,.95), inset 0 -4px 9px rgba(20,60,40,.05);
-  }
-  .act-opt:active, .chip:active, .lg-btn:active, .btn-sec:active, .bq-opt:active, .map-toggle .mt-opt:active, .prof .edit:active, .goal .edit:active, .qb-spk:active, .screen-back:active, .iconbtn:active{ transform:translateY(2px); box-shadow:0 4px 11px rgba(20,60,40,.13), inset 0 2px 0 rgba(255,255,255,.9); }
-  .btn-start, .btn-pause, .btn-stop{
-    border:1px solid rgba(255,255,255,.3);
-    box-shadow:0 8px 18px rgba(20,60,40,.18), inset 0 2px 0 rgba(255,255,255,.4), inset 0 -6px 12px rgba(0,0,0,.14);
-  }
-  .btn-start:active, .btn-pause:active, .btn-stop:active{ transform:translateY(2px); }
-  @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
-    .card, .dev-card, .st-box, .st-card, .qboard, .act{ background:rgba(255,255,255,.95); }
-    .act-opt, .chip, .lg-btn, .btn-sec, .bq-opt, .map-toggle .mt-opt, .prof .edit, .goal .edit, .qb-spk, .screen-back, .iconbtn{ background:rgba(255,255,255,.93); }
-    .btn-pri, .coach-ctrls #coachConvo, .act-opt.on, .map-toggle .mt-opt.on, .bq-opt.on, .coach-input button, .ob-next{ background:var(--grad); }
-    .ym-bar{ background:linear-gradient(135deg,#36A96B,#258654) !important; }
-  }
-
-  /* ===== Карта, картинки, значки — в аккуратных объёмных рамках ===== */
-  #map{ border-radius:14px; border:3px solid #fff; box-shadow:0 8px 20px rgba(20,60,40,.16); overflow:hidden }
-  .coach-banner{ box-shadow:0 6px 16px rgba(20,60,40,.16) }
-  .act-lm .lm img, .mach-photo, #mPhoto, .ava-img, .lm-t img{
-    border:2.5px solid #fff; box-shadow:0 4px 12px rgba(20,60,40,.18); box-sizing:border-box }
-  #mPhoto{ border-radius:14px }
-  .avatar, .lg-av{ box-shadow:0 4px 10px rgba(20,60,40,.20), inset 0 2px 0 rgba(255,255,255,.4) }
-  /* значки-иконки — лёгкий объём, чтобы читались как «выпуклые» */
-  .sec-h h2 .svic, .st-box .svic, .st-card .svic, .act-opt .svic, .lg-btn .svic{ filter:drop-shadow(0 1px 1px rgba(20,60,40,.18)) }
-
-  /* ===== Единый стеклянный плеер (радио + Яндекс) ===== */
-  .ym-bar{
-    background:linear-gradient(180deg, rgba(46,190,118,.50), rgba(31,140,86,.62)) !important;
-    -webkit-backdrop-filter:blur(20px) saturate(1.6); backdrop-filter:blur(20px) saturate(1.6);
-    will-change:auto; transform:none; -webkit-transform:none; backface-visibility:visible; border:1px solid rgba(255,255,255,.42);
-    box-shadow:0 12px 34px rgba(8,70,45,.34), inset 0 1px 0 rgba(255,255,255,.55) !important;
-    max-width:470px; gap:11px; padding:calc(11px + env(safe-area-inset-top)) 14px 13px;
-    border-radius:0 0 20px 20px;
-  }
-  .ym-bar iframe{ height:80px !important; }
-  .ym-radioview{ display:none; }
-  .ym-bar.rad{ position:relative; padding-right:46px !important; }
-  .ym-bar.rad .ym-radioview{ display:flex; flex:1; align-items:center; gap:10px; }
-  .ym-bar.rad .ym-lbl, .ym-bar.rad .ym-frame, .ym-bar.rad #ymToggle, .ym-bar.rad #ymOpenExt, .ym-bar.rad .ym-eq{ display:none !important; }
-  .ym-bar.rad #ymBarClose{ position:absolute; top:calc(9px + env(safe-area-inset-top)); right:11px; }
-  .ym-rad-play, .ym-rad-nav{ flex:none; border:none; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; color:#1f8b52; transition:.12s;
-    background:linear-gradient(180deg,#ffffff,#eef2ef);
-    box-shadow:0 5px 12px rgba(0,40,22,.24), inset 0 2px 0 rgba(255,255,255,.95), inset 0 -3px 6px rgba(0,40,22,.08) }
-  .ym-rad-play:active, .ym-rad-nav:active{ transform:translateY(2px); box-shadow:0 3px 7px rgba(0,40,22,.2), inset 0 2px 0 rgba(255,255,255,.9) }
-  .ym-rad-play{ width:46px; height:46px; font-size:17px }
-  .ym-rad-nav{ width:40px; height:40px; font-size:14px }
-  .ym-rad-txt{ display:flex; flex-direction:column; justify-content:center; line-height:1.22; color:#fff; flex:1; min-width:0; padding-left:3px }
-  .ym-rad-txt b{ font-size:16.5px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
-  .ym-rad-marq{ overflow:hidden; white-space:nowrap; width:100%; margin-top:1px }
-  .ym-rad-marq small{ display:inline-block; white-space:nowrap; font-size:12px; opacity:.92; font-weight:600; animation:mqroll 16s linear infinite; will-change:transform }
-
-  /* ===== Радио-плеер в разделе «Музыка» ===== */
-  .radio-box{ background:linear-gradient(180deg,#34b06f,#1f8b52); border-radius:18px; padding:14px; margin-bottom:14px; color:#fff; box-shadow:0 8px 20px rgba(31,139,82,.26) }
-  .radio-box .rb-top{ display:flex; align-items:center; gap:7px; font-size:11px; font-weight:800; letter-spacing:.5px; text-transform:uppercase; opacity:.9; margin-bottom:10px }
-  .radio-box .rb-top .svic{ width:16px; height:16px }
-  .rb-screen{ background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.16); border-radius:13px; padding:8px 13px; margin-bottom:11px }
-  .rb-name{ font-size:15px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; line-height:1.25 }
-  .radio-marq{ overflow:hidden; white-space:nowrap; margin-top:2px }
-  .radio-marq b{ display:inline-block; white-space:nowrap; font-size:12.5px; font-weight:600; opacity:.9; animation:mqroll 18s linear infinite; will-change:transform }
-  @keyframes mqroll{ from{transform:translateX(0)} to{transform:translateX(-50%)} }
-  .rb-ctrls{ display:flex; align-items:center; justify-content:center; gap:11px; margin-bottom:12px }
-  .rb-btn{ flex:none; border:none; cursor:pointer; border-radius:50%; display:flex; align-items:center; justify-content:center; transition:.12s;
-    background:linear-gradient(180deg,#ffffff,#eef2ef); color:#1f8b52;
-    box-shadow:0 6px 14px rgba(0,40,22,.22), inset 0 2px 0 rgba(255,255,255,.95), inset 0 -3px 7px rgba(0,40,22,.08) }
-  .rb-btn:active{ transform:translateY(2px); box-shadow:0 3px 8px rgba(0,40,22,.2), inset 0 2px 0 rgba(255,255,255,.9) }
-  .rb-btn.sm{ width:46px; height:46px; font-size:15px }
-  .rb-btn.big{ width:54px; height:54px; font-size:19px }
-  .radio-box #radioPick{ display:flex; flex-wrap:wrap; gap:7px; justify-content:center }
-  .radio-box .chip{ background:rgba(255,255,255,.92); border-color:transparent; color:#1f7a4d; box-shadow:0 2px 6px rgba(0,0,0,.10) }
-  .radio-box .chip svg{ stroke:#1f7a4d }
-  .radio-box .chip.on{ background:#fff; color:#15813f; font-weight:800; box-shadow:0 0 0 2px rgba(255,255,255,.92), 0 4px 9px rgba(0,0,0,.18) }
 </style>
 </head>
 <body>
@@ -628,12 +534,6 @@
 
 <div id="ymBar" class="ym-bar ym-min" style="display:none">
   <div class="ym-eq"><i></i><i></i><i></i><i></i></div>
-  <div id="ymRadioView" class="ym-radioview">
-    <button id="ymRadioPrev" class="ym-rad-nav" type="button" aria-label="предыдущая станция">⏮</button>
-    <button id="ymRadioToggle" class="ym-rad-play" type="button" aria-label="пауза или играть">⏸</button>
-    <button id="ymRadioNext" class="ym-rad-nav" type="button" aria-label="следующая станция">⏭</button>
-    <span class="ym-rad-txt"><b id="ymRadioName">Радио</b><span class="ym-rad-marq"><small id="ymRadioSub">радио</small></span></span>
-  </div>
   <button id="ymExpand" class="ym-lbl" type="button"><svg class="svic" aria-hidden="true"><use href="#ic-music"></use></svg><span>Яндекс Музыка</span><b class="ym-play">▶ открыть</b></button>
   <iframe id="ymIframe" class="ym-frame" frameborder="0" allow="autoplay"></iframe>
   <button id="ymToggle" class="ym-bar-x" aria-label="свернуть плеер">▴</button>
@@ -642,20 +542,6 @@
 </div>
 
 <div class="wrap">
-
-  <div class="modal" id="abModal">
-    <div class="sheet" style="max-width:580px;width:96%;height:90vh;max-height:90vh;display:flex;flex-direction:column;padding:0;overflow:hidden">
-      <div style="display:flex;align-items:center;gap:8px;padding:11px 13px;border-bottom:1px solid var(--line)">
-        <b id="abTitle" style="flex:1;font-size:14.5px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">📚 Аудиокниги</b>
-        <input id="abUrl" type="text" placeholder="ссылка на книгу из Яндекс Музыки" inputmode="url" style="display:none;flex:2;min-width:80px;font-size:13px;padding:8px 10px;margin:0">
-        <button id="abGo" class="chip" type="button" style="display:none;flex:none">▶ Играть</button>
-        <button id="abOpenExt" class="ym-bar-x" type="button" title="открыть снаружи" style="background:#eee;color:var(--ink2)">↗</button>
-        <button id="abClose" class="ym-bar-x" type="button" aria-label="закрыть" style="background:#eee;color:var(--ink2)">✕</button>
-      </div>
-      <div id="abShelf" style="display:none;gap:7px;padding:9px 11px;overflow-x:auto;white-space:nowrap;border-bottom:1px solid var(--line);flex:none"></div>
-      <iframe id="abFrame" style="flex:1;border:none;width:100%;background:#fff" allow="autoplay; encrypted-media; clipboard-write" referrerpolicy="no-referrer-when-downgrade"></iframe>
-    </div>
-  </div>
 
   <div class="apphead">
   <div class="topbar">
@@ -735,6 +621,7 @@
       <!-- GPS tracking -->
       <div class="track-panel">
         <div class="track-mode-note" id="trackModeNote">Автозапись по GPS — нажми «Старт» и беги</div>
+        <button class="chip" id="voiceBtn" style="margin:0 auto 12px;display:inline-flex"><svg class="svic" aria-hidden="true"><use href="#ic-headphones"></use></svg> Голос ИИ-тренера: выкл</button>
         <div class="track-live" id="trackLive">
           <div class="tl"><div class="tv accent" id="liveDist">0.00</div><div class="tu">км</div></div>
           <div class="tl"><div class="tv" id="liveTime">0:00</div><div class="tu">время</div></div>
@@ -869,12 +756,15 @@
     <div class="card coach-chat" id="coachChat" style="margin-top:12px">
       <div class="coach-chat-h">💬 Спроси тренера</div>
       <div class="coach-ctrls">
-        <button id="coachConvo" type="button">🎙️ Поговорить с тренером</button>
+        <button id="coachConvo" type="button">🎙️ Разговор</button>
+        <button id="coachPlay" type="button"><svg class="svic" aria-hidden="true"><use href="#ic-play"></use></svg> Озвучить</button>
+        <button id="coachStop" type="button"><svg class="svic" aria-hidden="true"><use href="#ic-stop"></use></svg> Стоп</button>
       </div>
       <div class="coach-thread" id="coachThread"></div>
       <div class="coach-chips" id="coachChips"></div>
       <div class="coach-input">
         <input id="coachQ" type="text" placeholder="Тренировки, пульс, травмы, питание, техника..." autocomplete="off">
+        <button id="coachMic" type="button" aria-label="говорить" title="Спросить голосом"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
         <button id="coachSend" type="button" aria-label="отправить"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 12h15M13 6l6 6-6 6"/></svg></button>
       </div>
     </div>
@@ -891,36 +781,23 @@
         <button class="act-opt" data-listen="both" type="button"><svg class="svic" aria-hidden="true"><use href="#ic-headphones"></use></svg> Оба</button>
       </div>
 
-      <div style="font-size:12.5px;font-weight:700;color:var(--muted);margin-bottom:7px">📚 Слушать аудиокниги</div>
-      <div class="act-pick" style="margin-bottom:6px">
-        <button class="act-opt" id="abYandex" type="button"><svg class="svic" aria-hidden="true"><use href="#ic-music"></use></svg> Яндекс Книги</button>
-        <button class="act-opt" id="abLitres" type="button"><svg class="svic" aria-hidden="true"><use href="#ic-headphones"></use></svg> ЛитРес</button>
-      </div>
-      <div id="abHint" style="font-size:11.5px;color:var(--muted);line-height:1.5;margin:0 2px 14px;display:none"></div>
-
-      <div class="radio-box">
-        <div class="rb-top"><svg class="svic" aria-hidden="true"><use href="#ic-music"></use></svg> Радио</div>
-        <div class="rb-screen">
-          <div class="rb-name" id="radioName">Радио Skride</div>
-          <div class="radio-marq"><b id="radioMarq">Выбери станцию ниже</b></div>
-        </div>
-        <div class="rb-ctrls">
-          <button id="rbPrev" class="rb-btn sm" type="button" aria-label="предыдущая станция">⏮</button>
-          <button id="rbPlay" class="rb-btn big" type="button" aria-label="играть или пауза">▶</button>
-          <button id="rbStop" class="rb-btn sm" type="button" aria-label="стоп">⏹</button>
-          <button id="rbNext" class="rb-btn sm" type="button" aria-label="следующая станция">⏭</button>
-        </div>
-        <div id="radioPick"></div>
+      <div id="ymDayCard" style="background:var(--grad);color:#fff;border-radius:14px;padding:14px 15px;margin-bottom:12px">
+        <div style="font-size:11px;font-weight:800;letter-spacing:.5px;opacity:.95;text-transform:uppercase">Плейлист дня от Skride</div>
+        <div id="ymDayName" style="font-family:var(--num);font-weight:800;font-size:18px;margin:3px 0 10px"></div>
+        <button id="ymDayOpen" class="chip" type="button" style="background:#fff;color:var(--ink);border:none"><svg class="svic" aria-hidden="true"><use href="#ic-play"></use></svg> Включить</button>
       </div>
 
-      <div style="font-size:13.5px;font-weight:800;margin:4px 0 4px">🎵 Своя музыка из Яндекс Музыки</div>
+      <div style="font-size:12.5px;font-weight:700;color:var(--muted);margin-bottom:7px">Подборки — тап и играет сразу</div>
+      <div id="ymMoods" style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px"></div>
+
+      <div style="font-size:13.5px;font-weight:800;margin:4px 0 4px">🎵 Свои плейлисты из Яндекс Музыки</div>
       <div style="font-size:12px;color:var(--muted);line-height:1.55;margin-bottom:8px">В приложении Яндекс Музыка открой любой свой плейлист → «···» (или «Поделиться») → «Скопировать ссылку» и вставь сюда — он заиграет в приложении:</div>
       <input id="ymLink" type="text" placeholder="Вставь ссылку на свой плейлист…" inputmode="url" style="margin-bottom:8px">
       <div class="row">
         <button class="btn-sec" id="ymStop"><svg class="svic" aria-hidden="true"><use href="#ic-stop"></use></svg> Стоп</button>
         <button class="btn-pri" id="ymLoad"><svg class="svic" aria-hidden="true"><use href="#ic-play"></use></svg> Играть</button>
       </div>
-      <p style="font-size:11.5px;color:var(--muted);line-height:1.5;margin:10px 2px 0">▶ Плей и пауза — также внутри самого плеера. 🔊 Громкость — кнопками громкости телефона или наушников. Совет: открой Яндекс Музыку, найди плейлист, «Поделиться» → скопируй ссылку и вставь сюда. Для полного воспроизведения нужна активная Яндекс Музыка (подписка/вход) в этом браузере.</p>
+      <p style="font-size:11.5px;color:var(--muted);line-height:1.5;margin:10px 2px 0">▶ Плей и пауза — также внутри самого плеера. 🔊 Громкость — кнопками громкости телефона или наушников. Совет: открой Яндекс Музыку, найди плейлист (можно свой «Плейлист дня»), «Поделиться» → скопируй ссылку и вставь сюда. Для полного воспроизведения нужна активная Яндекс Музыка (подписка/вход) в этом браузере.</p>
     </div>
   </div>
 
@@ -1125,7 +1002,7 @@
     <div id="premiumStatus" style="text-align:center;font-weight:700;font-size:14px;margin:10px 0;color:var(--orange)"></div>
     <button class="btn-pri" id="premiumActivate" style="width:100%;height:auto;padding:17px;font-size:17.5px;font-weight:800;border-radius:16px;display:flex;align-items:center;justify-content:center;gap:8px" data-i18n="prem_activate">⭐ Оформить подписку — 100 ₽/мес</button>
     <button class="btn-sec" id="premiumClose" style="width:100%;height:auto;padding:14px;font-size:16px;font-weight:700;border-radius:14px;margin-top:10px" data-i18n="close">Закрыть</button>
-    <p style="margin-top:10px;font-size:11px" data-i18n="prem_note">Первые 21 день — всё бесплатно. Дальше 100 ₽/мес, оплата банковской картой через ЮKassa. Оформить можно в любой момент, продление раз в месяц.</p>
+    <p style="margin-top:10px;font-size:11px" data-i18n="prem_note">Реальная оплата подключается через Google Play в нативной версии. Сейчас кнопка активирует Premium в демо-режиме для проверки.</p>
   </div>
 </div>
 
@@ -1229,7 +1106,7 @@ const $=id=>document.getElementById(id);
 // Можно переопределить своим ключом через настройки ⚙.
 const YANDEX_KEY='fb32ecf2-89e6-454a-9b4c-9d46d2252be2';
 const YANDEX_KEY_BACKUP='729aa267-ca44-4237-9f0d-a5fc13684126';
-const APP_VERSION='2026.06.12.2'; // версия для автообновления — меняется при каждом релизе
+const APP_VERSION='2026.06.12.1'; // версия для автообновления — меняется при каждом релизе
 let runs=[], pts=[], route=null, placemarks=[], deferredPrompt=null, goal=20, editId=null;
 let routeMode='road';
 let profile={name:'Бегун',ava:'Я',city:''};
@@ -1657,20 +1534,13 @@ async function connectHr(stateId, label){
       hrSetState(stateId,'включаю Bluetooth…',false);
       if(!bleInited){ await BLE.initialize({ androidNeverForLocation:true }); bleInited=true; }
       hrSetState(stateId,'выбор устройства…',false);
-      const dev=await BLE.requestDevice({ optionalServices:[HR_SVC] });   // показываем ВСЕ устройства рядом — часы (Garmin и др.) часто не «вещают» сервис пульса, но имеют его
+      const dev=await BLE.requestDevice({ services:[HR_SVC], optionalServices:[HR_SVC] });
       const id=dev.deviceId, name=dev.name||label;
       hrSetState(stateId,'подключаюсь к '+name+'…',false);
-      await BLE.connect({ deviceId:id, timeout:15000 });
-      try{ if(BLE.discoverServices) await BLE.discoverServices({ deviceId:id }); }catch(e){}  // у части часов сервисы появляются только после явного discover
+      await BLE.connect({ deviceId:id });
       const keys=new Set(['notification|'+id+'|'+HR_SVC+'|'+HR_CHR, ('notification|'+id+'|'+HR_SVC+'|'+HR_CHR).toLowerCase()]);
       keys.forEach(k=>{ BLE.addListener(k,(e)=>{ const bpm=hrFromBytes(bleBytes(e&&e.value)); if(bpm!=null) pushHr(bpm); }); });
-      // Garmin/часы готовы не сразу — пауза + до 4 попыток подписки на пульс
-      let subOk=false, lastErr=null;
-      for(let a=0; a<4 && !subOk; a++){
-        try{ await BLE.startNotifications({ deviceId:id, service:HR_SVC, characteristic:HR_CHR }); subOk=true; }
-        catch(se){ lastErr=se; hrSetState(stateId,'настраиваю пульс… ('+(a+1)+')',false); await new Promise(r=>setTimeout(r, 800)); }
-      }
-      if(!subOk) throw new Error('у устройства нет трансляции пульса (на Garmin включи «Трансляция ЧСС»): '+((lastErr&&(lastErr.message||lastErr.errorMessage))||lastErr||''));
+      await BLE.startNotifications({ deviceId:id, service:HR_SVC, characteristic:HR_CHR });
       hrDeviceId=id;
       hrSetState(stateId,'подключено: '+name+' · пульс идёт',true);
       toast(label+' подключено ❤️');
@@ -1686,7 +1556,7 @@ async function connectHr(stateId, label){
   if(!navigator.bluetooth){ hrSetState(stateId,'Bluetooth доступен в приложении Skride или в Chrome (https)',false); toast('Bluetooth доступен в приложении Skride или Chrome (https).'); return; }
   try{
     hrSetState(stateId,'поиск устройства…',false);
-    const dev=await navigator.bluetooth.requestDevice({ acceptAllDevices:true, optionalServices:['heart_rate'] });
+    const dev=await navigator.bluetooth.requestDevice({ filters:[{services:['heart_rate']}] });
     const srv=await dev.gatt.connect();
     const s=await srv.getPrimaryService('heart_rate');
     const ch=await s.getCharacteristic('heart_rate_measurement');
@@ -1744,29 +1614,9 @@ function mSpeedToDist(){
   if(sec>0 && $('mDist')) $('mDist').value=(v*sec/3600).toFixed(2);
 }
 ['mSpeed','mH','mM','mS'].forEach(id=>{ const el=$(id); if(el) el.addEventListener('input', mSpeedToDist); });
-const FTMS_SVC='00001826-0000-1000-8000-00805f9b34fb';   // Fitness Machine Service (дорожка/эллипс/велотренажёр)
-const TREAD_CHR='00002acd-0000-1000-8000-00805f9b34fb';  // Treadmill Data
-function treadSpeed(bytes){ if(!bytes||bytes.length<4) return null; const sp=(bytes[2]|(bytes[3]<<8))/100; return isFinite(sp)?sp:null; }
 $('treadBt').onclick=async()=>{
   if(!requirePremium()) return;
-  if(BLE){ /* ---- нативное приложение Skride: BLE-плагин ---- */
-    try{
-      if($('treadState')) $('treadState').textContent='включаю Bluetooth…';
-      if(!bleInited){ await BLE.initialize({ androidNeverForLocation:true }); bleInited=true; }
-      if($('treadState')) $('treadState').textContent='выбор дорожки…';
-      const dev=await BLE.requestDevice({ services:[FTMS_SVC], optionalServices:[FTMS_SVC] });
-      const id=dev.deviceId, name=dev.name||'дорожка';
-      await BLE.connect({ deviceId:id });
-      const keys=new Set(['notification|'+id+'|'+FTMS_SVC+'|'+TREAD_CHR, ('notification|'+id+'|'+FTMS_SVC+'|'+TREAD_CHR).toLowerCase()]);
-      keys.forEach(k=>{ BLE.addListener(k,(e)=>{ const sp=treadSpeed(bleBytes(e&&e.value)); if(sp!=null && $('treadState')) $('treadState').textContent='дорожка: '+sp.toFixed(1)+' км/ч — по финишу впиши итог'; }); });
-      await BLE.startNotifications({ deviceId:id, service:FTMS_SVC, characteristic:TREAD_CHR });
-      if($('treadState')) $('treadState').textContent='подключено: '+name;
-      toast('Дорожка подключена');
-    }catch(e){ const msg=((e&&(e.message||e.errorMessage))||e)+''; if($('treadState'))$('treadState').textContent='не подключилось: '+msg; toast('Не подключилось: '+msg+' — можно сфотографировать табло'); }
-    return;
-  }
-  /* ---- браузер / PWA: Web Bluetooth ---- */
-  if(!navigator.bluetooth){ toast('Bluetooth доступен в приложении Skride или в Chrome (https).'); return; }
+  if(!navigator.bluetooth){ toast('Bluetooth недоступен. Нужен Chrome на Android (https).'); return; }
   try{
     toast('Поиск дорожки...');
     const dev=await navigator.bluetooth.requestDevice({ filters:[{services:['fitness_machine']}] });
@@ -2286,7 +2136,7 @@ async function drawMini(c,track){
   ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(e[0],e[1],6,0,7);ctx.fill();
   ctx.fillStyle='#258654';ctx.beginPath();ctx.arc(e[0],e[1],4,0,7);ctx.fill();
 }
-function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function esc(s){return s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
 
 /* ---- streak (последовательные дни с пробежкой) ---- */
 function calcStreak(){
@@ -2584,119 +2434,28 @@ function ymToIframe(u){
   m=u.match(/track\/(\d+)/); if(m) return 'https://music.yandex.ru/iframe/#track/'+m[1];
   return '';
 }
-async function ymSet(url){ try{if(typeof radioStop==='function')radioStop();}catch(e){} const f=ymToIframe(url); if(!f){ toast('Не похоже на ссылку Яндекс Музыки'); return; } if($('ymIframe'))$('ymIframe').src=f; if($('ymBar')){$('ymBar').style.display='flex';$('ymBar').classList.remove('rad');$('ymBar').classList.add('ym-min');} if($('ymToggle'))$('ymToggle').textContent='▴'; document.body.classList.add('has-player'); setYmBarTop(); await sSet(MUSIC_KEY, f); toast('Играет 🎵'); }
+async function ymSet(url){ const f=ymToIframe(url); if(!f){ toast('Не похоже на ссылку Яндекс Музыки'); return; } if($('ymIframe'))$('ymIframe').src=f; if($('ymBar')){$('ymBar').style.display='flex';$('ymBar').classList.add('ym-min');} if($('ymToggle'))$('ymToggle').textContent='▴'; document.body.classList.add('has-player'); setYmBarTop(); await sSet(MUSIC_KEY, f); toast('Играет 🎵'); }
 async function ymPlay(){ const inp=($('ymLink')&&$('ymLink').value||'').trim(); if(inp){ ymSet(inp); return; } const saved=await sGet(MUSIC_KEY); if(saved){ if($('ymIframe'))$('ymIframe').src=saved; if($('ymBar')){$('ymBar').style.display='flex';$('ymBar').classList.add('ym-min');} if($('ymToggle'))$('ymToggle').textContent='▴'; toast('Играет 🎵'); } else toast('Вставь ссылку на плейлист Яндекс Музыки'); }
-function ymStop(){ try{ if(typeof radioNowStop==='function')radioNowStop(); }catch(e){} try{ if(radioAudio){ radioAudio.pause(); radioAudio.src=''; } }catch(e){} if($('ymIframe'))$('ymIframe').src=''; if($('ymBar')){$('ymBar').style.display='none';$('ymBar').classList.remove('rad');} document.querySelectorAll('#radioPick button').forEach(b=>b.classList.remove('on')); document.body.classList.remove('has-player'); setYmBarTop(); toast('Остановлено ⏹'); }
+function ymStop(){ if($('ymIframe'))$('ymIframe').src=''; if($('ymBar'))$('ymBar').style.display='none'; document.body.classList.remove('has-player'); setYmBarTop(); toast('Остановлено ⏹'); }
 if($('ymLoad')) $('ymLoad').onclick=ymPlay;
 if($('ymStop')) $('ymStop').onclick=ymStop;
 if($('ymBarClose')) $('ymBarClose').onclick=ymStop;
 if($('ymToggle')) $('ymToggle').onclick=()=>{ const b=$('ymBar'); const min=b.classList.toggle('ym-min'); $('ymToggle').textContent=min?'▴':'▾'; setYmBarTop(); };
 if($('ymExpand')) $('ymExpand').onclick=()=>{ const b=$('ymBar'); b.classList.remove('ym-min'); if($('ymToggle'))$('ymToggle').textContent='▾'; setYmBarTop(); };
 if($('ymOpenExt')) $('ymOpenExt').onclick=()=>{ const u=_ymExternal||(($('ymLink')&&$('ymLink').value.trim())||'https://music.yandex.ru/'); window.open(u,'_blank'); };
-/* Аудиокниги — окно-плеер ВНУТРИ приложения (iframe), без выхода наружу */
-let _abExt='';
-const AB_YA_HELP='<!doctype html><meta charset="utf-8"><body style="font-family:system-ui,-apple-system,sans-serif;margin:0;display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(180deg,#34b06f,#1f8b52);color:#fff;text-align:center;padding:26px;box-sizing:border-box"><div style="max-width:360px"><div style="font-size:44px;margin-bottom:8px">📚</div><b style="font-size:19px">Аудиокниги Яндекса</b><div style="font-size:14px;line-height:1.65;opacity:.96;margin:16px 0;text-align:left"><b>1.</b> Нажми <b>↗</b> вверху — откроется каталог Яндекс Книг.<br><b>2.</b> Выбери книгу → «Поделиться» → скопируй ссылку.<br><b>3.</b> Вставь ссылку в поле сверху и нажми <b>«▶ Играть»</b>.<br>Книга заиграет прямо в этом окне.</div><div style="font-size:12px;opacity:.85">Нужна подписка Яндекс&nbsp;Плюс</div></div></body>';
-function abCloseModal(){ if($('abFrame')){ $('abFrame').removeAttribute('srcdoc'); $('abFrame').src='about:blank'; } if($('abModal')) $('abModal').classList.remove('show'); }
-if($('abClose')) $('abClose').onclick=abCloseModal;
-if($('abModal')) $('abModal').onclick=(e)=>{ if(e.target===$('abModal')) abCloseModal(); };
-if($('abOpenExt')) $('abOpenExt').onclick=()=>{ if(_abExt) window.open(_abExt,'_blank'); };
-// Готовые подборки Яндекс Книг (реальные альбомы Яндекс Музыки)
-const AB_YA_BOOKS=[
-  {n:'📖 Классика · рассказы', id:'9702311'},
-  {n:'📕 Пушкин «Дубровский»', id:'8320731'},
-  {n:'📗 Набоков «Лолита»', id:'24278831'},
-  {n:'📘 «Две жизни» Антарова', id:'28801709'},
-  {n:'⚡ Гарри Поттер (рацмышление)', id:'23301952'},
-  {n:'📙 Книги на миллион', id:'7447189'},
-  {n:'🎧 Читатель', id:'6316355'}
+const YM_LISTS=[
+ {n:'⚡ Энергия для бега', u:'music.partners/1169'},
+ {n:'🔥 Интенсивная тренировка', u:'music-blog/2398'},
+ {n:'🏃 Полюбить бег', u:'music.partners/1602'},
+ {n:'🍂 Осенняя пробежка', u:'music-blog/1380'},
+ {n:'💪 Музыка для тренировок', u:'blackstarinc2014/1013'},
+ {n:'🏋️ Для спортзала', u:'music-partners/1598'}
 ];
-function abLoadBook(id){ if($('abFrame')){ $('abFrame').removeAttribute('srcdoc'); $('abFrame').src='https://music.yandex.ru/iframe/#album/'+id; } }
-function abBuildShelf(){ const s=$('abShelf'); if(!s) return; s.innerHTML=''; AB_YA_BOOKS.forEach((b,i)=>{ const btn=document.createElement('button'); btn.type='button'; btn.className='chip'; btn.style.cssText='display:inline-flex;flex:none;white-space:nowrap;margin-right:7px'; btn.textContent=b.n; if(i===0)btn.classList.add('on'); btn.onclick=()=>{ s.querySelectorAll('button').forEach(x=>x.classList.remove('on')); btn.classList.add('on'); abLoadBook(b.id); }; s.appendChild(btn); }); }
-// Яндекс Книги — полка подборок + плеер; первая книга грузится сразу
-if($('abYandex')) $('abYandex').onclick=()=>{
-  if($('abYandex'))$('abYandex').classList.add('on'); if($('abLitres'))$('abLitres').classList.remove('on');
-  if($('abTitle'))$('abTitle').textContent='📚 Аудиокниги Яндекса';
-  if($('abUrl'))$('abUrl').style.display='block'; if($('abGo'))$('abGo').style.display='inline-flex';
-  if($('abShelf'))$('abShelf').style.display='flex';
-  _abExt='https://music.yandex.ru/non-music/audiobooks';
-  abBuildShelf(); abLoadBook(AB_YA_BOOKS[0].id);
-  if($('abModal'))$('abModal').classList.add('show');
-};
-if($('abGo')) $('abGo').onclick=()=>{ const u=($('abUrl')&&$('abUrl').value||'').trim(); const f=(typeof ymToIframe==='function')?ymToIframe(u):''; if(f){ if($('abFrame')){ $('abFrame').removeAttribute('srcdoc'); $('abFrame').src=f; } } else toast('Вставь ссылку на книгу из Яндекс Музыки'); };
-// ЛитРес — грузим их сайт в окне
-if($('abLitres')) $('abLitres').onclick=()=>{
-  if($('abLitres'))$('abLitres').classList.add('on'); if($('abYandex'))$('abYandex').classList.remove('on');
-  if($('abTitle'))$('abTitle').textContent='📚 ЛитРес — аудиокниги';
-  if($('abUrl'))$('abUrl').style.display='none'; if($('abGo'))$('abGo').style.display='none';
-  if($('abShelf'))$('abShelf').style.display='none';
-  _abExt='https://www.litres.ru/audioknigi/';
-  if($('abFrame')){ $('abFrame').removeAttribute('srcdoc'); $('abFrame').src='https://www.litres.ru/audioknigi/'; }
-  if($('abModal'))$('abModal').classList.add('show');
-};
-
-/* ===== Бесплатное радио (электроника/хаус) — играет у всех без подписки ===== */
-const RADIO=[
-  {n:'Record',g:'танцевальные хиты',u:'https://radiorecord.hostingradio.ru/rr_main96.aacp',rr:'record'},
-  {n:'Record Club',g:'клубный хаус',u:'https://radiorecord.hostingradio.ru/club96.aacp',rr:'club'},
-  {n:'Trancemission',g:'транс',u:'https://radiorecord.hostingradio.ru/tm96.aacp',rr:'trancemission'},
-  {n:'Beat Blender',g:'даунтемпо · хаус',u:'https://ice.somafm.com/beatblender-128-mp3',soma:'beatblender'},
-  {n:'The Trip',g:'прог-хаус',u:'https://ice.somafm.com/thetrip-128-mp3',soma:'thetrip'},
-  {n:'Record Deep',g:'дип-хаус',u:'https://radiorecord.hostingradio.ru/deep96.aacp',rr:'deep'},
-  {n:'Record Rock',g:'рок для драйва',u:'https://radiorecord.hostingradio.ru/rock96.aacp',rr:'rock'},
-  {n:'Русский микс',g:'русские хиты',u:'https://radiorecord.hostingradio.ru/rus96.aacp',rr:'rus'},
-  {n:'Groove Salad',g:'эмбиент · чилл',u:'https://ice.somafm.com/groovesalad-128-mp3',soma:'groovesalad'},
-  {n:'SomaFM Lush',g:'мелодик · вокал',u:'https://ice.somafm.com/lush-128-mp3',soma:'lush'}
-];
-let radioAudio=null, radioIdx=-1, radioNowTimer=null;
-function setRadioMarq(t){ const d=t+'  '+t+'  '; if($('radioMarq'))$('radioMarq').textContent=d; if($('ymRadioSub'))$('ymRadioSub').textContent=d; }
-function setRadioName(t){ if($('radioName'))$('radioName').textContent=t; }
-/* Бегущая строка трека: сначала жанр, затем (если станция отдаёт) — реальное название песни */
-function radioMarqDefault(s){ return s.n+'  ·  '+s.g+'  ·  Skride радио  ·  '+s.n+'  ·  '+s.g+'  ·  '; }
-function radioNowApply(s, track){ if(RADIO[radioIdx]!==s||!radioAudio||radioAudio.paused) return; const t=(track||'').trim(); const txt=t?('♪  '+t+'  ·  '+s.n+'  '):radioMarqDefault(s); setRadioMarq(txt); }
-function radioNowFetch(){ const s=RADIO[radioIdx]; if(!s) return; try{
-    if(s.soma){ fetch('https://somafm.com/songs/'+s.soma+'.json',{cache:'no-store'}).then(r=>r.json()).then(d=>{ const x=d&&d.songs&&d.songs[0]; if(x){ radioNowApply(s, (x.artist?x.artist+' — ':'')+(x.title||'')); } }).catch(()=>{}); }
-    else if(s.rr){ fetch('https://www.radiorecord.ru/api/stations/now/?tz=180',{cache:'no-store'}).then(r=>r.json()).then(d=>{ const list=(d&&d.result)||[]; const it=list.find(x=>x&&(x.prefix===s.rr||x.id===s.rr)); const tr=it&&it.track; if(tr){ radioNowApply(s, (tr.artist?tr.artist+' — ':'')+(tr.song||tr.title||'')); } }).catch(()=>{}); }
-  }catch(e){} }
-function radioNowStart(){ if(radioNowTimer)clearInterval(radioNowTimer); radioNowFetch(); radioNowTimer=setInterval(radioNowFetch, 20000); }
-function radioNowStop(){ if(radioNowTimer){ clearInterval(radioNowTimer); radioNowTimer=null; } }
-function setRadioPlayIcon(ic){ if($('rbPlay'))$('rbPlay').textContent=ic; if($('ymRadioToggle'))$('ymRadioToggle').textContent=ic; }
-function hlRadioChip(){ document.querySelectorAll('#radioPick button').forEach((b,i)=>b.classList.toggle('on', i===radioIdx)); }
-function showRadioBar(name, sub, icon){ const bar=$('ymBar'); if(!bar) return; bar.style.display='flex'; bar.classList.add('rad'); bar.classList.remove('ym-min'); if($('ymRadioName'))$('ymRadioName').textContent=name; if(sub)setRadioMarq(sub); setRadioPlayIcon(icon); document.body.classList.add('has-player'); setYmBarTop(); }
-function radioStop(){ radioNowStop(); if(radioAudio){ try{radioAudio.pause();}catch(e){} radioAudio.src=''; } radioIdx=-1; hlRadioChip(); setRadioPlayIcon('▶'); setRadioName('Радио Skride'); setRadioMarq('Выбери станцию ниже'); const b=$('ymBar'); if(b&&b.classList.contains('rad')){ b.style.display='none'; b.classList.remove('rad'); document.body.classList.remove('has-player'); setYmBarTop(); } }
-function radioToggle(){ if(!radioAudio||!radioAudio.src){ radioPlayIdx(radioIdx<0?0:radioIdx); return; } const s=RADIO[radioIdx]; if(radioAudio.paused){ radioAudio.play().then(()=>{ setRadioPlayIcon('⏸'); if(s){ setRadioMarq(radioMarqDefault(s)); radioNowStart(); } }).catch(()=>{}); } else { radioNowStop(); radioAudio.pause(); setRadioPlayIcon('▶'); if(s)setRadioMarq('⏸  пауза — '+s.n); } }
-function radioPlay(s){
-  try{ if(typeof unlockAudio==='function') unlockAudio(); }catch(e){}
-  try{ if($('ymIframe'))$('ymIframe').src=''; }catch(e){}
-  if(!radioAudio){ radioAudio=new Audio(); radioAudio.preload='none'; radioAudio.crossOrigin=null; }
-  radioAudio.onerror=function(){ const c=radioAudio&&radioAudio.error?radioAudio.error.code:'-'; showRadioBar('✗ '+s.n,'ошибка ('+c+')','▶'); setRadioName(s.n); setRadioMarq('✗  '+s.n+' не открылось ('+c+')'); };
-  radioAudio.src=s.u;
-  showRadioBar(s.n,'загрузка…','⏳'); setRadioName(s.n); setRadioMarq('⏳  '+s.n+' — загрузка…'); hlRadioChip();
-  radioAudio.play().then(()=>{
-    showRadioBar(s.n, radioMarqDefault(s), '⏸'); setRadioPlayIcon('⏸'); setRadioName(s.n);
-    setRadioMarq(radioMarqDefault(s)); hlRadioChip(); radioNowStart();
-    try{ if('mediaSession' in navigator){ navigator.mediaSession.metadata=new MediaMetadata({title:s.n, artist:'Skride · радио'}); } }catch(e){}
-  }).catch(err=>{
-    const c=radioAudio&&radioAudio.error?radioAudio.error.code:'-';
-    showRadioBar('✗ '+s.n,'не включилось','▶'); setRadioMarq('✗  '+s.n+' не включилось');
-    alert('РАДИО не включилось.\nСтанция: '+s.n+'\nПричина: '+((err&&err.name)||'?')+' — '+((err&&err.message)||'')+'\nКод аудио: '+c);
-  });
-}
-function radioPlayIdx(i){ radioIdx=((i%RADIO.length)+RADIO.length)%RADIO.length; radioPlay(RADIO[radioIdx]); }
-function radioPrev(){ radioPlayIdx((radioIdx<0?0:radioIdx)-1); }
-function radioNext(){ radioPlayIdx((radioIdx<0?-1:radioIdx)+1); }
-function buildRadio(){ const w=$('radioPick'); if(!w) return; w.innerHTML=''; RADIO.forEach((s,i)=>{ const b=document.createElement('button'); b.type='button'; b.className='chip'; b.innerHTML='<svg class="svic" aria-hidden="true"><use href="#ic-music"></use></svg> '+s.n; b.onclick=()=>radioPlayIdx(i); w.appendChild(b); }); }
-if($('radioStop')) $('radioStop').onclick=radioStop;
-if($('rbStop')) $('rbStop').onclick=radioStop;
-if($('rbPlay')) $('rbPlay').onclick=radioToggle;
-if($('rbPrev')) $('rbPrev').onclick=radioPrev;
-if($('rbNext')) $('rbNext').onclick=radioNext;
-if($('ymRadioToggle')) $('ymRadioToggle').onclick=radioToggle;
-if($('ymRadioPrev')) $('ymRadioPrev').onclick=radioPrev;
-if($('ymRadioNext')) $('ymRadioNext').onclick=radioNext;
-buildRadio();
-let _ymExternal='';
+let _ymExternal=''; function ymPlayList(u){ const pr=u.split('/'); _ymExternal=(pr.length>=2)?('https://music.yandex.ru/users/'+pr[0]+'/playlists/'+pr[1]):'https://music.yandex.ru/'; ymSet('https://music.yandex.ru/iframe/#playlist/'+u); }
+function renderMoods(){ const c=$('ymMoods'); if(!c) return; c.innerHTML=''; YM_LISTS.forEach(m=>{ const b=document.createElement('button'); b.type='button'; b.className='bq-opt'; b.textContent=m.n; b.onclick=()=>ymPlayList(m.u); c.appendChild(b); }); }
+function ymDay(){ const d=new Date(); const doy=Math.floor((d-new Date(d.getFullYear(),0,0))/86400000); return YM_LISTS[doy % YM_LISTS.length]; }
 function setYmBarTop(){ try{ const h=document.querySelector('.apphead'); if(h){ document.documentElement.style.setProperty('--head-h', h.offsetHeight+'px'); } }catch(e){} }
-function initMusic(){ applyListen(); setYmBarTop(); }
+function initMusic(){ renderMoods(); const day=ymDay(); if($('ymDayName')) $('ymDayName').textContent=day.n.replace(/^[^\sа-яА-Я\w]*\s*/,''); if($('ymDayOpen')) $('ymDayOpen').onclick=()=>ymPlayList(day.u); applyListen(); setYmBarTop(); }
 window.addEventListener('resize', setYmBarTop);
 window.addEventListener('orientationchange', ()=>setTimeout(setYmBarTop,200));
 try{ const _ah=document.querySelector('.apphead'); if(_ah && window.ResizeObserver){ new ResizeObserver(setYmBarTop).observe(_ah); } }catch(e){}
@@ -2998,7 +2757,7 @@ $('keySave').onclick=async()=>{await sSet(YKEY,$('keyInput').value.trim());$('se
 /* ---- голосовой тренер: переключатель в настройках + кнопка на панели ---- */
 function syncVoiceUI(){
   const b=$('voiceBtn');
-  if(b){ b.innerHTML='<svg class="svic" aria-hidden="true"><use href="#ic-volume"></use></svg> '+(voiceCoach?'Голос вкл':'Голос выкл'); b.style.cssText='flex:none;display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border-radius:999px;font-size:12px;font-weight:700;cursor:pointer;background:#fff;border:1px solid '+(voiceCoach?'var(--orange)':'var(--line2)')+';color:'+(voiceCoach?'var(--orange)':'var(--muted)'); }
+  if(b){ b.innerHTML='<svg class="svic" aria-hidden="true"><use href="#ic-headphones"></use></svg> Голос ИИ-тренера: '+(voiceCoach?'вкл':'выкл'); b.style.borderColor=voiceCoach?'var(--orange)':'var(--line2)'; b.style.color=voiceCoach?'var(--orange)':'var(--ink2)'; }
   if($('voiceToggle')) $('voiceToggle').checked=voiceCoach;
 }
 async function setVoice(v, announce){
@@ -3007,7 +2766,7 @@ async function setVoice(v, announce){
   toast(v?'Тренер включён 🎧':'Тренер выключен');
 }
 $('voiceToggle').onchange=()=>setVoice($('voiceToggle').checked,true);
-if($('voiceBtn')) $('voiceBtn').onclick=()=>setVoice(!voiceCoach,true);
+$('voiceBtn').onclick=()=>setVoice(!voiceCoach,true);
 $('voiceSel').onchange=async()=>{ voiceURI=$('voiceSel').value; await sSet(VOICE_URI_KEY,voiceURI); say('Привет! Я твой тренер. Побежали — держи ровный темп, у тебя отлично получается.'); };
 $('voiceTest').onclick=()=>say('Отличный темп! Дыши ровно, плечи расслаблены. Ты молодец — так держать.');
 
@@ -3175,13 +2934,11 @@ function renderCoach(){
       ? 'Советы — по принципам велоподготовки и анализа твоих данных. Не заменяют врача или личного тренера.'
       : 'Советы — на основе принципов беговой подготовки («Natural Running», методические пособия по лёгкой атлетике) и анализа твоих данных. Не заменяют врача или личного тренера.');
   c.innerHTML=BANNER+'<div class="coach-intro" style="padding-top:12px">'+
-    '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px">'+
-    '<div style="font-family:var(--num);font-weight:800;font-size:15px;line-height:1.2">'+esc(a.head)+'</div>'+
-    '<button id="coachSpeak" type="button" aria-label="Послушать совет голосом" title="Послушать совет" style="flex:none;width:36px;height:36px;border-radius:50%;border:1px solid var(--line2);background:#fff;color:var(--orange);display:flex;align-items:center;justify-content:center;cursor:pointer"><svg class="svic" aria-hidden="true"><use href="#ic-volume"></use></svg></button>'+
-    '</div></div>'+
+    '<div style="font-family:var(--num);font-weight:800;font-size:15px;line-height:1.2">'+esc(a.head)+'</div></div>'+
     a.tips.map(t=>'<div class="coach-tip">'+esc(t)+'</div>').join('')+
     '<div class="coach-tip"><b style="color:var(--orange)">Тренировка:</b> '+esc(train)+'</div>'+
     '<div class="coach-tip"><b style="color:var(--orange)">'+techLabel+'</b> '+esc(tech)+'</div>'+
+    '<button class="lg-btn" id="coachSpeak" style="margin:12px 0 0"><svg class="svic" aria-hidden="true"><use href="#ic-volume"></use></svg> Послушать совет</button>'+
     '<div class="coach-note">'+coachNote+'</div>';
   const speakText=a.tips[0]+'. По тренировкам: '+train+' По технике: '+tech;
   $('coachSpeak').onclick=()=>{ say(speakText); toast('Озвучиваю совет 🔊'); };
@@ -3326,7 +3083,7 @@ if($('authRegBtn')) $('authRegBtn').onclick=()=>doAuth('/api/register');
 if($('authLogout')) $('authLogout').onclick=doLogout;
 if($('authSync')) $('authSync').onclick=cloudSyncInitial;
 const YA_CLIENT_ID='56d4c54c13f648938f52754b4b12b3b3';
-function yaAuthURL(){ const srv=(cloudURL||DEFAULT_SERVER).replace(/\/+$/,''); const st=(typeof isNative!=='undefined'&&isNative)?'app':location.origin; return 'https://oauth.yandex.ru/authorize?response_type=token&client_id='+YA_CLIENT_ID+'&redirect_uri='+encodeURIComponent(srv+'/yandex-callback')+'&state='+encodeURIComponent(st); }
+function yaAuthURL(){ const srv=(cloudURL||DEFAULT_SERVER).replace(/\/+$/,''); return 'https://oauth.yandex.ru/authorize?response_type=token&client_id='+YA_CLIENT_ID+'&redirect_uri='+encodeURIComponent(srv+'/yandex-callback'); }
 async function applyYandexProfile(u){
   if(!u) return;
   let changed=false;
@@ -3376,13 +3133,6 @@ if($('profYandexBtn')) $('profYandexBtn').onclick=startYandexLogin;
     if(m && m[1]){ const tk=decodeURIComponent(m[1]); history.replaceState(null,'',location.pathname+location.search); yandexExchange(tk); }
   }
 }catch(_){} })();
-// НАТИВКА: возврат из входа по Яндексу через deep-link ru.skride.app://login?ytk=...
-(function(){ try{
-  const Cap=window.Capacitor;
-  if(Cap && Cap.Plugins && Cap.Plugins.App){
-    Cap.Plugins.App.addListener('appUrlOpen',(d)=>{ try{ const u=(d&&d.url)||''; const m=u.match(/ytk=([^&]+)/); if(m && m[1]) yandexExchange(decodeURIComponent(m[1])); }catch(e){} });
-  }
-}catch(_){} })();
 let ttsVoice='zahar'; const TTS_VOICE_KEY='stride:ttsvoice';
 let bikeType=''; const BIKE_KEY='stride:biketype';
 function coachContext(){ const wk=_wk(), bp=_bestPace(); let c='всего тренировок '+runs.length+', за неделю '+wk.km.toFixed(1)+' км ('+wk.n+' трен)'; if(bp) c+=', лучший темп '+fmtPace(bp)+'/км'; c+=', ориентир макс пульса '+(maxHr||190)+', сейчас вид активности: '+(activityType==='bike'?'велосипед':'бег'); if(activityType==='bike'&&bikeType) c+=' ('+bikeType+')'; return c; }
@@ -3416,13 +3166,13 @@ async function cloudTTS(text, onDone){
 }
 function coachSendText(q){
   q=(q||'').trim(); if(!q) return; chatPush('me',q); if($('coachQ'))$('coachQ').value='';
-  if(cloudURL && hasAccess()){   // первые 21 день (пробный период) — всё включено; дальше Premium
+  if(cloudURL && hasAccess()){
     chatPush('coach','…',false);
     cloudCoach().then(ans=>{ if(chatMsgs.length&&chatMsgs[chatMsgs.length-1].text==='…')chatMsgs.pop(); chatPush('coach',ans); if(voiceCoach) say(ans); })
       .catch(e=>{ if(chatMsgs.length&&chatMsgs[chatMsgs.length-1].text==='…')chatMsgs.pop(); toast('Облачный тренер недоступен ('+((e&&e.message)||'ошибка')+') — отвечаю офлайн'); const ans=coachAnswer(q); chatPush('coach',ans); if(voiceCoach) say(ans); });
   } else {
     if(!cloudURL) toast('Облачный ИИ не подключён — отвечаю офлайн. Подключи сервер в Настройках');
-    else if(!hasAccess()) toast('Пробный период (21 день) завершён — умный тренер в Premium. Сейчас отвечаю офлайн');
+    else if(!hasAccess()) toast('Умный ИИ-тренер — после пробного периода в Premium. Сейчас отвечаю офлайн');
     const ans=coachAnswer(q); setTimeout(()=>{ chatPush('coach',ans); if(voiceCoach) say(ans); },180);
   }
 }
@@ -3443,45 +3193,22 @@ if($('cloudVoiceSel')) $('cloudVoiceSel').onchange=async(e)=>{ unlockAudio(); tt
 /* ---- голосовой ввод: говоришь вопрос — тренер отвечает (как с Алисой) ---- */
 /* ---- нативное распознавание речи (Android-приложение) как «переходник» к Web Speech API ---- */
 const NATIVE_SR=(window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.SpeechRecognition) || null;
-let _micOK=false;  // разрешение микрофона выдано в этой сессии — повторно не запрашивать (иначе окно лезет каждый круг)
-let _srPopup=false; // тихий режим распознавания не поддержан прошивкой → переключились на системное окно Google
 class NativeSpeechRec{
   constructor(){ this.lang='ru-RU'; this.interimResults=false; this.maxAlternatives=1; this.onstart=this.onresult=this.onerror=this.onend=null; }
   async _perm(SR){
-    // разрешение запрашиваем ОДИН раз за сессию; если уже выдано — не дёргаем (иначе окно лезет каждый круг и рвёт разговор)
     try{
-      if(_micOK) return true;
-      if(SR.checkPermissions){
-        const c=await SR.checkPermissions();
-        if(c && c.speechRecognition==='granted'){ _micOK=true; return true; }
-        const r=await SR.requestPermissions();
-        if(r && r.speechRecognition==='granted'){ _micOK=true; return true; }
-        return false;
-      }
-      if(SR.requestPermission){ await SR.requestPermission(); _micOK=true; return true; }
+      if(SR.checkPermissions){ let p=await SR.checkPermissions(); if(p&&p.speechRecognition==='granted') return true; p=await SR.requestPermissions(); return !!(p&&p.speechRecognition==='granted'); }
+      if(SR.hasPermission){ let h=await SR.hasPermission(); if(h&&(h.permission===true||h.permission==='granted')) return true; await SR.requestPermission(); h=await SR.hasPermission(); return !!(h&&(h.permission===true||h.permission==='granted')); }
     }catch(e){}
     return true;
-  }
-  async _recognize(SR, popup){
-    const res=await SR.start({ language:this.lang||'ru-RU', maxResults:1, partialResults:false, popup:popup });
-    if(res){ if(Array.isArray(res.matches)) return res.matches[0]||''; if(Array.isArray(res)) return res[0]||''; if(typeof res==='string') return res; if(res.text) return res.text; }
-    return '';
   }
   async start(){
     const SR=window.Capacitor.Plugins.SpeechRecognition;
     try{
-      const ok=await this._perm(SR);
-      if(!ok){ this.onerror&&this.onerror({error:'not-allowed'}); this.onend&&this.onend(); return; }
+      if(!(await this._perm(SR))){ this.onerror&&this.onerror({error:'not-allowed'}); this.onend&&this.onend(); return; }
       this.onstart&&this.onstart();
-      let t='';
-      try{
-        t=await this._recognize(SR, _srPopup);   // тихий режим (hands-free) либо системное окно, если уже переключились
-      }catch(e1){
-        // ЛЮБАЯ неудача тихого режима (в т.ч. "insufficient permissions" / error 9 на части прошивок)
-        // → переключаемся на системное окно голосового ввода Google: оно использует своё разрешение и обходит проблему
-        if(!_srPopup){ _srPopup=true; t=await this._recognize(SR, true); }
-        else { throw e1; }
-      }
+      const res=await SR.start({ language:this.lang||'ru-RU', maxResults:1, partialResults:false, popup:false });
+      const t=(res&&res.matches&&res.matches[0])||'';
       if(t) this.onresult&&this.onresult({ results:[[{transcript:t}]] });
       else this.onerror&&this.onerror({error:'no-speech'});
       this.onend&&this.onend();
@@ -3495,31 +3222,13 @@ class NativeSpeechRec{
 }
 const SpeechRec = NATIVE_SR ? NativeSpeechRec : (window.SpeechRecognition || window.webkitSpeechRecognition);
 /* запрос разрешения на микрофон через нативный плагин (показывает системное окно Android) */
-// гонка с таймаутом — чтобы запрос разрешения не подвисал навсегда
-function pTimeout(p, ms){ return Promise.race([ Promise.resolve(p), new Promise(res=>setTimeout(()=>res('__timeout__'), ms)) ]); }
 async function ensureMicNative(){
-  if(_micOK) return true;
-  // 1) САМЫЙ НАДЁЖНЫЙ способ: getUserMedia — показывает системное окно «Разрешить микрофон» ПРЯМО В ПРИЛОЖЕНИИ
-  //    (Capacitor пробрасывает это в runtime-разрешение RECORD_AUDIO). Работает и в браузере, и в нативке.
-  try{
-    if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
-      const st=await pTimeout(navigator.mediaDevices.getUserMedia({audio:true}), 20000);
-      if(st && st!=='__timeout__'){ try{ st.getTracks().forEach(t=>t.stop()); }catch(e){} _micOK=true; return true; }
-    }
-  }catch(e){ /* отказ или нет API — пробуем нативный плагин ниже */ }
-  // 2) Запасной путь — нативный плагин распознавания (его собственный запрос разрешения)
   try{
     const SR=(window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins.SpeechRecognition)||null;
-    if(!SR) return false;
-    if(SR.checkPermissions){
-      let p=await pTimeout(SR.checkPermissions(), 4000);
-      if(p && p!=='__timeout__' && p.speechRecognition==='granted'){ _micOK=true; return true; }
-      p=await pTimeout(SR.requestPermissions(), 12000);
-      if(p && p!=='__timeout__' && p.speechRecognition==='granted'){ _micOK=true; return true; }
-      return false;
-    }
-    if(SR.requestPermission){ try{ await pTimeout(SR.requestPermission(), 12000); }catch(e){} if(SR.hasPermission){ const h=await pTimeout(SR.hasPermission(), 4000); return !!(h && h!=='__timeout__' && (h.permission===true||h.permission==='granted')); } }
-    return false;
+    if(!SR) return true;
+    if(SR.checkPermissions){ let p=await SR.checkPermissions(); if(p&&p.speechRecognition==='granted') return true; p=await SR.requestPermissions(); return !!(p&&p.speechRecognition==='granted'); }
+    if(SR.requestPermission){ try{ await SR.requestPermission(); }catch(e){} if(SR.hasPermission){ const h=await SR.hasPermission(); return !!(h&&(h.permission===true||h.permission==='granted')); } }
+    return true;
   }catch(e){ return false; }
 }
 let _permKind=null;
@@ -3530,11 +3239,11 @@ function showPerm(kind){
   if($('permText')){
     const standalone = isNative || !!(window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || (document.referrer||'').startsWith('android-app://');
     const perm = isMic ? 'Микрофон' : 'Местоположение';
-    const base = isMic ? 'Чтобы говорить с тренером голосом — разреши доступ к микрофону. Потом просто говори, он ответит вслух.' : 'Чтобы показать тебя на карте, разреши доступ к геолокации.';
+    const base = isMic ? 'Голосовой ввод заработает после следующего обновления приложения. Сейчас пиши тренеру текстом — он отвечает так же.' : 'Чтобы показать тебя на карте, разреши доступ к геолокации.';
     const help = standalone
       ? ('Нажми «Разрешить» — появится системное окно, выбери в нём «Разрешить». Если окно не появляется (доступ был запрещён ранее), открой: <b>Настройки телефона → Приложения → Skride → Разрешения → '+perm+' → Разрешить</b>, затем вернись в приложение.')
       : ('Нажми «Разрешить» ниже. Если окно не появилось — доступ заблокирован, открой: <b>значок слева от адреса → Настройки сайта → '+perm+' → Разрешить</b>, затем вернись и нажми «Разрешить» ещё раз.');
-    $('permText').innerHTML = base + '<br><br>' + help;
+    $('permText').innerHTML = isMic ? base : (base + '<br><br>' + help);
   }
   if($('permModal')) $('permModal').style.display='flex';
 }
@@ -3545,8 +3254,7 @@ async function startVoiceAsk(){
   if(isNative){
     if(!NATIVE_SR){ toast('Нет нативного модуля распознавания — обнови сборку приложения'); return; }
     try{ if(NATIVE_SR.available){ const av=await NATIVE_SR.available(); if(av && av.available===false){ toast('На телефоне нет службы распознавания речи (включи Google)'); return; } } }catch(e){}
-    const okMic=await ensureMicNative();   // системное окно «Разрешить микрофон» прямо в приложении
-    if(!okMic){ showPerm('mic'); return; }
+    if(!(await ensureMicNative())){ showPerm('mic'); return; }
   }
   else if(await permState('microphone')==='denied'){ showPerm('mic'); return; }
   if(recOn){ try{recog.stop();}catch(e){} return; }
@@ -3554,14 +3262,13 @@ async function startVoiceAsk(){
     recog=new SpeechRec(); recog.lang='ru-RU'; recog.interimResults=false; recog.maxAlternatives=1;
     recog.onstart=()=>{ recOn=true; const b=$('coachMic'); if(b)b.classList.add('rec'); toast('Слушаю... говори'); };
     recog.onresult=(ev)=>{ const t=ev.results[0][0].transcript; if(t){ coachSendText(t); } };
-    recog.onerror=(ev)=>{ if(ev.error==='not-allowed'||ev.error==='service-not-allowed'){ if(isNative){ toast('Разреши микрофон: Настройки → Приложения → Skride → Разрешения → Микрофон'); } else { showPerm('mic'); } } else if(ev.error==='no-speech'||ev.error==='no-match'){ toast('Не расслышал, попробуй ещё'); } else { toast('Микрофон: '+(ev.message||ev.error||'ошибка')); } };
+    recog.onerror=(ev)=>{ if(ev.error==='not-allowed'||ev.error==='service-not-allowed'){ showPerm('mic'); } else if(ev.error==='no-speech'||ev.error==='no-match'){ toast('Не расслышал, попробуй ещё'); } else { toast('Микрофон: '+(ev.message||ev.error||'ошибка')); } };
     recog.onend=()=>{ recOn=false; const b=$('coachMic'); if(b)b.classList.remove('rec'); };
     recog.start();
   }catch(e){ toast('Не удалось запустить микрофон'); }
 }
 if($('coachMic')) $('coachMic').onclick=()=>{ unlockAudio(); if(convoMode){ stopConvo(); } else { startVoiceAsk(); } };
 if($('permClose')) $('permClose').onclick=()=>{ if($('permModal'))$('permModal').style.display='none'; };
-if($('permModal')) $('permModal').onclick=(e)=>{ if(e.target===$('permModal')) $('permModal').style.display='none'; };
 function openNativeSettings(){
   // в нативном приложении (Capacitor) пробуем открыть настройки приложения на телефоне
   try{
@@ -3577,11 +3284,11 @@ if($('permRetry')) $('permRetry').onclick=async()=>{
     if(isNative){
       const ok=await ensureMicNative();
       if(ok){ startVoiceAsk(); return; }
-      toast('Если окно «Разрешить» не появилось — переустанови приложение (скачай заново с сайта), при первом запуске оно спросит доступ.'); return;
+      if(openNativeSettings()) return;
+      showPerm('mic'); return;
     }
-    // TWA/браузер: голосовой ввод недоступен — просто закрываем, без повторного показа окна
     try{ const st=await navigator.mediaDevices.getUserMedia({audio:true}); st.getTracks().forEach(t=>t.stop()); startVoiceAsk(); }
-    catch(e){ toast('Голосовой ввод заработает в приложении из магазина'); }
+    catch(e){ showPerm('mic'); }
   } else if(_permKind==='geo'){
     if(isNative && openNativeSettings()){ return; }
     toast('Определяю местоположение…'); centerOnUser(16, true);
@@ -3590,19 +3297,8 @@ if($('permRetry')) $('permRetry').onclick=async()=>{
 
 /* ---- режим разговора (hands-free, как с Алисой): слушает → отвечает → снова слушает ---- */
 let convoMode=false;
-function setConvoUI(on){ const b=$('coachConvo'); if(b){ b.classList.toggle('on',on); b.textContent= on?'⏸ Остановить разговор':'🎙️ Поговорить с тренером'; } }
-async function startConvo(){
-  if(!SpeechRec){ toast('Голосовой ввод не поддерживается'); return; }
-  if(isNative){
-    // диагностика среды распознавания (чтобы не было молчаливого «не пашет»)
-    if(!NATIVE_SR){ alert('Распознавание: нет нативного модуля в сборке. Нужно поставить свежий APK (Skride-test.apk).'); return; }
-    try{ if(NATIVE_SR.available){ const av=await NATIVE_SR.available(); if(av && av.available===false){ alert('На телефоне нет службы распознавания речи.\n\nУстанови/включи приложение «Google» (Google Speech Recognition) в Play Маркете, затем попробуй снова.'); return; } } }catch(e){}
-    toast('Разреши доступ к микрофону…');
-    const ok=await ensureMicNative();
-    if(!ok){ showPerm('mic'); return; }   // не зависаем: показываем окно с кнопкой настроек телефона
-  }
-  convoMode=true; setConvoUI(true); unlockAudio(); toast('Скажи фразу — тренер ответит'); convoListen();
-}
+function setConvoUI(on){ const b=$('coachConvo'); if(b){ b.classList.toggle('on',on); b.textContent= on?'⏸ Остановить разговор':'🎙️ Разговор'; } }
+async function startConvo(){ if(!SpeechRec){ toast('Голосовой ввод не поддерживается'); return; } if(isNative && !(await ensureMicNative())){ showPerm('mic'); return; } convoMode=true; setConvoUI(true); unlockAudio(); toast('Режим разговора: просто говори'); convoListen(); }
 function stopConvo(){ convoMode=false; setConvoUI(false); try{recog&&recog.stop();}catch(e){} stopSpeaking(); const b=$('coachMic'); if(b)b.classList.remove('rec'); }
 function convoListen(){
   if(!convoMode) return;
@@ -3611,22 +3307,19 @@ function convoListen(){
     let got=false;
     recog.onstart=()=>{ const b=$('coachMic'); if(b)b.classList.add('rec'); };
     recog.onresult=(ev)=>{ got=true; const t=ev.results[0][0].transcript; if(t) convoAsk(t); };
-    recog.onerror=(ev)=>{ const er=(ev&&ev.error)||'?'; const m=(ev&&ev.message)?(' — '+ev.message):''; if(er==='no-speech'||er==='no-match'){ /* тишина, слушаем дальше */ } else { alert('МИКРОФОН: распознавание не сработало.\nОшибка: '+er+m); } };
+    recog.onerror=()=>{};
     recog.onend=()=>{ const b=$('coachMic'); if(b)b.classList.remove('rec'); if(convoMode && !got){ setTimeout(convoListen, 500); } };
     recog.start();
-  }catch(e){ alert('МИКРОФОН: не удалось запустить распознавание.\n'+((e&&e.message)||e)); if(convoMode) setTimeout(convoListen, 900); }
+  }catch(e){ if(convoMode) setTimeout(convoListen, 900); }
 }
 function convoAsk(q){
   chatPush('me', q);
-  let resumed=false;
-  const after=()=>{ if(resumed) return; resumed=true; if(convoMode) setTimeout(convoListen, 300); };  // дальше слушаем сами, без кнопки
-  const guard=setTimeout(after, 15000);   // подстраховка: продолжаем, даже если озвучка не вызвала callback
-  const done=()=>{ clearTimeout(guard); after(); };
-  if(cloudURL && hasAccess()){   // первые 21 день — всё включено; дальше Premium
+  const after=()=>{ if(convoMode) setTimeout(convoListen, 350); };
+  if(cloudURL && hasAccess()){
     chatPush('coach','…',false);
-    cloudCoach().then(a=>{ if(chatMsgs.length&&chatMsgs[chatMsgs.length-1].text==='…')chatMsgs.pop(); chatPush('coach',a); say(a, done); })
-      .catch(()=>{ if(chatMsgs.length&&chatMsgs[chatMsgs.length-1].text==='…')chatMsgs.pop(); const a=coachAnswer(q); chatPush('coach',a); say(a, done); });
-  } else { const a=coachAnswer(q); chatPush('coach',a); say(a, done); }
+    cloudCoach().then(a=>{ if(chatMsgs.length&&chatMsgs[chatMsgs.length-1].text==='…')chatMsgs.pop(); chatPush('coach',a); say(a, after); })
+      .catch(()=>{ if(chatMsgs.length&&chatMsgs[chatMsgs.length-1].text==='…')chatMsgs.pop(); const a=coachAnswer(q); chatPush('coach',a); say(a, after); });
+  } else { const a=coachAnswer(q); chatPush('coach',a); say(a, after); }
 }
 if($('coachConvo')) $('coachConvo').onclick=()=>{ convoMode?stopConvo():startConvo(); };
 if($('coachPlay')) $('coachPlay').onclick=()=>playLastCoach();
@@ -3698,7 +3391,7 @@ const I18N={
    ob1_d:'Беговой трекер, который делает тебя быстрее: запись по GPS, ИИ-тренер и сравнение с легендами.',ob2_t:'Беги за лучшими бегунами планеты',ob2_d:'Сравни свой темп со 100 легендами мирового бега и поднимайся в рейтинге.',
    obskip:'Пропустить',obnext:'Далее',obstart:'Начать 🏃',
    set_title:'Настройки',set_mode:'Режим записи',set_devices:'Часы и пульсометр',set_voice:'Голос ИИ-тренера',set_lang:'Язык / Language',set_about:'О разработчике',
-   prem_title:'Skride Premium',prem_sub:'21 день бесплатно, затем 100 ₽/мес. Открой все возможности.',prem_f1:'GPS-трекинг и маршруты',prem_f2:'selfie route и пульсовые зоны',prem_f3:'ИИ-тренер — полный анализ и голос',prem_f4:'100 легенд бега — рейтинг',prem_f5:'Беговая дорожка и датчики',prem_free:'Free',prem_pro:'Premium',prem_activate:'Оформить подписку — 100 ₽/мес',close:'Закрыть',prem_note:'Первые 21 день — всё бесплатно. Дальше 100 ₽/мес, оплата банковской картой через ЮKassa. Оформить можно в любой момент, продление раз в месяц.',
+   prem_title:'Skride Premium',prem_sub:'14 дней бесплатно, затем 100 ₽/мес. Открой все возможности.',prem_f1:'GPS-трекинг и маршруты',prem_f2:'selfie route и пульсовые зоны',prem_f3:'ИИ-тренер — полный анализ и голос',prem_f4:'100 легенд бега — рейтинг',prem_f5:'Беговая дорожка и датчики',prem_free:'Free',prem_pro:'Premium',prem_activate:'Оформить подписку — 100 ₽/мес',close:'Закрыть',prem_note:'Реальная оплата подключается через Google Play в нативной версии. Сейчас кнопка активирует Premium в демо-режиме для проверки.',
    prem_on:'Premium активен ⭐',prem_off:'Бесплатный план',prem_activated:'Premium активирован ⭐',prem_locked:'Это функция Premium'},
  en:{sec_route:'Route',sec_hr:'Heart rate & zones',sec_week:'This week',sec_records:'Records',sec_level:'Runner level',sec_coach:'AI coach',sec_feed:'Activities',sec_tread:'Treadmill',
    ob1_d:'A running tracker that makes you faster: GPS recording, an AI coach and comparison with legends.',ob2_t:'Run with the best runners on the planet',ob2_d:'Compare your pace with 100 running legends and climb the ranking.',
@@ -3739,58 +3432,27 @@ $('langSel').onchange=async()=>{ await sSet(LANG_KEY,$('langSel').value); applyL
 
 /* ===== Premium (бесплатно / платно) ===== */
 let isPremium=false; const PREMIUM_KEY='stride:premium';
-let trialStart=0; const TRIAL_KEY='stride:trialstart'; const TRIAL_DAYS=21;  // первые 3 недели — всё бесплатно
+let trialStart=0; const TRIAL_KEY='stride:trialstart'; const TRIAL_DAYS=14;
 function trialMsLeft(){ if(!trialStart) return TRIAL_DAYS*86400000; return (trialStart + TRIAL_DAYS*86400000) - Date.now(); }
 function trialDaysLeft(){ return Math.max(0, Math.ceil(trialMsLeft()/86400000)); }
 function trialActive(){ return trialMsLeft() > 0; }
-// доступ: первые 21 день — пробный период (всё включено, и залогиненным тоже); оплата на сервере = апгрейд в Premium
-function accessInfo(){
-  const now=Date.now();
-  // статус с сервера (после входа): ОТДЕЛЬНО оплачено и пробный (поле premium=true бывает и в триале!)
-  if(authToken && authUser && (authUser.paid!==undefined || authUser.trial!==undefined)){
-    const pu=authUser.premium_until?Date.parse(authUser.premium_until):0;
-    if(authUser.paid===true || pu>now) return {state:'paid', days:pu>now?Math.max(0,Math.ceil((pu-now)/86400000)):0};
-    const tu=authUser.trial_until?Date.parse(authUser.trial_until):0;
-    if(authUser.trial===true || tu>now) return {state:'trial', days:tu>now?Math.max(0,Math.ceil((tu-now)/86400000)):trialDaysLeft()};
-  }
-  if(isPremium) return {state:'paid', days:0};
-  // не вошёл или сервер не дал статус — общий локальный пробный период
-  if(trialActive()) return {state:'trial', days:trialDaysLeft()};
-  return {state:'expired', days:0};
-}
-function hasAccess(){ return accessInfo().state!=='expired'; }
-function _plD(n){ return n%10===1&&n%100!==11?'день':(n%10>=2&&n%10<=4&&(n%100<10||n%100>=20)?'дня':'дней'); }
+function hasAccess(){ return isPremium || trialActive(); }
 function updatePremiumUI(){
-  const ai=accessInfo(); const paid=ai.state==='paid';
+  const dl=trialDaysLeft();
   let statusTxt;
-  if(paid) statusTxt='Premium включён ✓';
-  else if(ai.state==='trial') statusTxt='Пробный период: осталось '+ai.days+' '+_plD(ai.days);
+  if(isPremium) statusTxt='Premium включён ✓';
+  else if(trialActive()) statusTxt='Пробный период: осталось '+dl+' '+(dl%10===1&&dl%100!==11?'день':(dl%10>=2&&dl%10<=4&&(dl%100<10||dl%100>=20)?'дня':'дней'));
   else statusTxt='Пробный период завершён';
   if($('premiumStatus')) $('premiumStatus').textContent = statusTxt;
-  if($('premiumActivate')) $('premiumActivate').style.display = paid?'none':'block';
-  if($('premiumBtn')) $('premiumBtn').textContent = paid? '⭐ Premium' : (ai.state==='trial'? '⭐ '+ai.days+' дн. бесплатно' : '⭐ Включить Premium');
+  if($('premiumActivate')) $('premiumActivate').style.display = isPremium?'none':'block';
+  if($('premiumBtn')) $('premiumBtn').textContent = isPremium? '⭐ Premium' : (trialActive()? '⭐ '+dl+' дн. бесплатно' : '⭐ Включить Premium');
 }
 function openPremium(){ updatePremiumUI(); $('premiumModal').classList.add('show'); }
 function requirePremium(){ if(hasAccess()) return true; toast('Пробный период завершён — оформи Premium, чтобы продолжить'); openPremium(); return false; }
 $('premiumBtn').onclick=openPremium;
 $('premiumClose').onclick=()=>$('premiumModal').classList.remove('show');
 $('premiumModal').onclick=e=>{ if(e.target===$('premiumModal')) $('premiumModal').classList.remove('show'); };
-// РЕАЛЬНАЯ оплата ЮKassa: премиум привязывается к аккаунту на сервере
-$('premiumActivate').onclick=async()=>{
-  if(!authToken){ toast('Сначала войди в аккаунт — премиум привязывается к нему'); $('premiumModal').classList.remove('show'); if(typeof gotoAccount==='function'){ gotoAccount(); } return; }
-  if(!cloudURL){ toast('Не указан адрес сервера'); return; }
-  toast('Создаю платёж…');
-  try{
-    const d=await apiFetch('/api/pay/create',{method:'POST',body:JSON.stringify({})});
-    if(d&&d.confirmation_url){ location.href=d.confirmation_url; }
-    else toast('Не удалось получить ссылку на оплату');
-  }catch(e){ toast(e.message||'Оплата недоступна'); }
-};
-// подтянуть актуальный статус премиума с сервера (после входа / возврата с оплаты)
-async function refreshMe(){
-  if(!(authToken&&cloudURL)) return;
-  try{ const d=await apiFetch('/api/me'); if(d&&d.user){ authUser=d.user; if(typeof saveAuth==='function') await saveAuth(); updatePremiumUI(); if(typeof updateAuthUI==='function') updateAuthUI(); } }catch(e){}
-}
+$('premiumActivate').onclick=async()=>{ isPremium=true; await sSet(PREMIUM_KEY,'1'); updatePremiumUI(); toast(t('prem_activated')); };
 
 /* ---- boot ---- */
 async function boot(){
@@ -3815,15 +3477,13 @@ async function boot(){
   const au=await sGet(AUTH_KEY); if(au){ try{ const a=JSON.parse(au); authToken=a.token||''; authUser=a.user||null; }catch(e){} }
   const sm=await sGet(STORE_KEY); if(sm==='cloud'||sm==='local') storeMode=sm;
   const lm=await sGet(LISTEN_KEY); if(lm==='coach'||lm==='music'||lm==='both') listenMode=lm;
-  /* плеер на старте НЕ показываем — открывается только когда пользователь включит радио или Яндекс Музыку */
+  const mu=await sGet(MUSIC_KEY); if(mu){ if($('ymIframe'))$('ymIframe').src=mu; if($('ymBar'))$('ymBar').style.display='flex'; document.body.classList.add('has-player'); }
   applyLang(curLang); updatePremiumUI(); updateAuthUI();
   syncVoiceUI(); renderHr();
   renderProfile();
   render(); initMap();
   applyMode(); applyActivity(); initChat(); initMusic();
   if(storeMode==='cloud' && authToken && cloudURL) cloudSyncInitial();
-  if(authToken && cloudURL){ refreshMe(); }
-  if(/[?&]paid=1/.test(location.search)){ toast('Проверяю оплату…'); setTimeout(refreshMe,1500); setTimeout(refreshMe,5000); }
   const seen=await sGet(ONB_KEY); if(seen!=='1') obStart();
   renderBoard(pickQuoteDaily());
   // АВТООБНОВЛЕНИЕ: чистим старый SW и проверяем, не вышла ли новая версия
