@@ -3311,7 +3311,7 @@ if($('authRegBtn')) $('authRegBtn').onclick=()=>doAuth('/api/register');
 if($('authLogout')) $('authLogout').onclick=doLogout;
 if($('authSync')) $('authSync').onclick=cloudSyncInitial;
 const YA_CLIENT_ID='56d4c54c13f648938f52754b4b12b3b3';
-function yaAuthURL(){ const srv=(cloudURL||DEFAULT_SERVER).replace(/\/+$/,''); return 'https://oauth.yandex.ru/authorize?response_type=token&client_id='+YA_CLIENT_ID+'&redirect_uri='+encodeURIComponent(srv+'/yandex-callback')+'&state='+encodeURIComponent(location.origin); }
+function yaAuthURL(){ const srv=(cloudURL||DEFAULT_SERVER).replace(/\/+$/,''); const st=(typeof isNative!=='undefined'&&isNative)?'app':location.origin; return 'https://oauth.yandex.ru/authorize?response_type=token&client_id='+YA_CLIENT_ID+'&redirect_uri='+encodeURIComponent(srv+'/yandex-callback')+'&state='+encodeURIComponent(st); }
 async function applyYandexProfile(u){
   if(!u) return;
   let changed=false;
@@ -3359,6 +3359,13 @@ if($('profYandexBtn')) $('profYandexBtn').onclick=startYandexLogin;
   if(h.indexOf('ytk=')>=0){
     const m=h.match(/ytk=([^&]+)/);
     if(m && m[1]){ const tk=decodeURIComponent(m[1]); history.replaceState(null,'',location.pathname+location.search); yandexExchange(tk); }
+  }
+}catch(_){} })();
+// НАТИВКА: возврат из входа по Яндексу через deep-link ru.skride.app://login?ytk=...
+(function(){ try{
+  const Cap=window.Capacitor;
+  if(Cap && Cap.Plugins && Cap.Plugins.App){
+    Cap.Plugins.App.addListener('appUrlOpen',(d)=>{ try{ const u=(d&&d.url)||''; const m=u.match(/ytk=([^&]+)/); if(m && m[1]) yandexExchange(decodeURIComponent(m[1])); }catch(e){} });
   }
 }catch(_){} })();
 let ttsVoice='zahar'; const TTS_VOICE_KEY='stride:ttsvoice';
