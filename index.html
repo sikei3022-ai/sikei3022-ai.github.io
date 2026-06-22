@@ -652,6 +652,7 @@
         <button id="abOpenExt" class="ym-bar-x" type="button" title="открыть снаружи" style="background:#eee;color:var(--ink2)">↗</button>
         <button id="abClose" class="ym-bar-x" type="button" aria-label="закрыть" style="background:#eee;color:var(--ink2)">✕</button>
       </div>
+      <div id="abShelf" style="display:none;gap:7px;padding:9px 11px;overflow-x:auto;white-space:nowrap;border-bottom:1px solid var(--line);flex:none"></div>
       <iframe id="abFrame" style="flex:1;border:none;width:100%;background:#fff" allow="autoplay; encrypted-media; clipboard-write" referrerpolicy="no-referrer-when-downgrade"></iframe>
     </div>
   </div>
@@ -2599,13 +2600,26 @@ function abCloseModal(){ if($('abFrame')){ $('abFrame').removeAttribute('srcdoc'
 if($('abClose')) $('abClose').onclick=abCloseModal;
 if($('abModal')) $('abModal').onclick=(e)=>{ if(e.target===$('abModal')) abCloseModal(); };
 if($('abOpenExt')) $('abOpenExt').onclick=()=>{ if(_abExt) window.open(_abExt,'_blank'); };
-// Яндекс Книги — сразу грузим готовый список аудиокниг в окно; поле для своей ссылки тоже есть
+// Готовые подборки Яндекс Книг (реальные альбомы Яндекс Музыки)
+const AB_YA_BOOKS=[
+  {n:'📖 Классика · рассказы', id:'9702311'},
+  {n:'📕 Пушкин «Дубровский»', id:'8320731'},
+  {n:'📗 Набоков «Лолита»', id:'24278831'},
+  {n:'📘 «Две жизни» Антарова', id:'28801709'},
+  {n:'⚡ Гарри Поттер (рацмышление)', id:'23301952'},
+  {n:'📙 Книги на миллион', id:'7447189'},
+  {n:'🎧 Читатель', id:'6316355'}
+];
+function abLoadBook(id){ if($('abFrame')){ $('abFrame').removeAttribute('srcdoc'); $('abFrame').src='https://music.yandex.ru/iframe/#album/'+id; } }
+function abBuildShelf(){ const s=$('abShelf'); if(!s) return; s.innerHTML=''; AB_YA_BOOKS.forEach((b,i)=>{ const btn=document.createElement('button'); btn.type='button'; btn.className='chip'; btn.style.cssText='display:inline-flex;flex:none;white-space:nowrap;margin-right:7px'; btn.textContent=b.n; if(i===0)btn.classList.add('on'); btn.onclick=()=>{ s.querySelectorAll('button').forEach(x=>x.classList.remove('on')); btn.classList.add('on'); abLoadBook(b.id); }; s.appendChild(btn); }); }
+// Яндекс Книги — полка подборок + плеер; первая книга грузится сразу
 if($('abYandex')) $('abYandex').onclick=()=>{
   if($('abYandex'))$('abYandex').classList.add('on'); if($('abLitres'))$('abLitres').classList.remove('on');
   if($('abTitle'))$('abTitle').textContent='📚 Аудиокниги Яндекса';
   if($('abUrl'))$('abUrl').style.display='block'; if($('abGo'))$('abGo').style.display='inline-flex';
+  if($('abShelf'))$('abShelf').style.display='flex';
   _abExt='https://music.yandex.ru/non-music/audiobooks';
-  if($('abFrame')){ $('abFrame').removeAttribute('srcdoc'); $('abFrame').src='https://music.yandex.ru/iframe/#album/9702311'; }
+  abBuildShelf(); abLoadBook(AB_YA_BOOKS[0].id);
   if($('abModal'))$('abModal').classList.add('show');
 };
 if($('abGo')) $('abGo').onclick=()=>{ const u=($('abUrl')&&$('abUrl').value||'').trim(); const f=(typeof ymToIframe==='function')?ymToIframe(u):''; if(f){ if($('abFrame')){ $('abFrame').removeAttribute('srcdoc'); $('abFrame').src=f; } } else toast('Вставь ссылку на книгу из Яндекс Музыки'); };
@@ -2614,6 +2628,7 @@ if($('abLitres')) $('abLitres').onclick=()=>{
   if($('abLitres'))$('abLitres').classList.add('on'); if($('abYandex'))$('abYandex').classList.remove('on');
   if($('abTitle'))$('abTitle').textContent='📚 ЛитРес — аудиокниги';
   if($('abUrl'))$('abUrl').style.display='none'; if($('abGo'))$('abGo').style.display='none';
+  if($('abShelf'))$('abShelf').style.display='none';
   _abExt='https://www.litres.ru/audioknigi/';
   if($('abFrame')){ $('abFrame').removeAttribute('srcdoc'); $('abFrame').src='https://www.litres.ru/audioknigi/'; }
   if($('abModal'))$('abModal').classList.add('show');
