@@ -643,6 +643,19 @@
 
 <div class="wrap">
 
+  <div class="modal" id="abModal">
+    <div class="sheet" style="max-width:580px;width:96%;height:90vh;max-height:90vh;display:flex;flex-direction:column;padding:0;overflow:hidden">
+      <div style="display:flex;align-items:center;gap:8px;padding:11px 13px;border-bottom:1px solid var(--line)">
+        <b id="abTitle" style="flex:1;font-size:14.5px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">📚 Аудиокниги</b>
+        <input id="abUrl" type="text" placeholder="ссылка на книгу из Яндекс Музыки" inputmode="url" style="display:none;flex:2;min-width:80px;font-size:13px;padding:8px 10px;margin:0">
+        <button id="abGo" class="chip" type="button" style="display:none;flex:none">▶ Играть</button>
+        <button id="abOpenExt" class="ym-bar-x" type="button" title="открыть снаружи" style="background:#eee;color:var(--ink2)">↗</button>
+        <button id="abClose" class="ym-bar-x" type="button" aria-label="закрыть" style="background:#eee;color:var(--ink2)">✕</button>
+      </div>
+      <iframe id="abFrame" style="flex:1;border:none;width:100%;background:#fff" allow="autoplay; encrypted-media; clipboard-write" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
+  </div>
+
   <div class="apphead">
   <div class="topbar">
     <div class="brand">Skride<span>·</span></div>
@@ -2579,17 +2592,30 @@ if($('ymBarClose')) $('ymBarClose').onclick=ymStop;
 if($('ymToggle')) $('ymToggle').onclick=()=>{ const b=$('ymBar'); const min=b.classList.toggle('ym-min'); $('ymToggle').textContent=min?'▴':'▾'; setYmBarTop(); };
 if($('ymExpand')) $('ymExpand').onclick=()=>{ const b=$('ymBar'); b.classList.remove('ym-min'); if($('ymToggle'))$('ymToggle').textContent='▾'; setYmBarTop(); };
 if($('ymOpenExt')) $('ymOpenExt').onclick=()=>{ const u=_ymExternal||(($('ymLink')&&$('ymLink').value.trim())||'https://music.yandex.ru/'); window.open(u,'_blank'); };
-/* Аудиокниги: Яндекс (каталог → ссылку играть в нашем плеере) + ЛитРес (открыть приложение) */
-function abHint(html){ const h=$('abHint'); if(h){ h.style.display='block'; h.innerHTML=html; } }
+/* Аудиокниги — окно-плеер ВНУТРИ приложения (iframe), без выхода наружу */
+let _abExt='';
+function abOpen(src, title, withUrl, ext){
+  if($('abFrame')) $('abFrame').src=src;
+  if($('abTitle')) $('abTitle').textContent=title;
+  if($('abUrl')) $('abUrl').style.display=withUrl?'block':'none';
+  if($('abGo')) $('abGo').style.display=withUrl?'inline-flex':'none';
+  _abExt=ext||src;
+  if($('abModal')) $('abModal').classList.add('show');
+}
+function abCloseModal(){ if($('abFrame')) $('abFrame').src='about:blank'; if($('abModal')) $('abModal').classList.remove('show'); }
+if($('abClose')) $('abClose').onclick=abCloseModal;
+if($('abModal')) $('abModal').onclick=(e)=>{ if(e.target===$('abModal')) abCloseModal(); };
+if($('abOpenExt')) $('abOpenExt').onclick=()=>{ if(_abExt) window.open(_abExt,'_blank'); };
+// Яндекс Книги — плеер-iframe + поле для ссылки на книгу (играет прямо в окне)
 if($('abYandex')) $('abYandex').onclick=()=>{
   if($('abYandex'))$('abYandex').classList.add('on'); if($('abLitres'))$('abLitres').classList.remove('on');
-  abHint('Открыл каталог <b>Яндекс Книг</b>. Выбери книгу → «Поделиться» → скопируй ссылку → вставь в поле «🎵 Своя музыка» ниже и нажми «Играть». Книга заиграет в плеере (нужен Яндекс Плюс).');
-  window.open('https://music.yandex.ru/non-music/audiobooks','_blank');
+  abOpen('https://music.yandex.ru/iframe/', '📚 Аудиокниги Яндекса', true, 'https://music.yandex.ru/non-music/audiobooks');
 };
+if($('abGo')) $('abGo').onclick=()=>{ const u=($('abUrl')&&$('abUrl').value||'').trim(); const f=(typeof ymToIframe==='function')?ymToIframe(u):''; if(f){ if($('abFrame'))$('abFrame').src=f; } else toast('Вставь ссылку на книгу из Яндекс Музыки'); };
+// ЛитРес — грузим их сайт в окне
 if($('abLitres')) $('abLitres').onclick=()=>{
   if($('abLitres'))$('abLitres').classList.add('on'); if($('abYandex'))$('abYandex').classList.remove('on');
-  abHint('Открываю <b>ЛитРес</b> — слушай книги в их приложении (с фоновым звуком, вернёшься в Skride когда захочешь). Внутри Skride их каталог проигрывать нельзя без лицензии.');
-  window.open('https://www.litres.ru/audioknigi/','_blank');
+  abOpen('https://www.litres.ru/audioknigi/', '📚 ЛитРес — аудиокниги', false, 'https://www.litres.ru/audioknigi/');
 };
 
 /* ===== Бесплатное радио (электроника/хаус) — играет у всех без подписки ===== */
