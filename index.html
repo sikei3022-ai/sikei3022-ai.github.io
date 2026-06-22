@@ -2599,13 +2599,13 @@ function abCloseModal(){ if($('abFrame')){ $('abFrame').removeAttribute('srcdoc'
 if($('abClose')) $('abClose').onclick=abCloseModal;
 if($('abModal')) $('abModal').onclick=(e)=>{ if(e.target===$('abModal')) abCloseModal(); };
 if($('abOpenExt')) $('abOpenExt').onclick=()=>{ if(_abExt) window.open(_abExt,'_blank'); };
-// Яндекс Книги — экран-подсказка + поле для ссылки; книга играет прямо в окне
+// Яндекс Книги — сразу грузим готовый список аудиокниг в окно; поле для своей ссылки тоже есть
 if($('abYandex')) $('abYandex').onclick=()=>{
   if($('abYandex'))$('abYandex').classList.add('on'); if($('abLitres'))$('abLitres').classList.remove('on');
   if($('abTitle'))$('abTitle').textContent='📚 Аудиокниги Яндекса';
   if($('abUrl'))$('abUrl').style.display='block'; if($('abGo'))$('abGo').style.display='inline-flex';
   _abExt='https://music.yandex.ru/non-music/audiobooks';
-  if($('abFrame')){ $('abFrame').removeAttribute('src'); $('abFrame').srcdoc=AB_YA_HELP; }
+  if($('abFrame')){ $('abFrame').removeAttribute('srcdoc'); $('abFrame').src='https://music.yandex.ru/iframe/#album/9702311'; }
   if($('abModal'))$('abModal').classList.add('show');
 };
 if($('abGo')) $('abGo').onclick=()=>{ const u=($('abUrl')&&$('abUrl').value||'').trim(); const f=(typeof ymToIframe==='function')?ymToIframe(u):''; if(f){ if($('abFrame')){ $('abFrame').removeAttribute('srcdoc'); $('abFrame').src=f; } } else toast('Вставь ссылку на книгу из Яндекс Музыки'); };
