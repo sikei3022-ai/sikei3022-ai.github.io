@@ -877,6 +877,13 @@
         <button class="act-opt" data-listen="both" type="button"><svg class="svic" aria-hidden="true"><use href="#ic-headphones"></use></svg> Оба</button>
       </div>
 
+      <div style="font-size:12.5px;font-weight:700;color:var(--muted);margin-bottom:7px">📚 Слушать аудиокниги</div>
+      <div class="act-pick" style="margin-bottom:6px">
+        <button class="act-opt" id="abYandex" type="button"><svg class="svic" aria-hidden="true"><use href="#ic-music"></use></svg> Яндекс Книги</button>
+        <button class="act-opt" id="abLitres" type="button"><svg class="svic" aria-hidden="true"><use href="#ic-headphones"></use></svg> ЛитРес</button>
+      </div>
+      <div id="abHint" style="font-size:11.5px;color:var(--muted);line-height:1.5;margin:0 2px 14px;display:none"></div>
+
       <div class="radio-box">
         <div class="rb-top"><svg class="svic" aria-hidden="true"><use href="#ic-music"></use></svg> Радио</div>
         <div class="rb-screen">
@@ -892,30 +899,14 @@
         <div id="radioPick"></div>
       </div>
 
-      <div id="ymDayCard" style="background:var(--grad);color:#fff;border-radius:14px;padding:14px 15px;margin-bottom:12px">
-        <div style="font-size:11px;font-weight:800;letter-spacing:.5px;opacity:.95;text-transform:uppercase">Плейлист дня от Skride</div>
-        <div id="ymDayName" style="font-family:var(--num);font-weight:800;font-size:18px;margin:3px 0 10px"></div>
-        <button id="ymDayOpen" class="chip" type="button" style="background:#fff;color:var(--ink);border:none"><svg class="svic" aria-hidden="true"><use href="#ic-play"></use></svg> Включить</button>
-      </div>
-
-      <div style="font-size:12.5px;font-weight:700;color:var(--muted);margin-bottom:7px">Подборки — тап и играет сразу</div>
-      <div id="ymMoods" style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px"></div>
-
-      <div style="font-size:13.5px;font-weight:800;margin:4px 0 4px">🎵 Свои плейлисты из Яндекс Музыки</div>
+      <div style="font-size:13.5px;font-weight:800;margin:4px 0 4px">🎵 Своя музыка из Яндекс Музыки</div>
       <div style="font-size:12px;color:var(--muted);line-height:1.55;margin-bottom:8px">В приложении Яндекс Музыка открой любой свой плейлист → «···» (или «Поделиться») → «Скопировать ссылку» и вставь сюда — он заиграет в приложении:</div>
       <input id="ymLink" type="text" placeholder="Вставь ссылку на свой плейлист…" inputmode="url" style="margin-bottom:8px">
       <div class="row">
         <button class="btn-sec" id="ymStop"><svg class="svic" aria-hidden="true"><use href="#ic-stop"></use></svg> Стоп</button>
         <button class="btn-pri" id="ymLoad"><svg class="svic" aria-hidden="true"><use href="#ic-play"></use></svg> Играть</button>
       </div>
-      <p style="font-size:11.5px;color:var(--muted);line-height:1.5;margin:10px 2px 0">▶ Плей и пауза — также внутри самого плеера. 🔊 Громкость — кнопками громкости телефона или наушников. Совет: открой Яндекс Музыку, найди плейлист (можно свой «Плейлист дня»), «Поделиться» → скопируй ссылку и вставь сюда. Для полного воспроизведения нужна активная Яндекс Музыка (подписка/вход) в этом браузере.</p>
-
-      <div style="font-size:13.5px;font-weight:800;margin:18px 0 4px">📚 Аудиокниги на тренировке</div>
-      <div style="font-size:12px;color:var(--muted);line-height:1.55;margin-bottom:9px">Книги из Яндекс Музыки играют прямо здесь: открой каталог, выбери книгу → «Поделиться» → скопируй ссылку → вставь в поле «🎵 Свои плейлисты» выше и нажми «Играть» (нужна подписка Яндекс Плюс). ЛитРес откроется в своём приложении.</div>
-      <div style="display:flex;flex-wrap:wrap;gap:8px">
-        <button class="chip" id="abYandex" type="button"><svg class="svic" aria-hidden="true"><use href="#ic-music"></use></svg> Аудиокниги Яндекса</button>
-        <button class="chip" id="abLitres" type="button"><svg class="svic" aria-hidden="true"><use href="#ic-headphones"></use></svg> Слушать в ЛитРес</button>
-      </div>
+      <p style="font-size:11.5px;color:var(--muted);line-height:1.5;margin:10px 2px 0">▶ Плей и пауза — также внутри самого плеера. 🔊 Громкость — кнопками громкости телефона или наушников. Совет: открой Яндекс Музыку, найди плейлист, «Поделиться» → скопируй ссылку и вставь сюда. Для полного воспроизведения нужна активная Яндекс Музыка (подписка/вход) в этом браузере.</p>
     </div>
   </div>
 
@@ -2589,8 +2580,17 @@ if($('ymToggle')) $('ymToggle').onclick=()=>{ const b=$('ymBar'); const min=b.cl
 if($('ymExpand')) $('ymExpand').onclick=()=>{ const b=$('ymBar'); b.classList.remove('ym-min'); if($('ymToggle'))$('ymToggle').textContent='▾'; setYmBarTop(); };
 if($('ymOpenExt')) $('ymOpenExt').onclick=()=>{ const u=_ymExternal||(($('ymLink')&&$('ymLink').value.trim())||'https://music.yandex.ru/'); window.open(u,'_blank'); };
 /* Аудиокниги: Яндекс (каталог → ссылку играть в нашем плеере) + ЛитРес (открыть приложение) */
-if($('abYandex')) $('abYandex').onclick=()=>{ window.open('https://music.yandex.ru/non-music/audiobooks','_blank'); toast('Выбери книгу → «Поделиться» → ссылку вставь в поле выше'); };
-if($('abLitres')) $('abLitres').onclick=()=>{ window.open('https://www.litres.ru/audioknigi/','_blank'); };
+function abHint(html){ const h=$('abHint'); if(h){ h.style.display='block'; h.innerHTML=html; } }
+if($('abYandex')) $('abYandex').onclick=()=>{
+  if($('abYandex'))$('abYandex').classList.add('on'); if($('abLitres'))$('abLitres').classList.remove('on');
+  abHint('Открыл каталог <b>Яндекс Книг</b>. Выбери книгу → «Поделиться» → скопируй ссылку → вставь в поле «🎵 Своя музыка» ниже и нажми «Играть». Книга заиграет в плеере (нужен Яндекс Плюс).');
+  window.open('https://music.yandex.ru/non-music/audiobooks','_blank');
+};
+if($('abLitres')) $('abLitres').onclick=()=>{
+  if($('abLitres'))$('abLitres').classList.add('on'); if($('abYandex'))$('abYandex').classList.remove('on');
+  abHint('Открываю <b>ЛитРес</b> — слушай книги в их приложении (с фоновым звуком, вернёшься в Skride когда захочешь). Внутри Skride их каталог проигрывать нельзя без лицензии.');
+  window.open('https://www.litres.ru/audioknigi/','_blank');
+};
 
 /* ===== Бесплатное радио (электроника/хаус) — играет у всех без подписки ===== */
 const RADIO=[
@@ -2598,14 +2598,19 @@ const RADIO=[
   {n:'Record Club',g:'клубный хаус',u:'https://radiorecord.hostingradio.ru/club96.aacp',rr:'club'},
   {n:'Trancemission',g:'транс',u:'https://radiorecord.hostingradio.ru/tm96.aacp',rr:'trancemission'},
   {n:'Beat Blender',g:'даунтемпо · хаус',u:'https://ice.somafm.com/beatblender-128-mp3',soma:'beatblender'},
-  {n:'The Trip',g:'прог-хаус',u:'https://ice.somafm.com/thetrip-128-mp3',soma:'thetrip'}
+  {n:'The Trip',g:'прог-хаус',u:'https://ice.somafm.com/thetrip-128-mp3',soma:'thetrip'},
+  {n:'Record Deep',g:'дип-хаус',u:'https://radiorecord.hostingradio.ru/deep96.aacp',rr:'deep'},
+  {n:'Record Rock',g:'рок для драйва',u:'https://radiorecord.hostingradio.ru/rock96.aacp',rr:'rock'},
+  {n:'Русский микс',g:'русские хиты',u:'https://radiorecord.hostingradio.ru/rus96.aacp',rr:'rus'},
+  {n:'Groove Salad',g:'эмбиент · чилл',u:'https://ice.somafm.com/groovesalad-128-mp3',soma:'groovesalad'},
+  {n:'SomaFM Lush',g:'мелодик · вокал',u:'https://ice.somafm.com/lush-128-mp3',soma:'lush'}
 ];
 let radioAudio=null, radioIdx=-1, radioNowTimer=null;
 function setRadioMarq(t){ if($('radioMarq'))$('radioMarq').textContent=t; }
 function setRadioName(t){ if($('radioName'))$('radioName').textContent=t; }
 /* Бегущая строка трека: сначала жанр, затем (если станция отдаёт) — реальное название песни */
-function radioMarqDefault(s){ return s.g+'      ·      Skride радио'; }
-function radioNowApply(s, track){ if(RADIO[radioIdx]!==s||!radioAudio||radioAudio.paused) return; const t=(track||'').trim(); const txt=t?('♪  '+t):radioMarqDefault(s); setRadioMarq(txt); if($('ymRadioSub'))$('ymRadioSub').textContent=t?t:s.g; }
+function radioMarqDefault(s){ return s.n+'  ·  '+s.g+'  ·  Skride радио  ·  '+s.n+'  ·  '+s.g+'  ·  '; }
+function radioNowApply(s, track){ if(RADIO[radioIdx]!==s||!radioAudio||radioAudio.paused) return; const t=(track||'').trim(); const txt=t?('♪  '+t+'  ·  '+s.n+'  '):radioMarqDefault(s); setRadioMarq(txt); if($('ymRadioSub'))$('ymRadioSub').textContent=txt; }
 function radioNowFetch(){ const s=RADIO[radioIdx]; if(!s) return; try{
     if(s.soma){ fetch('https://somafm.com/songs/'+s.soma+'.json',{cache:'no-store'}).then(r=>r.json()).then(d=>{ const x=d&&d.songs&&d.songs[0]; if(x){ radioNowApply(s, (x.artist?x.artist+' — ':'')+(x.title||'')); } }).catch(()=>{}); }
     else if(s.rr){ fetch('https://www.radiorecord.ru/api/stations/now/?tz=180',{cache:'no-store'}).then(r=>r.json()).then(d=>{ const list=(d&&d.result)||[]; const it=list.find(x=>x&&(x.prefix===s.rr||x.id===s.rr)); const tr=it&&it.track; if(tr){ radioNowApply(s, (tr.artist?tr.artist+' — ':'')+(tr.song||tr.title||'')); } }).catch(()=>{}); }
@@ -2625,7 +2630,7 @@ function radioPlay(s){
   radioAudio.src=s.u;
   showRadioBar(s.n,'загрузка…','⏳'); setRadioName(s.n); setRadioMarq('⏳  '+s.n+' — загрузка…'); hlRadioChip();
   radioAudio.play().then(()=>{
-    showRadioBar(s.n, s.g, '⏸'); setRadioPlayIcon('⏸'); setRadioName(s.n);
+    showRadioBar(s.n, radioMarqDefault(s), '⏸'); setRadioPlayIcon('⏸'); setRadioName(s.n);
     setRadioMarq(radioMarqDefault(s)); hlRadioChip(); radioNowStart();
     try{ if('mediaSession' in navigator){ navigator.mediaSession.metadata=new MediaMetadata({title:s.n, artist:'Skride · радио'}); } }catch(e){}
   }).catch(err=>{
@@ -2647,19 +2652,9 @@ if($('ymRadioToggle')) $('ymRadioToggle').onclick=radioToggle;
 if($('ymRadioPrev')) $('ymRadioPrev').onclick=radioPrev;
 if($('ymRadioNext')) $('ymRadioNext').onclick=radioNext;
 buildRadio();
-const YM_LISTS=[
- {n:'⚡ Энергия для бега', u:'music.partners/1169'},
- {n:'🔥 Интенсивная тренировка', u:'music-blog/2398'},
- {n:'🏃 Полюбить бег', u:'music.partners/1602'},
- {n:'🍂 Осенняя пробежка', u:'music-blog/1380'},
- {n:'💪 Музыка для тренировок', u:'blackstarinc2014/1013'},
- {n:'🏋️ Для спортзала', u:'music-partners/1598'}
-];
-let _ymExternal=''; function ymPlayList(u){ const pr=u.split('/'); _ymExternal=(pr.length>=2)?('https://music.yandex.ru/users/'+pr[0]+'/playlists/'+pr[1]):'https://music.yandex.ru/'; ymSet('https://music.yandex.ru/iframe/#playlist/'+u); }
-function renderMoods(){ const c=$('ymMoods'); if(!c) return; c.innerHTML=''; YM_LISTS.forEach(m=>{ const b=document.createElement('button'); b.type='button'; b.className='bq-opt'; b.textContent=m.n; b.onclick=()=>ymPlayList(m.u); c.appendChild(b); }); }
-function ymDay(){ const d=new Date(); const doy=Math.floor((d-new Date(d.getFullYear(),0,0))/86400000); return YM_LISTS[doy % YM_LISTS.length]; }
+let _ymExternal='';
 function setYmBarTop(){ try{ const h=document.querySelector('.apphead'); if(h){ document.documentElement.style.setProperty('--head-h', h.offsetHeight+'px'); } }catch(e){} }
-function initMusic(){ renderMoods(); const day=ymDay(); if($('ymDayName')) $('ymDayName').textContent=day.n.replace(/^[^\sа-яА-Я\w]*\s*/,''); if($('ymDayOpen')) $('ymDayOpen').onclick=()=>ymPlayList(day.u); applyListen(); setYmBarTop(); }
+function initMusic(){ applyListen(); setYmBarTop(); }
 window.addEventListener('resize', setYmBarTop);
 window.addEventListener('orientationchange', ()=>setTimeout(setYmBarTop,200));
 try{ const _ah=document.querySelector('.apphead'); if(_ah && window.ResizeObserver){ new ResizeObserver(setYmBarTop).observe(_ah); } }catch(e){}
@@ -3289,7 +3284,7 @@ if($('authRegBtn')) $('authRegBtn').onclick=()=>doAuth('/api/register');
 if($('authLogout')) $('authLogout').onclick=doLogout;
 if($('authSync')) $('authSync').onclick=cloudSyncInitial;
 const YA_CLIENT_ID='56d4c54c13f648938f52754b4b12b3b3';
-function yaAuthURL(){ const srv=(cloudURL||DEFAULT_SERVER).replace(/\/+$/,''); return 'https://oauth.yandex.ru/authorize?response_type=token&client_id='+YA_CLIENT_ID+'&redirect_uri='+encodeURIComponent(srv+'/yandex-callback'); }
+function yaAuthURL(){ const srv=(cloudURL||DEFAULT_SERVER).replace(/\/+$/,''); return 'https://oauth.yandex.ru/authorize?response_type=token&client_id='+YA_CLIENT_ID+'&redirect_uri='+encodeURIComponent(srv+'/yandex-callback')+'&state='+encodeURIComponent(location.origin); }
 async function applyYandexProfile(u){
   if(!u) return;
   let changed=false;
