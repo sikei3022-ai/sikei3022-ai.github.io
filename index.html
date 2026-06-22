@@ -2594,28 +2594,29 @@ if($('ymExpand')) $('ymExpand').onclick=()=>{ const b=$('ymBar'); b.classList.re
 if($('ymOpenExt')) $('ymOpenExt').onclick=()=>{ const u=_ymExternal||(($('ymLink')&&$('ymLink').value.trim())||'https://music.yandex.ru/'); window.open(u,'_blank'); };
 /* Аудиокниги — окно-плеер ВНУТРИ приложения (iframe), без выхода наружу */
 let _abExt='';
-function abOpen(src, title, withUrl, ext){
-  if($('abFrame')) $('abFrame').src=src;
-  if($('abTitle')) $('abTitle').textContent=title;
-  if($('abUrl')) $('abUrl').style.display=withUrl?'block':'none';
-  if($('abGo')) $('abGo').style.display=withUrl?'inline-flex':'none';
-  _abExt=ext||src;
-  if($('abModal')) $('abModal').classList.add('show');
-}
-function abCloseModal(){ if($('abFrame')) $('abFrame').src='about:blank'; if($('abModal')) $('abModal').classList.remove('show'); }
+const AB_YA_HELP='<!doctype html><meta charset="utf-8"><body style="font-family:system-ui,-apple-system,sans-serif;margin:0;display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(180deg,#34b06f,#1f8b52);color:#fff;text-align:center;padding:26px;box-sizing:border-box"><div style="max-width:360px"><div style="font-size:44px;margin-bottom:8px">📚</div><b style="font-size:19px">Аудиокниги Яндекса</b><div style="font-size:14px;line-height:1.65;opacity:.96;margin:16px 0;text-align:left"><b>1.</b> Нажми <b>↗</b> вверху — откроется каталог Яндекс Книг.<br><b>2.</b> Выбери книгу → «Поделиться» → скопируй ссылку.<br><b>3.</b> Вставь ссылку в поле сверху и нажми <b>«▶ Играть»</b>.<br>Книга заиграет прямо в этом окне.</div><div style="font-size:12px;opacity:.85">Нужна подписка Яндекс&nbsp;Плюс</div></div></body>';
+function abCloseModal(){ if($('abFrame')){ $('abFrame').removeAttribute('srcdoc'); $('abFrame').src='about:blank'; } if($('abModal')) $('abModal').classList.remove('show'); }
 if($('abClose')) $('abClose').onclick=abCloseModal;
 if($('abModal')) $('abModal').onclick=(e)=>{ if(e.target===$('abModal')) abCloseModal(); };
 if($('abOpenExt')) $('abOpenExt').onclick=()=>{ if(_abExt) window.open(_abExt,'_blank'); };
-// Яндекс Книги — плеер-iframe + поле для ссылки на книгу (играет прямо в окне)
+// Яндекс Книги — экран-подсказка + поле для ссылки; книга играет прямо в окне
 if($('abYandex')) $('abYandex').onclick=()=>{
   if($('abYandex'))$('abYandex').classList.add('on'); if($('abLitres'))$('abLitres').classList.remove('on');
-  abOpen('https://music.yandex.ru/iframe/', '📚 Аудиокниги Яндекса', true, 'https://music.yandex.ru/non-music/audiobooks');
+  if($('abTitle'))$('abTitle').textContent='📚 Аудиокниги Яндекса';
+  if($('abUrl'))$('abUrl').style.display='block'; if($('abGo'))$('abGo').style.display='inline-flex';
+  _abExt='https://music.yandex.ru/non-music/audiobooks';
+  if($('abFrame')){ $('abFrame').removeAttribute('src'); $('abFrame').srcdoc=AB_YA_HELP; }
+  if($('abModal'))$('abModal').classList.add('show');
 };
-if($('abGo')) $('abGo').onclick=()=>{ const u=($('abUrl')&&$('abUrl').value||'').trim(); const f=(typeof ymToIframe==='function')?ymToIframe(u):''; if(f){ if($('abFrame'))$('abFrame').src=f; } else toast('Вставь ссылку на книгу из Яндекс Музыки'); };
+if($('abGo')) $('abGo').onclick=()=>{ const u=($('abUrl')&&$('abUrl').value||'').trim(); const f=(typeof ymToIframe==='function')?ymToIframe(u):''; if(f){ if($('abFrame')){ $('abFrame').removeAttribute('srcdoc'); $('abFrame').src=f; } } else toast('Вставь ссылку на книгу из Яндекс Музыки'); };
 // ЛитРес — грузим их сайт в окне
 if($('abLitres')) $('abLitres').onclick=()=>{
   if($('abLitres'))$('abLitres').classList.add('on'); if($('abYandex'))$('abYandex').classList.remove('on');
-  abOpen('https://www.litres.ru/audioknigi/', '📚 ЛитРес — аудиокниги', false, 'https://www.litres.ru/audioknigi/');
+  if($('abTitle'))$('abTitle').textContent='📚 ЛитРес — аудиокниги';
+  if($('abUrl'))$('abUrl').style.display='none'; if($('abGo'))$('abGo').style.display='none';
+  _abExt='https://www.litres.ru/audioknigi/';
+  if($('abFrame')){ $('abFrame').removeAttribute('srcdoc'); $('abFrame').src='https://www.litres.ru/audioknigi/'; }
+  if($('abModal'))$('abModal').classList.add('show');
 };
 
 /* ===== Бесплатное радио (электроника/хаус) — играет у всех без подписки ===== */
