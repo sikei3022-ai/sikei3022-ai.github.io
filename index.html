@@ -1055,6 +1055,9 @@
           <button class="btn-pri" id="authSync">Синхронизировать</button>
         </div>
         <div id="authSyncState" style="font-size:11.5px;color:var(--muted);margin-top:8px;text-align:center"></div>
+        <div style="margin-top:14px;text-align:center">
+          <button type="button" id="acctDelete" style="border:none;background:none;color:#c0392b;font-size:12.5px;font-weight:700;text-decoration:underline;cursor:pointer;padding:4px">Удалить аккаунт и все данные</button>
+        </div>
       </div>
     </div>
 
@@ -1111,6 +1114,13 @@
       <div class="row2"><span class="ic">🏃</span><div><div class="t">Skride</div><div class="d">GPS-трекер бега с голосовым тренером, пульсовыми зонами и сравнением со 100 легендами. Версия 8.6 — крупные кнопки премиума; убран блок тестирования.</div></div></div>
     </div>
 
+    <div style="margin:16px 0 4px;text-align:center;font-size:12.5px;line-height:1.9">
+      <a href="privacy-ru.html" target="_blank" rel="noopener" style="color:var(--muted);text-decoration:underline">Политика конфиденциальности</a>
+      <span style="color:var(--line2)">·</span>
+      <a href="#" id="subTermsLink" style="color:var(--muted);text-decoration:underline">Условия подписки</a>
+      <div style="color:var(--muted);margin-top:6px">Поддержка: <a href="mailto:sikei3022@gmail.com" style="color:var(--muted)">sikei3022@gmail.com</a></div>
+    </div>
+
   </div>
 </div>
 <div class="modal" id="premiumModal">
@@ -1130,7 +1140,7 @@
     <div id="premiumStatus" style="text-align:center;font-weight:700;font-size:14px;margin:10px 0;color:var(--orange)"></div>
     <button class="btn-pri" id="premiumActivate" style="width:100%;height:auto;padding:17px;font-size:17.5px;font-weight:800;border-radius:16px;display:flex;align-items:center;justify-content:center;gap:8px" data-i18n="prem_activate">⭐ Оформить подписку — 100 ₽/мес</button>
     <button class="btn-sec" id="premiumClose" style="width:100%;height:auto;padding:14px;font-size:16px;font-weight:700;border-radius:14px;margin-top:10px" data-i18n="close">Закрыть</button>
-    <p style="margin-top:10px;font-size:11px" data-i18n="prem_note">Первые 21 день — всё бесплатно. Дальше 100 ₽/мес, оплата банковской картой через ЮKassa. Оформить можно в любой момент, продление раз в месяц.</p>
+    <p style="margin-top:10px;font-size:11px;line-height:1.6" data-i18n="prem_note">Первые 21 день — всё бесплатно, без оплаты. Дальше Premium — 100 ₽ за 30 дней, оплата банковской картой через ЮKassa. Списание разовое, автопродления нет: премиум действует 30 дней, для продления оплачиваешь снова. Входит: умный ИИ-тренер с голосом, 100 легенд бега, беговая дорожка и датчики. Базовый трекинг и маршруты бесплатны всегда. Возврат и вопросы: sikei3022@gmail.com.</p>
   </div>
 </div>
 
@@ -3341,6 +3351,19 @@ function updateAuthUI(){
   if($('authLoggedIn')) $('authLoggedIn').style.display = li?'block':'none';
   if(li && $('authWho')) $('authWho').textContent = (authUser&&(authUser.email||authUser.name))||'аккаунт';
 }
+/* Удаление аккаунта и всех данных (требование магазинов приложений) */
+async function deleteAccount(){
+  if(!authToken){ toast('Вы не вошли'); return; }
+  if(!confirm('Удалить аккаунт и ВСЕ данные без возможности восстановления?\n\nПробежки в облаке, профиль и подписка будут стёрты. Данные на этом телефоне останутся, пока не удалишь приложение.')) return;
+  try{
+    await apiFetch('/api/account/delete',{method:'POST'});
+    authToken=''; authUser=null; await saveAuth(); storeMode='local'; await sSet(STORE_KEY,'local');
+    updateAuthUI(); if(typeof updatePremiumUI==='function') updatePremiumUI();
+    toast('Аккаунт и данные удалены');
+  }catch(e){ toast('Не удалось удалить: '+e.message); }
+}
+if($('acctDelete')) $('acctDelete').onclick=deleteAccount;
+if($('subTermsLink')) $('subTermsLink').onclick=function(e){ e.preventDefault(); if(typeof openPremium==='function') openPremium(); };
 document.querySelectorAll('#storePick button').forEach(b=>b.onclick=async()=>{
   const m=b.dataset.store;
   if(m==='cloud'){ storeMode='cloud'; await sSet(STORE_KEY,'cloud'); updateAuthUI(); if(!cloudURL) toast('Укажи адрес сервера ниже («Облачный ИИ»)'); else if(authToken) cloudSyncInitial(); }
@@ -3723,31 +3746,31 @@ const I18N={
    ob1_d:'Беговой трекер, который делает тебя быстрее: запись по GPS, ИИ-тренер и сравнение с легендами.',ob2_t:'Беги за лучшими бегунами планеты',ob2_d:'Сравни свой темп со 100 легендами мирового бега и поднимайся в рейтинге.',
    obskip:'Пропустить',obnext:'Далее',obstart:'Начать 🏃',
    set_title:'Настройки',set_mode:'Режим записи',set_devices:'Часы и пульсометр',set_voice:'Голос ИИ-тренера',set_lang:'Язык / Language',set_about:'О разработчике',
-   prem_title:'Skride Premium',prem_sub:'21 день бесплатно, затем 100 ₽/мес. Открой все возможности.',prem_f1:'GPS-трекинг и маршруты',prem_f2:'selfie route и пульсовые зоны',prem_f3:'ИИ-тренер — полный анализ и голос',prem_f4:'100 легенд бега — рейтинг',prem_f5:'Беговая дорожка и датчики',prem_free:'Free',prem_pro:'Premium',prem_activate:'Оформить подписку — 100 ₽/мес',close:'Закрыть',prem_note:'Первые 21 день — всё бесплатно. Дальше 100 ₽/мес, оплата банковской картой через ЮKassa. Оформить можно в любой момент, продление раз в месяц.',
+   prem_title:'Skride Premium',prem_sub:'21 день бесплатно, затем 100 ₽/мес. Открой все возможности.',prem_f1:'GPS-трекинг и маршруты',prem_f2:'selfie route и пульсовые зоны',prem_f3:'ИИ-тренер — полный анализ и голос',prem_f4:'100 легенд бега — рейтинг',prem_f5:'Беговая дорожка и датчики',prem_free:'Free',prem_pro:'Premium',prem_activate:'Оформить подписку — 100 ₽/мес',close:'Закрыть',prem_note:'Первые 21 день — всё бесплатно, без оплаты. Дальше Premium — 100 ₽ за 30 дней, оплата банковской картой через ЮKassa. Списание разовое, автопродления нет: премиум действует 30 дней, для продления оплачиваешь снова. Входит: умный ИИ-тренер с голосом, 100 легенд бега, беговая дорожка и датчики. Базовый трекинг и маршруты бесплатны всегда. Возврат и вопросы: sikei3022@gmail.com.',
    prem_on:'Premium активен ⭐',prem_off:'Бесплатный план',prem_activated:'Premium активирован ⭐',prem_locked:'Это функция Premium'},
  en:{sec_route:'Route',sec_hr:'Heart rate & zones',sec_week:'This week',sec_records:'Records',sec_level:'Runner level',sec_coach:'AI coach',sec_feed:'Activities',sec_tread:'Treadmill',
    ob1_d:'A running tracker that makes you faster: GPS recording, an AI coach and comparison with legends.',ob2_t:'Run with the best runners on the planet',ob2_d:'Compare your pace with 100 running legends and climb the ranking.',
    obskip:'Skip',obnext:'Next',obstart:'Start 🏃',
    set_title:'Settings',set_mode:'Recording mode',set_devices:'Watch & heart rate',set_voice:'AI coach voice',set_lang:'Language',set_about:'About the developer',
-   prem_title:'Skride Premium',prem_sub:'14 days free, then 100 ₽/mo. Unlock everything.',prem_f1:'GPS tracking & routes',prem_f2:'Manual entry & heart-rate zones',prem_f3:'AI coach — full analysis & voice',prem_f4:'100 running legends — ranking',prem_f5:'Treadmill & sensors',prem_free:'Free',prem_pro:'Premium',prem_activate:'Subscribe — 100 ₽/mo',close:'Close',prem_note:'Real payments are handled via Google Play in the native version. For now this button activates Premium in demo mode for testing.',
+   prem_title:'Skride Premium',prem_sub:'21 days free, then 100 ₽ / 30 days. Unlock everything.',prem_f1:'GPS tracking & routes',prem_f2:'Manual entry & heart-rate zones',prem_f3:'AI coach — full analysis & voice',prem_f4:'100 running legends — ranking',prem_f5:'Treadmill & sensors',prem_free:'Free',prem_pro:'Premium',prem_activate:'Subscribe — 100 ₽ / 30 days',close:'Close',prem_note:'First 21 days are free. Then Premium is 100 ₽ for 30 days, paid by bank card via YooKassa. One-time charge, no auto-renewal: Premium lasts 30 days, pay again to extend. Includes: smart AI coach with voice, 100 running legends, treadmill and sensors. Basic tracking and routes are always free. Refunds and questions: sikei3022@gmail.com.',
    prem_on:'Premium active ⭐',prem_off:'Free plan',prem_activated:'Premium activated ⭐',prem_locked:'This is a Premium feature'},
  es:{sec_route:'Ruta',sec_hr:'Pulso y zonas',sec_week:'Esta semana',sec_records:'Récords',sec_level:'Nivel de corredor',sec_coach:'Entrenador IA',sec_feed:'Actividades',sec_tread:'Cinta de correr',
    ob1_d:'Un rastreador de carrera que te hace más rápido: registro por GPS, entrenador con IA y comparación con leyendas.',ob2_t:'Corre con los mejores del planeta',ob2_d:'Compara tu ritmo con 100 leyendas del running y sube en la clasificación.',
    obskip:'Saltar',obnext:'Siguiente',obstart:'Empezar 🏃',
    set_title:'Ajustes',set_mode:'Modo de registro',set_devices:'Reloj y pulso',set_voice:'Voz del entrenador IA',set_lang:'Idioma',set_about:'Sobre el desarrollador',
-   prem_title:'Skride Premium',prem_sub:'14 días gratis, luego 100 ₽/mes. Desbloquea todo.',prem_f1:'Seguimiento GPS y rutas',prem_f2:'Entrada manual y zonas de pulso',prem_f3:'Entrenador IA — análisis completo y voz',prem_f4:'100 leyendas del running — ranking',prem_f5:'Cinta de correr y sensores',prem_free:'Free',prem_pro:'Premium',prem_activate:'Suscribirse — 100 ₽/mes',close:'Cerrar',prem_note:'Los pagos reales se gestionan por Google Play en la versión nativa. Por ahora este botón activa Premium en modo demo para probar.',
+   prem_title:'Skride Premium',prem_sub:'21 días gratis, luego 100 ₽ / 30 días. Desbloquea todo.',prem_f1:'Seguimiento GPS y rutas',prem_f2:'Entrada manual y zonas de pulso',prem_f3:'Entrenador IA — análisis completo y voz',prem_f4:'100 leyendas del running — ranking',prem_f5:'Cinta de correr y sensores',prem_free:'Free',prem_pro:'Premium',prem_activate:'Suscribirse — 100 ₽ / 30 días',close:'Cerrar',prem_note:'Los primeros 21 días son gratis. Luego Premium cuesta 100 ₽ por 30 días, con tarjeta vía YooKassa. Cargo único, sin renovación automática: Premium dura 30 días, paga de nuevo para extender. Incluye: entrenador IA con voz, 100 leyendas, cinta y sensores. El seguimiento básico y las rutas son siempre gratis. Reembolsos y dudas: sikei3022@gmail.com.',
    prem_on:'Premium activo ⭐',prem_off:'Plan gratuito',prem_activated:'Premium activado ⭐',prem_locked:'Función Premium'},
  it:{sec_route:'Percorso',sec_hr:'Frequenza e zone',sec_week:'Questa settimana',sec_records:'Record',sec_level:'Livello del corridore',sec_coach:'Coach IA',sec_feed:'Attività',sec_tread:'Tapis roulant',
    ob1_d:'Un tracker di corsa che ti rende più veloce: registrazione GPS, coach IA e confronto con le leggende.',ob2_t:'Corri con i migliori del pianeta',ob2_d:'Confronta il tuo ritmo con 100 leggende della corsa e sali in classifica.',
    obskip:'Salta',obnext:'Avanti',obstart:'Inizia 🏃',
    set_title:'Impostazioni',set_mode:'Modalità di registrazione',set_devices:'Orologio e battito',set_voice:'Voce del coach IA',set_lang:'Lingua',set_about:'Sullo sviluppatore',
-   prem_title:'Skride Premium',prem_sub:'14 giorni gratis, poi 100 ₽/mese. Sblocca tutto.',prem_f1:'Tracciamento GPS e percorsi',prem_f2:'Inserimento manuale e zone di battito',prem_f3:'Coach IA — analisi completa e voce',prem_f4:'100 leggende della corsa — classifica',prem_f5:'Tapis roulant e sensori',prem_free:'Free',prem_pro:'Premium',prem_activate:'Abbonati — 100 ₽/mese',close:'Chiudi',prem_note:'I pagamenti reali avvengono tramite Google Play nella versione nativa. Per ora questo pulsante attiva Premium in modalità demo per la prova.',
+   prem_title:'Skride Premium',prem_sub:'21 giorni gratis, poi 100 ₽ / 30 giorni. Sblocca tutto.',prem_f1:'Tracciamento GPS e percorsi',prem_f2:'Inserimento manuale e zone di battito',prem_f3:'Coach IA — analisi completa e voce',prem_f4:'100 leggende della corsa — classifica',prem_f5:'Tapis roulant e sensori',prem_free:'Free',prem_pro:'Premium',prem_activate:'Abbonati — 100 ₽ / 30 giorni',close:'Chiudi',prem_note:'I primi 21 giorni sono gratis. Poi Premium costa 100 ₽ per 30 giorni, con carta tramite YooKassa. Addebito singolo, senza rinnovo automatico: Premium dura 30 giorni, paga di nuovo per estendere. Include: coach IA con voce, 100 leggende, tapis roulant e sensori. Tracciamento base e percorsi sempre gratis. Rimborsi e domande: sikei3022@gmail.com.',
    prem_on:'Premium attivo ⭐',prem_off:'Piano gratuito',prem_activated:'Premium attivato ⭐',prem_locked:'Funzione Premium'},
  ja:{sec_route:'ルート',sec_hr:'心拍とゾーン',sec_week:'今週',sec_records:'記録',sec_level:'ランナーレベル',sec_coach:'AIコーチ',sec_feed:'アクティビティ',sec_tread:'トレッドミル',
    ob1_d:'あなたを速くするランニングトラッカー：GPS記録、AIコーチ、レジェンドとの比較。',ob2_t:'世界最高のランナーと走ろう',ob2_d:'100人のランニングレジェンドとペースを比べ、ランキングを上げよう。',
    obskip:'スキップ',obnext:'次へ',obstart:'開始 🏃',
    set_title:'設定',set_mode:'記録モード',set_devices:'時計と心拍計',set_voice:'AIコーチの声',set_lang:'言語',set_about:'開発者について',
-   prem_title:'Skride Premium',prem_sub:'14日間無料、その後 月100₽。すべての機能を解放。',prem_f1:'GPSトラッキングとルート',prem_f2:'手動入力と心拍ゾーン',prem_f3:'AIコーチ — 詳細分析と音声',prem_f4:'100人のレジェンド — ランキング',prem_f5:'トレッドミルとセンサー',prem_free:'Free',prem_pro:'Premium',prem_activate:'登録する — 月100₽',close:'閉じる',prem_note:'実際の支払いはネイティブ版でGoogle Play経由になります。今はデモモードでPremiumを有効化します。',
+   prem_title:'Skride Premium',prem_sub:'21日間無料、その後 30日100₽。すべての機能を解放。',prem_f1:'GPSトラッキングとルート',prem_f2:'手動入力と心拍ゾーン',prem_f3:'AIコーチ — 詳細分析と音声',prem_f4:'100人のレジェンド — ランキング',prem_f5:'トレッドミルとセンサー',prem_free:'Free',prem_pro:'Premium',prem_activate:'登録する — 30日100₽',close:'閉じる',prem_note:'最初の21日間は無料。その後Premiumは30日で100₽、YooKassaの銀行カード決済です。都度課金で自動更新なし：Premiumは30日間有効、延長するには再度お支払いください。内容：音声付きAIコーチ、100人のレジェンド、トレッドミルとセンサー。基本のトラッキングとルートは常に無料。返金・問い合わせ：sikei3022@gmail.com。',
    prem_on:'Premium 有効 ⭐',prem_off:'無料プラン',prem_activated:'Premiumを有効化 ⭐',prem_locked:'これはPremium機能です'}
 };
 function t(k){ return (I18N[curLang]&&I18N[curLang][k]) || (I18N.ru&&I18N.ru[k]) || k; }
