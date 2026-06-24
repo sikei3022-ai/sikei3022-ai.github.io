@@ -1047,6 +1047,10 @@
           <span class="ya-logo"><svg viewBox="0 0 20 24" aria-hidden="true"><path fill="#fff" d="M12.7 24h3.2V0h-4.6C6.7 0 4.1 2.4 4.1 5.9c0 2.8 1.3 4.5 3.7 6.1L3.6 24h3.5l4.6-12.9-1.6-1.1C8.4 8.7 7.6 7.6 7.6 5.7c0-1.7 1.2-2.9 3.7-2.9h1.4V24z"/></svg></span>
           <span class="ya-txt">Войти с Яндекс ID<small>быстрый вход и синхронизация</small></span>
         </button>
+        <button type="button" class="ya-btn" id="authGoogleBtn" style="margin-top:8px;display:none">
+          <span class="ya-logo" style="background:#fff;border:1px solid #e3e3e3"><svg viewBox="0 0 48 48" style="width:22px;height:22px" aria-hidden="true"><path fill="#4285F4" d="M45.12 24.5c0-1.56-.14-3.06-.4-4.5H24v8.51h11.84c-.51 2.75-2.06 5.08-4.39 6.64v5.52h7.11c4.16-3.83 6.56-9.47 6.56-16.17z"/><path fill="#34A853" d="M24 46c5.94 0 10.92-1.97 14.56-5.33l-7.11-5.52c-1.97 1.32-4.49 2.1-7.45 2.1-5.73 0-10.58-3.87-12.31-9.07H4.34v5.7C7.96 41.07 15.4 46 24 46z"/><path fill="#FBBC05" d="M11.69 28.18C11.25 26.86 11 25.45 11 24s.25-2.86.69-4.18v-5.7H4.34A21.99 21.99 0 0 0 2 24c0 3.55.85 6.91 2.34 9.88l7.35-5.7z"/><path fill="#EA4335" d="M24 10.75c3.23 0 6.13 1.11 8.41 3.29l6.31-6.31C34.91 4.18 29.93 2 24 2 15.4 2 7.96 6.93 4.34 14.12l7.35 5.7c1.73-5.2 6.58-9.07 12.31-9.07z"/></svg></span>
+          <span class="ya-txt">Войти через Google<small>аккаунт Google</small></span>
+        </button>
       </div>
       <div id="authLoggedIn" style="display:none">
         <div style="font-size:14px;color:var(--ink)"><b>Вы вошли</b><div id="authWho" style="font-size:12.5px;color:var(--muted);margin-top:2px"></div></div>
@@ -1207,6 +1211,10 @@
         <button type="button" class="ya-btn" id="profYandexBtn">
           <span class="ya-logo"><svg viewBox="0 0 20 24" aria-hidden="true"><path fill="#fff" d="M12.7 24h3.2V0h-4.6C6.7 0 4.1 2.4 4.1 5.9c0 2.8 1.3 4.5 3.7 6.1L3.6 24h3.5l4.6-12.9-1.6-1.1C8.4 8.7 7.6 7.6 7.6 5.7c0-1.7 1.2-2.9 3.7-2.9h1.4V24z"/></svg></span>
           <span class="ya-txt">Войти с Яндекс ID<small>сохранит тренировки в облаке</small></span>
+        </button>
+        <button type="button" class="ya-btn" id="profGoogleBtn" style="margin-top:8px;display:none">
+          <span class="ya-logo" style="background:#fff;border:1px solid #e3e3e3"><svg viewBox="0 0 48 48" style="width:22px;height:22px" aria-hidden="true"><path fill="#4285F4" d="M45.12 24.5c0-1.56-.14-3.06-.4-4.5H24v8.51h11.84c-.51 2.75-2.06 5.08-4.39 6.64v5.52h7.11c4.16-3.83 6.56-9.47 6.56-16.17z"/><path fill="#34A853" d="M24 46c5.94 0 10.92-1.97 14.56-5.33l-7.11-5.52c-1.97 1.32-4.49 2.1-7.45 2.1-5.73 0-10.58-3.87-12.31-9.07H4.34v5.7C7.96 41.07 15.4 46 24 46z"/><path fill="#FBBC05" d="M11.69 28.18C11.25 26.86 11 25.45 11 24s.25-2.86.69-4.18v-5.7H4.34A21.99 21.99 0 0 0 2 24c0 3.55.85 6.91 2.34 9.88l7.35-5.7z"/><path fill="#EA4335" d="M24 10.75c3.23 0 6.13 1.11 8.41 3.29l6.31-6.31C34.91 4.18 29.93 2 24 2 15.4 2 7.96 6.93 4.34 14.12l7.35 5.7c1.73-5.2 6.58-9.07 12.31-9.07z"/></svg></span>
+          <span class="ya-txt">Войти через Google<small>аккаунт Google</small></span>
         </button>
       </div>
       <div class="f full" id="profYandexInWrap" style="display:none">
@@ -3429,6 +3437,53 @@ if($('profYandexBtn')) $('profYandexBtn').onclick=startYandexLogin;
   const Cap=window.Capacitor;
   if(Cap && Cap.Plugins && Cap.Plugins.App){
     Cap.Plugins.App.addListener('appUrlOpen',(d)=>{ try{ const u=(d&&d.url)||''; const m=u.match(/ytk=([^&]+)/); if(m && m[1]) yandexExchange(decodeURIComponent(m[1])); }catch(e){} });
+  }
+}catch(_){} })();
+
+// ===== Вход через Google (по схеме Яндекса; client_id живёт ТОЛЬКО на сервере) =====
+function googleAuthURL(){ const srv=(cloudURL||DEFAULT_SERVER).replace(/\/+$/,''); const st=(typeof isNative!=='undefined'&&isNative)?'app':location.origin; return srv+'/google-login?state='+encodeURIComponent(st); }
+let gWin=null;
+function startGoogleLogin(){
+  if(!cloudURL){ toast('Сначала укажи адрес сервера ниже («Облачный ИИ»)'); return; }
+  const url=googleAuthURL();
+  gWin=window.open(url,'google_login','width=520,height=680');
+  if(!gWin){ location.href=url; }
+}
+// Сервер уже выпустил НАШ JWT (Google проверен на сервере) — просто принимаем его
+async function applySkrideToken(tk){
+  if(!tk) return;
+  toast('Входим…');
+  try{
+    authToken=tk;
+    const d=await apiFetch('/api/me');
+    authUser=(d&&d.user)||null; await saveAuth();
+    if(authUser && typeof applyYandexProfile==='function') await applyYandexProfile(authUser);
+    storeMode='cloud'; await sSet(STORE_KEY,'cloud');
+    updateAuthUI(); if(typeof updateProfYandex==='function') updateProfYandex(); await cloudSyncInitial(); toast('Готово ✓ вы вошли');
+  }catch(e){ authToken=''; toast(e.message||'Не удалось войти'); }
+}
+if($('authGoogleBtn')) $('authGoogleBtn').onclick=startGoogleLogin;
+if($('profGoogleBtn')) $('profGoogleBtn').onclick=startGoogleLogin;
+// Показываем кнопки Google только если сервер сообщил, что Google-вход настроен (есть ключи)
+(function(){ try{
+  var base=(cloudURL||DEFAULT_SERVER).replace(/\/+$/,'');
+  fetch(base+'/',{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
+    if(j && j.google){ ['authGoogleBtn','profGoogleBtn'].forEach(function(id){ var b=$(id); if(b) b.style.display=''; }); }
+  }).catch(function(){});
+}catch(_){} })();
+window.addEventListener('message',(ev)=>{
+  if(!ev||!ev.data||typeof ev.data!=='object') return;
+  if(ev.data.skrideToken){ if(gWin){try{gWin.close();}catch(_){}} applySkrideToken(ev.data.skrideToken); }
+});
+(function(){ try{
+  const h=location.hash||'';
+  if(h.indexOf('stk=')>=0){ const m=h.match(/stk=([^&]+)/); if(m && m[1]){ const tk=decodeURIComponent(m[1]); history.replaceState(null,'',location.pathname+location.search); applySkrideToken(tk); } }
+}catch(_){} })();
+// НАТИВКА: возврат из входа через Google deep-link ru.skride.app://login?stk=<наш JWT>
+(function(){ try{
+  const Cap=window.Capacitor;
+  if(Cap && Cap.Plugins && Cap.Plugins.App){
+    Cap.Plugins.App.addListener('appUrlOpen',(d)=>{ try{ const u=(d&&d.url)||''; const m=u.match(/stk=([^&]+)/); if(m && m[1]) applySkrideToken(decodeURIComponent(m[1])); }catch(e){} });
   }
 }catch(_){} })();
 let ttsVoice='zahar'; const TTS_VOICE_KEY='stride:ttsvoice';
