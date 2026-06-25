@@ -3882,12 +3882,22 @@ $('premiumModal').onclick=e=>{ if(e.target===$('premiumModal')) $('premiumModal'
 $('premiumActivate').onclick=async()=>{
   if(!authToken){ toast('Сначала войди в аккаунт — премиум привязывается к нему'); $('premiumModal').classList.remove('show'); if(typeof gotoAccount==='function'){ gotoAccount(); } return; }
   if(!cloudURL){ toast('Не указан адрес сервера'); return; }
+  // Для чека (54-ФЗ) нужен e-mail. Если в аккаунте его нет (вход через Яндекс/Google без почты) — спросим.
+  const isEmail=(e)=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+  let email=(authUser&&authUser.email)||'';
+  if(!isEmail(email)){
+    email=(prompt('Укажи e-mail — на него придёт чек об оплате:','')||'').trim();
+    if(!isEmail(email)){ toast('Нужен корректный e-mail для чека'); return; }
+  }
   toast('Создаю платёж…');
   try{
-    const d=await apiFetch('/api/pay/create',{method:'POST',body:JSON.stringify({})});
+    const d=await apiFetch('/api/pay/create',{method:'POST',body:JSON.stringify({email})});
     if(d&&d.confirmation_url){ location.href=d.confirmation_url; }
     else toast('Не удалось получить ссылку на оплату');
-  }catch(e){ toast(e.message||'Оплата недоступна'); }
+  }catch(e){
+    if(e&&/e-mail|email/i.test(e.message||'')){ toast('Нужен e-mail для чека — попробуй ещё раз'); }
+    else toast(e.message||'Оплата недоступна');
+  }
 };
 // подтянуть актуальный статус премиума с сервера (после входа / возврата с оплаты)
 async function refreshMe(){
