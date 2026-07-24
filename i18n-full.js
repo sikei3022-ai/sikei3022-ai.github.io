@@ -171,6 +171,7 @@
     "Skride разработан в IT-лаборатории «Си Кей Лаб».": ["Skride is built by the Si Kei Lab IT studio.", "Skride está desarrollado por el laboratorio de TI «Si Kei Lab».", "Skride è sviluppato dal laboratorio IT «Si Kei Lab»."],
     "Политика конфиденциальности": ["Privacy policy", "Política de privacidad", "Informativa sulla privacy"],
     "Условия подписки": ["Subscription terms", "Condiciones de la suscripción", "Condizioni dell'abbonamento"],
+    "Публичная оферта": ["Public offer (terms)", "Oferta pública (condiciones)", "Offerta pubblica (condizioni)"],
     "Поддержка:": ["Support:", "Soporte:", "Assistenza:"],
     "Открой все возможности и беги без ограничений.": ["Unlock everything and run without limits.", "Desbloquea todo y corre sin límites.", "Sblocca tutto e corri senza limiti."],
     "GPS-трекинг и маршруты": ["GPS tracking and routes", "Seguimiento GPS y rutas", "Tracciamento GPS e percorsi"],
