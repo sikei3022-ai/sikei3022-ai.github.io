@@ -3315,6 +3315,18 @@ function renderChat(){ const t=$('coachThread'); if(!t) return; t.innerHTML=chat
 function chatPush(who,text,save){ chatMsgs.push({who,text}); if(chatMsgs.length>60) chatMsgs=chatMsgs.slice(-60); renderChat(); if(save!==false){ try{ sSet(CHAT_KEY,JSON.stringify(chatMsgs)); }catch(e){} } }
 /* ===== Облако: умный тренер + живой голос (через свой сервер) ===== */
 let cloudURL=''; const SERVER_KEY='stride:server'; const DEFAULT_SERVER='https://api.skride.ru';
+// --- Вариант дистрибуции: 'rf' (ИП Реутов, оплата ЮKassa) или 'intl' (SEKOR-FZCO, Google Play, всё открыто бесплатно).
+// Задаётся Flutter-оболочкой через ?variant=intl; в браузере по умолчанию 'rf'. Запоминаем, чтобы пережить редиректы.
+var SK_VARIANT=(function(){ try{ var m=(location.search.match(/[?&]variant=(rf|intl)/)||[])[1]; if(m){ localStorage.setItem('sk:variant',m); return m; } var s=localStorage.getItem('sk:variant'); if(s==='rf'||s==='intl') return s; }catch(e){} return 'rf'; })();
+function applyVariant(){
+  if(SK_VARIANT!=='intl') return; // rf — оставляем как есть
+  try{
+    var pv=document.querySelector('a[href="privacy-ru.html"]'); if(pv) pv.setAttribute('href','privacy-intl.html');
+    var of=document.querySelector('a[href="offer.html"]'); if(of){ of.setAttribute('href','terms-intl.html'); of.removeAttribute('data-i18n'); of.textContent='Условия использования'; }
+    var st=document.getElementById('subTermsLink'); if(st){ st.style.display='none'; var sep=st.previousElementSibling; if(sep&&sep.tagName==='SPAN') sep.style.display='none'; }
+    var note=document.querySelector('[data-i18n="prem_note"]'); if(note){ note.removeAttribute('data-i18n'); note.textContent='В этой версии все возможности открыты бесплатно: умный ИИ-тренер с голосом, 100 легенд бега, беговая дорожка и датчики. Вопросы: info@skride.ru.'; }
+  }catch(e){}
+}
 let authToken='', authUser=null; const AUTH_KEY='stride:auth';
 let storeMode='local'; const STORE_KEY='stride:store';
 async function saveAuth(){ await sSet(AUTH_KEY, JSON.stringify({token:authToken,user:authUser})); }
@@ -3850,6 +3862,7 @@ function trialDaysLeft(){ return Math.max(0, Math.ceil(trialMsLeft()/86400000));
 function trialActive(){ return trialMsLeft() > 0; }
 // доступ: первые 21 день — пробный период (всё включено, и залогиненным тоже); оплата на сервере = апгрейд в Premium
 function accessInfo(){
+  if(SK_VARIANT==='intl') return {state:'paid', days:0}; // международная версия — премиум открыт бесплатно (без ЮKassa)
   const now=Date.now();
   // статус с сервера (после входа): ОТДЕЛЬНО оплачено и пробный (поле premium=true бывает и в триале!)
   if(authToken && authUser && (authUser.paid!==undefined || authUser.trial!==undefined)){
@@ -3910,6 +3923,7 @@ async function refreshMe(){
 /* ---- boot ---- */
 async function boot(){
   await storageInit();
+  applyVariant();
   const raw=await sGet(RUNS_KEY); runs=raw?JSON.parse(raw):[];
   const g=await sGet(GOAL_KEY); if(g) goal=+g;
   const pr=await sGet(PROF_KEY); if(pr){ try{profile=JSON.parse(pr);}catch(e){} } else { profile.ava=FUN_AVA[Math.floor(Math.random()*FUN_AVA.length)]; }
