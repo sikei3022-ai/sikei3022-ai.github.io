@@ -3325,6 +3325,9 @@ function applyVariant(){
     var of=document.querySelector('a[href="offer.html"]'); if(of){ of.setAttribute('href','https://skride.ru/terms-intl.html'); of.removeAttribute('data-i18n'); of.textContent='Условия использования'; }
     var st=document.getElementById('subTermsLink'); if(st){ st.style.display='none'; var sep=st.previousElementSibling; if(sep&&sep.tagName==='SPAN') sep.style.display='none'; }
     var note=document.querySelector('[data-i18n="prem_note"]'); if(note){ note.removeAttribute('data-i18n'); note.textContent='In this version all features are unlocked for free: smart AI voice coach, 100 running legends, treadmill and sensors. Questions: info@skride.ru.'; }
+    // Онбординг: слайды 0-2 (ИИ/музыка/камера) имеют русский текст, ВШИТЫЙ в картинку — i18n не переводит.
+    // Для международной версии убираем их, оставляя фото-слайды 3-4 с переводимой HTML-подписью. RF оставляем как есть.
+    document.querySelectorAll('#obTrack .ob-slide[data-img="0"], #obTrack .ob-slide[data-img="1"], #obTrack .ob-slide[data-img="2"]').forEach(function(s){ s.remove(); });
     var sub=document.querySelector('[data-i18n="prem_sub"]'); if(sub){ sub.removeAttribute('data-i18n'); sub.textContent='All features included — free.'; }
     var act=document.getElementById('premiumActivate'); if(act) act.style.display='none';
     // премиум в intl всегда открыт: локализуем статус/кнопку и держим кнопку оплаты скрытой
