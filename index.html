@@ -317,6 +317,14 @@
   .ob-dots i{width:8px;height:8px;border-radius:50%;background:var(--line2);transition:.2s;cursor:pointer}
   .ob-dots i.on{background:var(--orange);width:22px;border-radius:4px}
   .ob-next{background:var(--grad);color:#fff;border:none;border-radius:24px;font-family:var(--body);font-weight:800;font-size:16px;padding:14px 30px;cursor:pointer}
+  /* вступительные слайды без картинки: фирменный градиент + иконка + переводимый текст по центру */
+  .ob-intro{justify-content:center;align-items:center;text-align:center;padding:30px 30px max(56px,calc(env(safe-area-inset-bottom) + 40px));
+            background:linear-gradient(160deg,#2E9E3E 0%,#0FB85F 100%)}
+  .ob-intro::before{display:none}
+  .ob-intro .ob-ic{margin-bottom:22px}
+  .ob-intro .ob-ic svg{filter:drop-shadow(0 6px 18px rgba(0,0,0,.35))}
+  .ob-intro .ob-t,.ob-intro .ob-d{text-align:center}
+  .ob-intro .ob-d{margin-left:auto;margin-right:auto}
 
   /* heart-rate zone graph */
   .hr-head{padding:14px 16px;font-size:12.5px;font-weight:600;color:var(--ink2);line-height:1.5}
@@ -578,9 +586,21 @@
 <div id="onboarding" class="ob" style="display:none">
   <button class="ob-skip" id="obSkip" data-i18n="obskip">Пропустить</button>
   <div class="ob-view"><div class="ob-track" id="obTrack">
-    <div class="ob-slide ob-cover" data-img="0"><div class="ob-fill"></div><img class="ob-real" alt=""></div>
-    <div class="ob-slide ob-cover" data-img="1"><div class="ob-fill"></div><img class="ob-real" alt=""></div>
-    <div class="ob-slide ob-cover" data-img="2"><div class="ob-fill"></div><img class="ob-real" alt=""></div>
+    <div class="ob-slide ob-intro">
+      <div class="ob-ic"><svg viewBox="0 0 24 24" width="64" height="64" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 9v4M12 7v8M16 10v3"/></svg></div>
+      <div class="ob-t">ИИ-тренер по бегу</div>
+      <div class="ob-d">Голосовые советы, пульсовые зоны и умные подсказки прямо на пробежке.</div>
+    </div>
+    <div class="ob-slide ob-intro">
+      <div class="ob-ic"><svg viewBox="0 0 24 24" width="64" height="64" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="2.5" y="14" width="5" height="7" rx="2"/><rect x="16.5" y="14" width="5" height="7" rx="2"/></svg></div>
+      <div class="ob-t">Музыка в приложении</div>
+      <div class="ob-d">Включай подборки и радио для бега, не выходя из приложения.</div>
+    </div>
+    <div class="ob-slide ob-intro">
+      <div class="ob-ic"><svg viewBox="0 0 24 24" width="64" height="64" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
+      <div class="ob-t">Сфоткай табло тренажёра</div>
+      <div class="ob-d">Сними показания беговой дорожки — цифры занесутся автоматически.</div>
+    </div>
     <div class="ob-slide ob-cover" data-img="3"><div class="ob-fill"></div><img class="ob-real" alt=""><div class="ob-cap">Бег, велосипед, пульс и статистика — всё в одном</div></div>
     <div class="ob-slide ob-cover" data-img="4"><div class="ob-fill"></div><img class="ob-real" alt=""><div class="ob-cap">GPS-маршрут, темп и дистанция в реальном времени</div></div>
   </div></div>
@@ -3325,9 +3345,6 @@ function applyVariant(){
     var of=document.querySelector('a[href="offer.html"]'); if(of){ of.setAttribute('href','https://skride.ru/terms-intl.html'); of.removeAttribute('data-i18n'); of.textContent='Условия использования'; }
     var st=document.getElementById('subTermsLink'); if(st){ st.style.display='none'; var sep=st.previousElementSibling; if(sep&&sep.tagName==='SPAN') sep.style.display='none'; }
     var note=document.querySelector('[data-i18n="prem_note"]'); if(note){ note.removeAttribute('data-i18n'); note.textContent='In this version all features are unlocked for free: smart AI voice coach, 100 running legends, treadmill and sensors. Questions: info@skride.ru.'; }
-    // Онбординг: слайды 0-2 (ИИ/музыка/камера) имеют русский текст, ВШИТЫЙ в картинку — i18n не переводит.
-    // Для международной версии убираем их, оставляя фото-слайды 3-4 с переводимой HTML-подписью. RF оставляем как есть.
-    document.querySelectorAll('#obTrack .ob-slide[data-img="0"], #obTrack .ob-slide[data-img="1"], #obTrack .ob-slide[data-img="2"]').forEach(function(s){ s.remove(); });
     var sub=document.querySelector('[data-i18n="prem_sub"]'); if(sub){ sub.removeAttribute('data-i18n'); sub.textContent='All features included — free.'; }
     var act=document.getElementById('premiumActivate'); if(act) act.style.display='none';
     // премиум в intl всегда открыт: локализуем статус/кнопку и держим кнопку оплаты скрытой
