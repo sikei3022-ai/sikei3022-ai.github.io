@@ -2884,7 +2884,7 @@ function statsRender(){
     '<div class="st-row"><span>Телефон (ходьба)</span><b>'+walkKm.toFixed(1)+' км</b></div>'+
     '<div class="st-row"><span>Всего</span><b style="color:var(--orange)">'+totalKm.toFixed(1)+' км</b></div>'+
   '</div>';
-  h+='<div class="st-h">🏆 Рейтинг среди пользователей</div><div id="stRankBox">'+
+  h+='<div class="st-h">🏆 Рейтинг бегунов Skride</div><div id="stRankBox">'+
     '<div class="st-rank"><div>Ты активнее <span class="big">~'+pct+'%</span> любителей</div>'+
     '<div class="st-bar"><i style="width:'+pct+'%"></i></div>'+
     '<div style="font-size:12px;opacity:.95">Оценка по среднему недельному объёму ('+weeklyAvg.toFixed(1)+' км/нед). Обезличенно.</div></div>'+
@@ -2894,10 +2894,22 @@ function statsRender(){
     apiFetch('/api/rank').then(d=>{
       if(!$('stRankBox')) return;
       const p=d.percentile!=null?d.percentile:0;
-      $('stRankBox').innerHTML='<div class="st-rank"><div>Ты активнее <span class="big">'+p+'%</span> пользователей Skride</div>'+
+      const row=(r,i,metric)=>'<div class="st-row" style="'+(r.me?'background:rgba(54,169,107,.08);margin:0 -8px;padding-left:8px;padding-right:8px;border-radius:10px;':'')+'">'+
+        '<span>'+(i+1)+'. '+(r.me?'Ты':esc(r.alias||('Runner-'+(i+1))))+'</span>'+
+        '<b>'+(metric==='week'?((r.week_km||0).toFixed(1)+' км'):((r.total_km||0).toFixed(1)+' км'))+'</b></div>';
+      const week=Array.isArray(d.week_top)?d.week_top:[];
+      const all=Array.isArray(d.all_top)?d.all_top:[];
+      $('stRankBox').innerHTML=
+        '<div class="st-rank"><div>Ты активнее <span class="big">'+p+'%</span> бегунов Skride</div>'+
         '<div class="st-bar"><i style="width:'+p+'%"></i></div>'+
-        '<div style="font-size:12px;opacity:.95">Место '+d.position+' из '+d.total+' по недельному объёму ('+(d.week_km||0).toFixed(1)+' км/нед). Обезличенно.</div></div>'+
-        '<div class="st-note">Реальный анонимный рейтинг среди пользователей Skride. Обновляется при синхронизации.</div>';
+        '<div style="font-size:12px;opacity:.95">Неделя: место '+d.position+' из '+d.total+' · '+(d.week_km||0).toFixed(1)+' км. За всё время: место '+(d.all_position||'—')+' · '+(d.total_km||0).toFixed(1)+' км.</div></div>'+
+        '<div class="st-h" style="margin-top:12px">Топ недели</div><div class="st-card">'+
+          (week.length?week.map((r,i)=>row(r,i,'week')).join(''):'<div class="st-note">Пока нет данных.</div>')+
+        '</div>'+
+        '<div class="st-h">Топ за всё время</div><div class="st-card">'+
+          (all.length?all.map((r,i)=>row(r,i,'all')).join(''):'<div class="st-note">Пока нет данных.</div>')+
+        '</div>'+
+        '<div class="st-note">Рейтинг анонимный: имена других пользователей не публикуются. Обновляется при облачной синхронизации тренировок.</div>';
     }).catch(()=>{ if($('stRankBox')){ const n=$('stRankBox').querySelector('.st-note'); if(n) n.textContent='Реальный рейтинг временно недоступен — показана оценка.'; } });
   }
   if($('walkEnable')) $('walkEnable').onclick=async()=>{ walkData.enabled=true; await saveWalk(); statsRender(); toast('Ручной ввод ходьбы включён'); };
@@ -3538,7 +3550,8 @@ async function cloudCoach(){
   const hist=chatMsgs.filter(m=>m.text!=='…').slice(-12).map(m=>({role:m.who==='me'?'user':'assistant',content:m.text}));
   const ctrl=new AbortController(); const to=setTimeout(()=>ctrl.abort(), 45000);
   try{
-    const r=await fetch(cloudURL.replace(/\/+$/,'')+'/api/coach',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:hist,context:coachContext()}),signal:ctrl.signal});
+    const h={'Content-Type':'application/json'}; if(authToken) h['Authorization']='Bearer '+authToken;
+    const r=await fetch(cloudURL.replace(/\/+$/,'')+'/api/coach',{method:'POST',headers:h,body:JSON.stringify({messages:hist,context:coachContext()}),signal:ctrl.signal});
     if(!r.ok) throw new Error('сервер '+r.status); const d=await r.json(); if(d.error) throw new Error(d.error); if(!d.reply||!d.reply.trim()) throw new Error('пустой ответ'); return d.reply;
   } finally { clearTimeout(to); }
 }
@@ -3585,7 +3598,7 @@ function initChat(){
 if($('coachSend')) $('coachSend').onclick=()=>{ unlockAudio(); coachSendText($('coachQ').value); };
 if($('coachQ')) $('coachQ').addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); unlockAudio(); coachSendText($('coachQ').value); } });
 $('serverSave').onclick=async()=>{ unlockAudio(); cloudURL=$('serverUrl').value.trim(); await sSet(SERVER_KEY,cloudURL); if(cloudURL){ toast('Сервер сохранён ✓ проверяю голос…'); setTimeout(()=>say('Привет! Голос подключён.'),200); } else toast('Адрес очищен — офлайн-режим'); };
-$('serverTest').onclick=async()=>{ const u=$('serverUrl').value.trim(); if(!u){ toast('Вставь адрес сервера'); return; } toast('Проверяю сервер...'); try{ const r=await fetch(u.replace(/\/+$/,'')+'/'); const d=await r.json(); toast(d&&d.ok?('Сервер на связи ✓ · мозг: '+d.llm+', голос: '+d.voice):'Ответ получен, но формат неожиданный'); }catch(e){ toast('Сервер не отвечает — проверь адрес и что он развёрнут'); } };
+$('serverTest').onclick=async()=>{ const u=$('serverUrl').value.trim(); if(!u){ toast('Вставь адрес сервера'); return; } toast('Проверяю сервер...'); try{ const r=await fetch(u.replace(/\/+$/,'')+'/'); const d=await r.json(); toast(d&&d.ok?('Сервер на связи ✓ · мозг: '+(d.llm||'—')+' · GPT-Live: '+(d.live?'да':'нет')+' · книги: '+(d.coachKb?'да':'нет')):'Ответ получен, но формат неожиданный'); }catch(e){ toast('Сервер не отвечает — проверь адрес и что он развёрнут'); } };
 if($('cloudVoiceSel')) $('cloudVoiceSel').onchange=async(e)=>{ unlockAudio(); ttsVoice=e.target.value; await sSet(TTS_VOICE_KEY,ttsVoice); if(cloudURL){ say('Привет! Так звучит выбранный голос.'); } toast('Голос сохранён'); };
 
 /* ---- голосовой ввод: говоришь вопрос — тренер отвечает (как с Алисой) ---- */
@@ -3736,10 +3749,132 @@ if($('permRetry')) $('permRetry').onclick=async()=>{
   }
 };
 
+
+/* ---- GPT-Live-1: настоящий full-duplex разговор по WebRTC ---- */
+let liveCoach={pc:null,dc:null,stream:null,audio:null,active:false,sessionId:'',backendModel:''};
+let liveInBuf='', liveOutBuf='', liveInTimer=null, liveOutTimer=null;
+
+function liveTranscriptDelta(who,delta){
+  if(!delta) return;
+  if(who==='me'){
+    liveInBuf+=delta; clearTimeout(liveInTimer);
+    liveInTimer=setTimeout(()=>{ const t=liveInBuf.trim(); liveInBuf=''; if(t) chatPush('me',t); },850);
+  }else{
+    liveOutBuf+=delta; clearTimeout(liveOutTimer);
+    liveOutTimer=setTimeout(()=>{ const t=liveOutBuf.trim(); liveOutBuf=''; if(t) chatPush('coach',t); },850);
+  }
+}
+function flushLiveTranscript(){
+  clearTimeout(liveInTimer); clearTimeout(liveOutTimer);
+  const a=liveInBuf.trim(), b=liveOutBuf.trim(); liveInBuf=''; liveOutBuf='';
+  if(a) chatPush('me',a); if(b) chatPush('coach',b);
+}
+function waitIceComplete(pc,timeout=5000){
+  if(pc.iceGatheringState==='complete') return Promise.resolve();
+  return new Promise(resolve=>{
+    let done=false;
+    const finish=()=>{ if(done)return; done=true; pc.removeEventListener('icegatheringstatechange',on); resolve(); };
+    const on=()=>{ if(pc.iceGatheringState==='complete') finish(); };
+    pc.addEventListener('icegatheringstatechange',on);
+    setTimeout(finish,timeout);
+  });
+}
+function stopLiveCoach(silent){
+  const x=liveCoach; liveCoach={pc:null,dc:null,stream:null,audio:null,active:false,sessionId:'',backendModel:''};
+  flushLiveTranscript();
+  try{ if(x.dc) x.dc.close(); }catch(e){}
+  try{ if(x.pc) x.pc.close(); }catch(e){}
+  try{ if(x.stream) x.stream.getTracks().forEach(t=>t.stop()); }catch(e){}
+  try{ if(x.audio){ x.audio.srcObject=null; x.audio.remove(); } }catch(e){}
+  if(!silent) toast('Разговор с тренером завершён');
+}
+async function startLiveCoach(){
+  if(!cloudURL || !hasAccess()) return false;
+  if(!window.RTCPeerConnection || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return false;
+
+  let pc=null, stream=null, audio=null, dc=null;
+  try{
+    stream=await navigator.mediaDevices.getUserMedia({
+      audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}
+    });
+    _micOK=true;
+    pc=new RTCPeerConnection();
+    stream.getTracks().forEach(t=>pc.addTrack(t,stream));
+
+    audio=document.createElement('audio');
+    audio.autoplay=true; audio.playsInline=true; audio.style.display='none';
+    document.body.appendChild(audio);
+    pc.ontrack=(ev)=>{ if(ev.streams&&ev.streams[0]) audio.srcObject=ev.streams[0]; };
+
+    dc=pc.createDataChannel('oai-events');
+    liveCoach={pc,dc,stream,audio,active:false,sessionId:'',backendModel:''};
+
+    let startedResolve=null, startedReject=null;
+    const startedPromise=new Promise((resolve,reject)=>{ startedResolve=resolve; startedReject=reject; });
+    const startedTimer=setTimeout(()=>{ if(startedReject) startedReject(new Error('GPT-Live session start timeout')); },10000);
+
+    dc.onmessage=(ev)=>{
+      try{
+        const e=JSON.parse(ev.data);
+        if(e.type==='session.started'){
+          clearTimeout(startedTimer);
+          liveCoach.active=true;
+          if(startedResolve){ startedResolve(true); startedResolve=null; startedReject=null; }
+          toast('GPT-Live на связи — говори');
+        }else if(e.type==='session.input_transcript.delta'){
+          liveTranscriptDelta('me',e.delta||'');
+        }else if(e.type==='session.output_transcript.delta'){
+          liveTranscriptDelta('coach',e.delta||'');
+        }
+      }catch(_){}
+    };
+    dc.onerror=()=>{
+      if(startedReject){ startedReject(new Error('GPT-Live data channel error')); startedResolve=null; startedReject=null; }
+    };
+    dc.onclose=()=>{
+      if(startedReject){ startedReject(new Error('GPT-Live closed before start')); startedResolve=null; startedReject=null; }
+      if(liveCoach.pc===pc){
+        stopLiveCoach(true);
+        if(convoMode){ convoMode=false; setConvoUI(false); }
+      }
+    };
+
+    const offer=await pc.createOffer();
+    await pc.setLocalDescription(offer);
+    await waitIceComplete(pc);
+
+    const headers={'Content-Type':'application/json'};
+    if(authToken) headers['Authorization']='Bearer '+authToken;
+    const r=await fetch(cloudURL.replace(/\/+$/,'')+'/api/live/session',{
+      method:'POST',headers,
+      body:JSON.stringify({sdp:pc.localDescription.sdp,context:coachContext()})
+    });
+    if(!r.ok){
+      let msg='сервер '+r.status; try{ const j=await r.json(); if(j&&j.error) msg=j.error; }catch(_){}
+      throw new Error(msg);
+    }
+    const j=await r.json();
+    if(!j || !j.transport || !j.transport.sdp) throw new Error('нет SDP-ответа');
+    liveCoach.sessionId=(j.session&&j.session.id)||'';
+    liveCoach.backendModel=j.backend_model||'';
+    await pc.setRemoteDescription({type:'answer',sdp:j.transport.sdp});
+    await startedPromise;
+    return true;
+  }catch(e){
+    try{ if(dc)dc.close(); }catch(_){}
+    try{ if(pc)pc.close(); }catch(_){}
+    try{ if(stream)stream.getTracks().forEach(t=>t.stop()); }catch(_){}
+    try{ if(audio)audio.remove(); }catch(_){}
+    liveCoach={pc:null,dc:null,stream:null,audio:null,active:false,sessionId:'',backendModel:''};
+    console.warn('GPT-Live fallback:',e);
+    return false;
+  }
+}
+
 /* ---- режим разговора (hands-free, как с Алисой): слушает → отвечает → снова слушает ---- */
 let convoMode=false;
 function setConvoUI(on){ const b=$('coachConvo'); if(b){ b.classList.toggle('on',on); b.textContent= on?'⏸ Остановить разговор':'🎙️ Поговорить с тренером'; } }
-async function startConvo(){
+async function startLegacyConvo(){
   if(!SpeechRec){ toast('Голосовой ввод не поддерживается'); return; }
   if(isNative){
     // диагностика среды распознавания (чтобы не было молчаливого «не пашет»)
@@ -3751,7 +3886,22 @@ async function startConvo(){
   }
   convoMode=true; setConvoUI(true); unlockAudio(); toast('Скажи фразу — тренер ответит'); convoListen();
 }
-function stopConvo(){ convoMode=false; setConvoUI(false); try{recog&&recog.stop();}catch(e){} stopSpeaking(); const b=$('coachMic'); if(b)b.classList.remove('rec'); }
+function stopConvo(){
+  convoMode=false; setConvoUI(false);
+  if(liveCoach.pc){ stopLiveCoach(true); }
+  try{recog&&recog.stop();}catch(e){}
+  stopSpeaking(); const b=$('coachMic'); if(b)b.classList.remove('rec');
+}
+async function startConvo(){
+  if(convoMode) return;
+  convoMode=true; setConvoUI(true); unlockAudio();
+  const liveOk=await startLiveCoach();
+  if(liveOk) return;
+  // Live не поднялся — не ломаем текущую функцию: возвращаемся к старому speech→text→TTS.
+  convoMode=false; setConvoUI(false);
+  toast('GPT-Live пока недоступен — включаю обычный голосовой режим');
+  return startLegacyConvo();
+}
 function convoListen(){
   if(!convoMode) return;
   try{
