@@ -1086,7 +1086,7 @@
     </div>
 
     <h3 style="font-size:16px;margin-top:18px">Облачный ИИ и голос <span style="font-size:11px;color:var(--orange)">Premium</span></h3>
-    <p>Подключи свой сервер — и тренер станет «умным» (отвечает на любые вопросы), а голос — живым. Как поднять сервер за 15 минут — в инструкции к архиву сервера. Пусто = офлайн-режим.</p>
+    <p>Сервер подключён автоматически для этой версии приложения.</p>
     <input id="serverUrl" type="text" placeholder="https://api.skride.ru" autocomplete="off" inputmode="url">
     <div class="row">
       <button class="btn-sec" id="serverTest">Проверить</button>
@@ -1274,7 +1274,8 @@ const $=id=>document.getElementById(id);
 // Можно переопределить своим ключом через настройки ⚙.
 const YANDEX_KEY='fb32ecf2-89e6-454a-9b4c-9d46d2252be2';
 const YANDEX_KEY_BACKUP='729aa267-ca44-4237-9f0d-a5fc13684126';
-const APP_VERSION='2026.06.12.2'; // версия для автообновления — меняется при каждом релизе
+const APP_VERSION='2026.10.29.regions.1';
+var SK_VARIANT=(function(){ try{ var m=(location.search.match(/[?&]variant=(rf|intl)/)||[])[1]; if(m){ localStorage.setItem('sk:variant',m); return m; } var s=localStorage.getItem('sk:variant'); if(s==='rf'||s==='intl') return s; }catch(e){} return 'rf'; })(); // версия для автообновления — меняется при каждом релизе
 let runs=[], pts=[], route=null, placemarks=[], deferredPrompt=null, goal=20, editId=null;
 let routeMode='road';
 let profile={name:'Бегун',ava:'Я',city:''};
@@ -1363,10 +1364,17 @@ async function storageInit(){
   }catch(e){}
 }
 async function sGet(k){
-  if(k in _mem) return _mem[k];
-  try{ const v=localStorage.getItem(k); if(v!=null) _mem[k]=v; return v; }catch(e){ return null; }
+  const legacy=k, scoped=SK_VARIANT==='intl'?'intl:'+k:k;
+  if(scoped in _mem) return _mem[scoped];
+  try{ const v=localStorage.getItem(scoped); if(v!=null){ _mem[scoped]=v; return v; } }catch(e){}
+  if(SK_VARIANT==='intl'){
+    let v=_mem[legacy]; if(v==null){try{v=localStorage.getItem(legacy);}catch(e){}}
+    if(v!=null){await sSet(legacy,v);return v;}
+  }
+  return null;
 }
 async function sSet(k,v){
+  if(SK_VARIANT==='intl') k='intl:'+k;
   _mem[k]=v;
   // дублируем в localStorage как быстрый кэш (на случай если стойкое не успело)
   try{ localStorage.setItem(k,v); }catch(e){}
@@ -1883,7 +1891,7 @@ function drawRouteCard(){
   const x=c.getContext('2d');
   x.fillStyle='#0d1117';x.fillRect(0,0,W,H);
   x.fillStyle='#36A96B';x.font='800 64px sans-serif';x.fillText('Skride',60,110);
-  x.fillStyle='#8a96a3';x.font='600 30px sans-serif';x.fillText((profile.name||'Бегун')+' · '+new Date().toLocaleDateString('ru-RU'),60,160);
+  x.fillStyle='#8a96a3';x.font='600 30px sans-serif';x.fillText((profile.name||'Бегун')+' · '+new Date().toLocaleDateString(speechLocale()),60,160);
   const lats=pts.map(p=>p[0]),lngs=pts.map(p=>p[1]);
   const minLa=Math.min(...lats),maxLa=Math.max(...lats),minLo=Math.min(...lngs),maxLo=Math.max(...lngs);
   const pad=160,sx=(maxLo-minLo)||1e-6,sy=(maxLa-minLa)||1e-6;
@@ -1937,7 +1945,7 @@ async function buildRouteImage(track){
   x.restore();
   x.fillStyle='rgba(13,36,23,.85)';x.fillRect(0,0,W,196);
   x.fillStyle='#36A96B';x.font='800 64px sans-serif';x.fillText('Skride',60,96);
-  x.fillStyle='#c9d2db';x.font='600 30px sans-serif';x.fillText((profile.name||'Бегун')+' · '+new Date().toLocaleDateString('ru-RU'),60,148);
+  x.fillStyle='#c9d2db';x.font='600 30px sans-serif';x.fillText((profile.name||'Бегун')+' · '+new Date().toLocaleDateString(speechLocale()),60,148);
   const dist=$('mapDist').textContent;
   x.fillStyle='rgba(13,36,23,.85)';x.fillRect(0,H-220,W,220);
   x.fillStyle='#fff';x.font='800 140px sans-serif';x.fillText(dist,60,H-70);
@@ -1982,7 +1990,7 @@ let lastSpokenKm=0, voicePrimed=false;
 let _voices=[];
 function loadVoices(){ try{ _voices = (window.speechSynthesis && window.speechSynthesis.getVoices()) || []; }catch(e){ _voices=[]; } }
 function vName(v){ return (((v&&v.name)||'')+' '+((v&&(v.voiceURI||v.identifier))||'')).toLowerCase(); }
-function isRu(v){ return ((v && (v.lang||v.language))||'').toLowerCase().startsWith('ru'); }
+function isRu(v){ return ((v && (v.lang||v.language))||'').toLowerCase().startsWith(coachLanguage()); }
 function rankVoice(v){ const n=vName(v); let s=0;
   if(/google/.test(n))s+=6; if(/microsoft|майкрософт/.test(n))s+=4; if(/yandex|яндекс/.test(n))s+=5;
   if(/natural|enhanced|premium|neural|online|network/.test(n))s+=4;
@@ -1994,7 +2002,7 @@ function scoreByGender(v){ const n=vName(v); const want=voiceGender==='male'?RU_
   if(want.some(k=>n.includes(k)))return 2; if(other.some(k=>n.includes(k)))return -2; return 0; }
 function pickWebVoice(){ if(!_voices.length) loadVoices(); const ru=_voices.filter(isRu); if(!ru.length) return null;
   return ru.map(v=>({v,s:rankVoice(v)+scoreByGender(v)})).sort((a,b)=>b.s-a.s)[0].v; }
-function chosenWebVoice(){ if(voiceURI){ const v=_voices.find(x=>(x.voiceURI||x.name)===voiceURI); if(v) return v; } return pickWebVoice(); }
+function chosenWebVoice(){ if(voiceURI){ const v=_voices.find(x=>(x.voiceURI||x.name)===voiceURI); if(v && isRu(v)) return v; } return pickWebVoice(); }
 function pickNativeIndex(list){ if(!Array.isArray(list)||!list.length) return -1;
   const ranked=list.map((v,i)=>({i,s:(isRu(v)?3:0)+rankVoice(v)+scoreByGender(v)})).filter(x=>x.s>0).sort((a,b)=>b.s-a.s);
   return ranked.length?ranked[0].i:-1; }
@@ -2017,11 +2025,11 @@ async function speak(text){ if(!voiceCoach) return; say(text); }
 async function say(text, onDone){
   if(typeof listenMode!=='undefined' && listenMode==='music'){ if(onDone) onDone(); return; }
   const pitch = 1.0;
-  if(cloudURL){ try{ await cloudTTS(text, onDone); return; }catch(e){ toast('Голос: '+((e&&e.message)||'ошибка')); if(onDone){try{onDone();}catch(_){}} return; } }
+  if(cloudURL && coachLanguage()==='ru'){ try{ await cloudTTS(text, onDone); return; }catch(e){ console.warn('Cloud voice unavailable'); } }
   try{
     if(isNative && window.Capacitor.Plugins && window.Capacitor.Plugins.TextToSpeech){
       const tts=window.Capacitor.Plugins.TextToSpeech;
-      const opts={ text, lang:'ru-RU', rate:0.92, pitch, volume:1.0 };
+      const opts={ text, lang:speechLocale(), rate:0.92, pitch, volume:1.0 };
       try{ const vs=await tts.getSupportedVoices(); const idx=pickNativeIndex((vs&&vs.voices)||vs||[]); if(idx>=0) opts.voice=idx; }catch(_){}
       await tts.speak(opts); if(onDone){try{onDone();}catch(_){}}
     } else if(window.speechSynthesis){
@@ -2031,7 +2039,7 @@ async function say(text, onDone){
       const parts=String(text).split(/(?<=[.!?…])\s+|\s—\s|:\s+/).map(s=>s.trim()).filter(Boolean);
       const arr=(parts.length?parts:[String(text)]);
       arr.forEach((p,i)=>{
-        const u=new SpeechSynthesisUtterance(p); u.lang='ru-RU';
+        const u=new SpeechSynthesisUtterance(p); u.lang=speechLocale();
         if(v) u.voice=v; u.rate=0.92; u.pitch=pitch; u.volume=1.0;
         if(i===arr.length-1 && onDone) u.onend=()=>{ try{onDone();}catch(_){} };
         window.speechSynthesis.speak(u);
@@ -2209,7 +2217,7 @@ function paceStr(km,sec){if(!km||!sec)return null;const p=sec/km,m=Math.floor(p/
 function defaultTitle(){const h=new Date().getHours();const tod=h<11?'Утренняя':h<17?'Дневная':'Вечерняя';return tod+(activityType==='bike'?' поездка':' пробежка');}
 
 /* ---- render ---- */
-function fmtDate(s){const d=new Date(s+'T00:00');return isNaN(d)?s:d.toLocaleDateString('ru-RU',{weekday:'short',day:'numeric',month:'long'});}
+function fmtDate(s){const d=new Date(s+'T00:00');return isNaN(d)?s:d.toLocaleDateString(speechLocale(),{weekday:'short',day:'numeric',month:'long'});}
 function fmtTime(sec){if(!sec)return '—';const h=Math.floor(sec/3600),m=Math.floor(sec%3600/60),s=sec%60;return h?`${h}ч ${m}м`:(m?`${m}:${String(s).padStart(2,'0')}`:`${s}с`);}
 function weekStart(d){const x=new Date(d);const day=(x.getDay()+6)%7;x.setHours(0,0,0,0);x.setDate(x.getDate()-day);return x;}
 
@@ -2222,7 +2230,7 @@ function render(){
   $('wRuns').textContent=wk.length;
   $('wTime').innerHTML=wSec? (wSec>=3600?Math.floor(wSec/3600)+'<small>ч '+Math.round(wSec%3600/60)+'м</small>':Math.round(wSec/60)+'<small>м</small>') : '0<small>м</small>';
   const opt={day:'numeric',month:'short'};
-  $('weekRange').textContent=ws.toLocaleDateString('ru-RU',opt)+' – '+new Date(we-86400000).toLocaleDateString('ru-RU',opt);
+  $('weekRange').textContent=ws.toLocaleDateString(speechLocale(),opt)+' – '+new Date(we-86400000).toLocaleDateString(speechLocale(),opt);
   const tot=runs.reduce((s,r)=>s+r.km,0);
   $('allTime').textContent=runs.length?`всего ${tot.toFixed(tot>=100?0:1)} км`:'';
 
@@ -2603,7 +2611,7 @@ let curQuote=null;
 function pickQuoteDaily(){ const d=new Date(); const doy=Math.floor((d-new Date(d.getFullYear(),0,0))/86400000); return QUOTES[doy % QUOTES.length]; }
 function pickQuoteRandom(){ return QUOTES[Math.floor(Math.random()*QUOTES.length)]; }
 function showQuote(q){ curQuote=q||pickQuoteDaily(); if($('quoteText')) $('quoteText').textContent='«'+curQuote.t+'»'; if($('quoteAuthor')) $('quoteAuthor').textContent='— '+curQuote.a; if($('quoteModal')) $('quoteModal').classList.add('show'); }
-function speakQuote(){ if(!curQuote) return; if(typeof say==='function'){ try{ say(curQuote.t+'. '+curQuote.a); }catch(e){} } }
+function speakQuote(){ if(!curQuote) return; if(typeof say==='function'){ try{ say((window.skTranslate?window.skTranslate(curQuote.t,coachLanguage()):curQuote.t)+'. '+(window.skTranslate?window.skTranslate('— '+curQuote.a,coachLanguage()).replace(/^— /,''):curQuote.a)); }catch(e){} } }
 function closeQuote(){ if(typeof stopSpeaking==='function') stopSpeaking(); if($('quoteModal')) $('quoteModal').classList.remove('show'); }
 if($('quoteMore')) $('quoteMore').onclick=()=>showQuote(pickQuoteRandom());
 if($('quoteSpeak')) $('quoteSpeak').onclick=()=>{ if(typeof unlockAudio==='function') unlockAudio(); speakQuote(); };
@@ -3268,9 +3276,10 @@ function renderCoach(){
 function _wk(){ const ws=weekStart(new Date()), we=new Date(ws); we.setDate(we.getDate()+7);
   const wk=runs.filter(r=>{const d=new Date(r.date+'T00:00');return d>=ws&&d<we;}); return {km:wk.reduce((s,r)=>s+r.km,0), n:wk.length}; }
 function _bestPace(){ let b=null; runs.filter(r=>(r.type||'run')!=='bike').forEach(r=>{ if(r.sec>0){const p=r.sec/r.km; if(b===null||p<b)b=p;} }); return b; }
-function greetText(){ return 'Привет! Я твой тренер. Спрашивай про тренировки, пульс, восстановление, травмы, питание, технику бега или велосипед — напиши вопрос или нажми кнопку ниже.'; }
+function greetText(){ return regionText('greet'); }
 
 function coachAnswer(q){
+  if(coachLanguage()!=='ru')return regionText('offline');
   const s=' '+String(q).toLowerCase().replace(/ё/g,'е')+' ';
   const has=(...a)=>a.some(k=>s.includes(k));
   const wk=_wk(), bp=_bestPace(), n=runs.length;
@@ -3346,24 +3355,49 @@ let chatMsgs=[];
 function renderChat(){ const t=$('coachThread'); if(!t) return; t.innerHTML=chatMsgs.map(m=>'<div class="cb '+(m.who==='me'?'me':'coach')+'">'+esc(m.text)+'</div>').join(''); t.scrollTop=t.scrollHeight; }
 function chatPush(who,text,save){ chatMsgs.push({who,text}); if(chatMsgs.length>60) chatMsgs=chatMsgs.slice(-60); renderChat(); if(save!==false){ try{ sSet(CHAT_KEY,JSON.stringify(chatMsgs)); }catch(e){} } }
 /* ===== Облако: умный тренер + живой голос (через свой сервер) ===== */
-let cloudURL=''; const SERVER_KEY='stride:server'; const DEFAULT_SERVER='https://api.skride.ru';
+let cloudURL=''; const SERVER_KEY='stride:server'; const DEFAULT_SERVER=SK_VARIANT==='intl'?'https://skride-intl.153.75.89.9.sslip.io':'https://api.skride.ru';
 // --- Вариант дистрибуции: 'rf' (ИП Реутов, оплата ЮKassa) или 'intl' (SEKOR-FZCO, Google Play, всё открыто бесплатно).
 // Задаётся Flutter-оболочкой через ?variant=intl; в браузере по умолчанию 'rf'. Запоминаем, чтобы пережить редиректы.
-var SK_VARIANT=(function(){ try{ var m=(location.search.match(/[?&]variant=(rf|intl)/)||[])[1]; if(m){ localStorage.setItem('sk:variant',m); return m; } var s=localStorage.getItem('sk:variant'); if(s==='rf'||s==='intl') return s; }catch(e){} return 'rf'; })();
+
+
+function coachLanguage(){ const l=(document.documentElement.lang||'').slice(0,2); return ['ru','en','es','it','ja'].includes(l)?l:'en'; }
+function speechLocale(){return {ru:'ru-RU',en:'en-US',es:'es-ES',it:'it-IT',ja:'ja-JP'}[coachLanguage()];}
+const REGION_TEXT={
+ ru:{free:'Все функции доступны бесплатно',note:'В международной версии все функции бесплатны: ИИ-тренер с голосом, тренировки, легенды и датчики.',greet:'Привет! Я твой тренер. Спроси про тренировки, пульс, восстановление, питание, бег или велосипед.',offline:'Сейчас нет связи с ИИ-тренером. Попробуй ещё раз, когда восстановится интернет.',connected:'Тренер на связи — говори',end:'Разговор с тренером завершён',talk:'🎙️ Поговорить с тренером',stop:'⏸ Остановить разговор',transfer:'Не удалось перенести облачный аккаунт. Тренировки на телефоне сохранены. Попробуй войти ещё раз.'},
+ en:{free:'All features included — free',note:'All features are free in the international edition: AI voice coaching, workouts, running legends and sensors.',greet:'Hi! I’m your coach. Ask me about training, heart rate, recovery, nutrition, running or cycling.',offline:'The AI coach is offline. Please try again when your internet connection is available.',connected:'Your coach is connected — go ahead',end:'Conversation ended',talk:'🎙️ Talk to your coach',stop:'⏸ End conversation',transfer:'Cloud account transfer is unavailable. Your workouts on this device are safe. Please try signing in again.'},
+ es:{free:'Todas las funciones incluidas — gratis',note:'Todas las funciones son gratis en la edición internacional: entrenador de voz con IA, entrenamientos, leyendas del running y sensores.',greet:'¡Hola! Soy tu entrenador. Pregúntame sobre entrenamiento, pulso, recuperación, nutrición, running o ciclismo.',offline:'El entrenador de IA está sin conexión. Vuelve a intentarlo cuando tengas internet.',connected:'Tu entrenador está conectado — habla',end:'Conversación terminada',talk:'🎙️ Hablar con tu entrenador',stop:'⏸ Terminar conversación',transfer:'No se pudo transferir la cuenta. Tus entrenamientos en este dispositivo están guardados. Intenta iniciar sesión de nuevo.'},
+ it:{free:'Tutte le funzioni incluse — gratis',note:'Tutte le funzioni sono gratuite nella versione internazionale: coach vocale IA, allenamenti, leggende della corsa e sensori.',greet:'Ciao! Sono il tuo coach. Chiedimi di allenamento, frequenza cardiaca, recupero, alimentazione, corsa o ciclismo.',offline:'Il coach IA non è connesso. Riprova quando sarà disponibile la connessione internet.',connected:'Il coach è connesso — parla pure',end:'Conversazione terminata',talk:'🎙️ Parla con il coach',stop:'⏸ Termina conversazione',transfer:'Trasferimento dell’account non disponibile. Gli allenamenti sul dispositivo sono al sicuro. Prova ad accedere di nuovo.'},
+ ja:{free:'すべての機能を無料で利用できます',note:'国際版では、AI音声コーチ、ワークアウト、ランニングレジェンド、センサーなど、すべての機能が無料です。',greet:'こんにちは！あなたのコーチです。トレーニング、心拍数、回復、栄養、ランニング、サイクリングについて質問してください。',offline:'AIコーチに接続できません。インターネット接続が回復したら、もう一度お試しください。',connected:'コーチに接続しました。話しかけてください',end:'会話を終了しました',talk:'🎙️ コーチと話す',stop:'⏸ 会話を終了',transfer:'アカウントを移行できませんでした。この端末のワークアウトは保存されています。もう一度ログインしてください。'}
+};
+function regionText(k){return (REGION_TEXT[coachLanguage()]||REGION_TEXT.en)[k];}
+async function migrateRegionAccount(){
+  if(SK_VARIANT!=='intl'||!authToken)return true;
+  try{
+    const headers={Authorization:'Bearer '+authToken,'Content-Type':'application/json'};
+    const check=await fetch(DEFAULT_SERVER+'/api/me',{headers});
+    if(check.ok)return true;
+    if(check.status!==401)throw new Error('unavailable');
+    const r=await fetch(DEFAULT_SERVER+'/api/migration/import',{method:'POST',headers,body:'{}',signal:AbortSignal.timeout(25000)});
+    if(!r.ok)throw new Error('transfer');
+    const d=await r.json();authToken=d.token;authUser=d.user;await saveAuth();return true;
+  }catch(e){toast(regionText('transfer'));return false;}
+}
+let pendingYandexToken='',pendingSkrideToken='';
+
 function applyVariant(){
   if(SK_VARIANT!=='intl') return; // rf — оставляем как есть
   try{
-    var pv=document.querySelector('a[href="privacy-ru.html"]'); if(pv) pv.setAttribute('href','https://skride.ru/privacy-intl.html');
-    var of=document.querySelector('a[href="offer.html"]'); if(of){ of.setAttribute('href','https://skride.ru/terms-intl.html'); of.removeAttribute('data-i18n'); of.textContent='Условия использования'; }
+    var pv=document.querySelector('a[href="privacy-ru.html"]'); if(pv) pv.setAttribute('href','privacy-intl.html');
+    var of=document.querySelector('a[href="offer.html"]'); if(of){ of.setAttribute('href','terms-intl.html'); of.removeAttribute('data-i18n'); of.textContent='Условия использования'; }
     var st=document.getElementById('subTermsLink'); if(st){ st.style.display='none'; var sep=st.previousElementSibling; if(sep&&sep.tagName==='SPAN') sep.style.display='none'; }
-    var note=document.querySelector('[data-i18n="prem_note"]'); if(note){ note.removeAttribute('data-i18n'); note.textContent='In this version all features are unlocked for free: smart AI voice coach, 100 running legends, treadmill and sensors. Questions: info@skride.ru.'; }
-    var sub=document.querySelector('[data-i18n="prem_sub"]'); if(sub){ sub.removeAttribute('data-i18n'); sub.textContent='All features included — free.'; }
+    var note=document.querySelector('[data-i18n="prem_note"]'); if(note){ note.removeAttribute('data-i18n'); note.textContent=regionText('note'); }
+    var sub=document.querySelector('[data-i18n="prem_sub"]'); if(sub){ sub.removeAttribute('data-i18n'); sub.textContent=regionText('free'); }
     var act=document.getElementById('premiumActivate'); if(act) act.style.display='none';
     // премиум в intl всегда открыт: локализуем статус/кнопку и держим кнопку оплаты скрытой
     if(typeof window.updatePremiumUI==='function' && !window.__intlPrem){
       window.__intlPrem=true; var _upu=window.updatePremiumUI;
       window.updatePremiumUI=function(){ try{ _upu(); }catch(e){}
-        var s=document.getElementById('premiumStatus'); if(s) s.textContent='Premium — all features unlocked ✓';
+        var s=document.getElementById('premiumStatus'); if(s) s.textContent=regionText('free')+' ✓';
         var b=document.getElementById('premiumBtn'); if(b) b.textContent='⭐ Premium';
         var a=document.getElementById('premiumActivate'); if(a) a.style.display='none'; };
       try{ window.updatePremiumUI(); }catch(e){}
@@ -3375,7 +3409,7 @@ let storeMode='local'; const STORE_KEY='stride:store';
 async function saveAuth(){ await sSet(AUTH_KEY, JSON.stringify({token:authToken,user:authUser})); }
 async function apiFetch(path, opts){
   if(!cloudURL) throw new Error('Не указан адрес сервера');
-  opts=opts||{}; opts.headers=Object.assign({'Content-Type':'application/json'}, opts.headers||{});
+  opts=opts||{}; opts.headers=Object.assign({'Content-Type':'application/json','Accept-Language':coachLanguage()}, opts.headers||{});
   if(authToken) opts.headers['Authorization']='Bearer '+authToken;
   const r=await fetch(cloudURL.replace(/\/+$/,'')+path, opts);
   let d=null; try{ d=await r.json(); }catch(e){}
@@ -3387,7 +3421,7 @@ function mergeRuns(a,b){ const m=new Map(); [].concat(a||[],b||[]).forEach(r=>m.
 function setSyncState(s){ if($('authSyncState')) $('authSyncState').textContent=s; }
 async function persistRuns(){ await sSet(RUNS_KEY, JSON.stringify(runs)); if(storeMode==='cloud' && authToken) cloudPush(); }
 let pushTimer=null;
-function cloudPush(){ if(!(storeMode==='cloud'&&authToken&&cloudURL)) return; clearTimeout(pushTimer); pushTimer=setTimeout(async()=>{ try{ await apiFetch('/api/sync',{method:'POST',body:JSON.stringify({runs})}); setSyncState('синхронизировано ✓ '+new Date().toLocaleTimeString('ru-RU').slice(0,5)); }catch(e){ setSyncState('не синхронизировано: '+e.message); } },800); }
+function cloudPush(){ if(!(storeMode==='cloud'&&authToken&&cloudURL)) return; clearTimeout(pushTimer); pushTimer=setTimeout(async()=>{ try{ await apiFetch('/api/sync',{method:'POST',body:JSON.stringify({runs})}); setSyncState('синхронизировано ✓ '+new Date().toLocaleTimeString(speechLocale()).slice(0,5)); }catch(e){ setSyncState('не синхронизировано: '+e.message); } },800); }
 async function cloudSyncInitial(){
   if(!(authToken&&cloudURL)) return;
   setSyncState('синхронизирую...');
@@ -3439,7 +3473,7 @@ if($('authRegBtn')) $('authRegBtn').onclick=()=>doAuth('/api/register');
 if($('authLogout')) $('authLogout').onclick=doLogout;
 if($('authSync')) $('authSync').onclick=cloudSyncInitial;
 const YA_CLIENT_ID='56d4c54c13f648938f52754b4b12b3b3';
-function yaAuthURL(){ const srv=(cloudURL||DEFAULT_SERVER).replace(/\/+$/,''); const st=(typeof isNative!=='undefined'&&isNative)?'app':location.origin; return 'https://oauth.yandex.ru/authorize?response_type=token&client_id='+YA_CLIENT_ID+'&redirect_uri='+encodeURIComponent(srv+'/yandex-callback')+'&state='+encodeURIComponent(st); }
+function yaAuthURL(){ const srv=(cloudURL||DEFAULT_SERVER).replace(/\/+$/,''); const st=SK_VARIANT==='intl'?'skride-intl':((typeof isNative!=='undefined'&&isNative)?'app':location.origin); return 'https://oauth.yandex.ru/authorize?response_type=token&client_id='+YA_CLIENT_ID+'&redirect_uri='+encodeURIComponent((SK_VARIANT==='intl'?'https://api.skride.ru':srv)+'/yandex-callback')+'&state='+encodeURIComponent(st); }
 async function applyYandexProfile(u){
   if(!u) return;
   let changed=false;
@@ -3478,6 +3512,7 @@ function updateProfYandex(){
 }
 window.addEventListener('message',(ev)=>{
   if(!ev||!ev.data||typeof ev.data!=='object') return;
+  if(ev.origin!==new URL(DEFAULT_SERVER).origin) return;
   if(ev.data.yandexToken){ if(yaWin){try{yaWin.close();}catch(_){}} yandexExchange(ev.data.yandexToken); }
 });
 if($('authYandexBtn')) $('authYandexBtn').onclick=startYandexLogin;
@@ -3486,7 +3521,7 @@ if($('profYandexBtn')) $('profYandexBtn').onclick=startYandexLogin;
   const h=location.hash||'';
   if(h.indexOf('ytk=')>=0){
     const m=h.match(/ytk=([^&]+)/);
-    if(m && m[1]){ const tk=decodeURIComponent(m[1]); history.replaceState(null,'',location.pathname+location.search); yandexExchange(tk); }
+    if(m && m[1]){ const tk=decodeURIComponent(m[1]); history.replaceState(null,'',location.pathname+location.search); pendingYandexToken=tk; }
   }
 }catch(_){} })();
 // НАТИВКА: возврат из входа по Яндексу через deep-link ru.skride.app://login?ytk=...
@@ -3530,11 +3565,12 @@ if($('profGoogleBtn')) $('profGoogleBtn').onclick=startGoogleLogin;
 }catch(_){} })();
 window.addEventListener('message',(ev)=>{
   if(!ev||!ev.data||typeof ev.data!=='object') return;
+  if(ev.origin!==new URL(DEFAULT_SERVER).origin) return;
   if(ev.data.skrideToken){ if(gWin){try{gWin.close();}catch(_){}} applySkrideToken(ev.data.skrideToken); }
 });
 (function(){ try{
   const h=location.hash||'';
-  if(h.indexOf('stk=')>=0){ const m=h.match(/stk=([^&]+)/); if(m && m[1]){ const tk=decodeURIComponent(m[1]); history.replaceState(null,'',location.pathname+location.search); applySkrideToken(tk); } }
+  if(h.indexOf('stk=')>=0){ const m=h.match(/stk=([^&]+)/); if(m && m[1]){ const tk=decodeURIComponent(m[1]); history.replaceState(null,'',location.pathname+location.search); pendingSkrideToken=tk; } }
 }catch(_){} })();
 // НАТИВКА: возврат из входа через Google deep-link ru.skride.app://login?stk=<наш JWT>
 (function(){ try{
@@ -3551,7 +3587,7 @@ async function cloudCoach(){
   const ctrl=new AbortController(); const to=setTimeout(()=>ctrl.abort(), 45000);
   try{
     const h={'Content-Type':'application/json'}; if(authToken) h['Authorization']='Bearer '+authToken;
-    const r=await fetch(cloudURL.replace(/\/+$/,'')+'/api/coach',{method:'POST',headers:h,body:JSON.stringify({messages:hist,context:coachContext()}),signal:ctrl.signal});
+    const r=await fetch(cloudURL.replace(/\/+$/,'')+'/api/coach',{method:'POST',headers:h,body:JSON.stringify({messages:hist,context:coachContext(),language:coachLanguage()}),signal:ctrl.signal});
     if(!r.ok) throw new Error('сервер '+r.status); const d=await r.json(); if(d.error) throw new Error(d.error); if(!d.reply||!d.reply.trim()) throw new Error('пустой ответ'); return d.reply;
   } finally { clearTimeout(to); }
 }
@@ -3564,7 +3600,7 @@ document.addEventListener('click', unlockAudio);
 async function cloudTTS(text, onDone){
   if(!cloudURL) throw new Error('сервер не подключён');
   let r;
-  try{ r=await fetch(cloudURL.replace(/\/+$/,'')+'/api/tts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text, voice: ttsVoice||undefined})}); }
+  try{ r=await fetch(cloudURL.replace(/\/+$/,'')+'/api/tts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text, voice: ttsVoice||undefined,language:coachLanguage()})}); }
   catch(e){ throw new Error('сервер не ответил (просыпается? подожди 30 сек)'); }
   if(!r.ok){ let extra=''; try{ const j=await r.json(); if(j&&j.error) extra=' · '+j.error; }catch(_){} throw new Error('сервер вернул '+r.status+extra); }
   const blob=await r.blob();
@@ -3590,14 +3626,14 @@ function coachSendText(q){
 const CHAT_CHIPS_RUN=['Сколько раз в неделю бегать?','Как мой прогресс?','Болит колено','Какой у меня пульс?','Что есть перед бегом?','Как бегать правильно?'];
 const CHAT_CHIPS_BIKE=['Какой каденс держать?','Как заезжать в гору?','Какое давление в шинах?','Как мой прогресс?','Что есть перед заездом?','Как тормозить на спуске?'];
 function chatChips(){ return activityType==='bike'?CHAT_CHIPS_BIKE:CHAT_CHIPS_RUN; }
-function renderChips(){ const c=$('coachChips'); if(!c) return; c.innerHTML=''; chatChips().forEach(t=>{ const b=document.createElement('button'); b.type='button'; b.textContent=t; b.onclick=()=>coachSendText(t); c.appendChild(b); }); }
+function renderChips(){ const c=$('coachChips'); if(!c) return; c.innerHTML=''; chatChips().forEach(t=>{ const b=document.createElement('button'); b.type='button'; b.textContent=t; b.onclick=()=>coachSendText(window.skTranslate?window.skTranslate(t,coachLanguage()):t); c.appendChild(b); }); }
 function initChat(){
   renderChips();
   if(chatMsgs.length) renderChat(); else chatPush('coach',greetText(),false);
 }
 if($('coachSend')) $('coachSend').onclick=()=>{ unlockAudio(); coachSendText($('coachQ').value); };
 if($('coachQ')) $('coachQ').addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); unlockAudio(); coachSendText($('coachQ').value); } });
-$('serverSave').onclick=async()=>{ unlockAudio(); cloudURL=$('serverUrl').value.trim(); await sSet(SERVER_KEY,cloudURL); if(cloudURL){ toast('Сервер сохранён ✓ проверяю голос…'); setTimeout(()=>say('Привет! Голос подключён.'),200); } else toast('Адрес очищен — офлайн-режим'); };
+$('serverSave').onclick=async()=>{ unlockAudio(); cloudURL=DEFAULT_SERVER; await sSet(SERVER_KEY,cloudURL); if(cloudURL){ toast('Сервер сохранён ✓ проверяю голос…'); setTimeout(()=>say('Привет! Голос подключён.'),200); } else toast('Адрес очищен — офлайн-режим'); };
 $('serverTest').onclick=async()=>{ const u=$('serverUrl').value.trim(); if(!u){ toast('Вставь адрес сервера'); return; } toast('Проверяю сервер...'); try{ const r=await fetch(u.replace(/\/+$/,'')+'/'); const d=await r.json(); toast(d&&d.ok?('Сервер на связи ✓ · мозг: '+(d.llm||'—')+' · GPT-Live: '+(d.live?'да':'нет')+' · книги: '+(d.coachKb?'да':'нет')):'Ответ получен, но формат неожиданный'); }catch(e){ toast('Сервер не отвечает — проверь адрес и что он развёрнут'); } };
 if($('cloudVoiceSel')) $('cloudVoiceSel').onchange=async(e)=>{ unlockAudio(); ttsVoice=e.target.value; await sSet(TTS_VOICE_KEY,ttsVoice); if(cloudURL){ say('Привет! Так звучит выбранный голос.'); } toast('Голос сохранён'); };
 
@@ -3712,7 +3748,7 @@ async function startVoiceAsk(){
   else if(await permState('microphone')==='denied'){ showPerm('mic'); return; }
   if(recOn){ try{recog.stop();}catch(e){} return; }
   try{
-    recog=new SpeechRec(); recog.lang='ru-RU'; recog.interimResults=false; recog.maxAlternatives=1;
+    recog=new SpeechRec(); recog.lang=speechLocale(); recog.interimResults=false; recog.maxAlternatives=1;
     recog.onstart=()=>{ recOn=true; const b=$('coachMic'); if(b)b.classList.add('rec'); toast('Слушаю... говори'); };
     recog.onresult=(ev)=>{ const t=ev.results[0][0].transcript; if(t){ coachSendText(t); } };
     recog.onerror=(ev)=>{ if(ev.error==='not-allowed'||ev.error==='service-not-allowed'){ if(isNative){ toast('Разреши микрофон: Настройки → Приложения → Skride → Разрешения → Микрофон'); } else { showPerm('mic'); } } else if(ev.error==='no-speech'||ev.error==='no-match'){ toast('Не расслышал, попробуй ещё'); } else { toast('Микрофон: '+(ev.message||ev.error||'ошибка')); } };
@@ -3782,11 +3818,14 @@ function waitIceComplete(pc,timeout=5000){
 function stopLiveCoach(silent){
   const x=liveCoach; liveCoach={pc:null,dc:null,stream:null,audio:null,active:false,sessionId:'',backendModel:''};
   flushLiveTranscript();
-  try{ if(x.dc) x.dc.close(); }catch(e){}
-  try{ if(x.pc) x.pc.close(); }catch(e){}
-  try{ if(x.stream) x.stream.getTracks().forEach(t=>t.stop()); }catch(e){}
-  try{ if(x.audio){ x.audio.srcObject=null; x.audio.remove(); } }catch(e){}
-  if(!silent) toast('Разговор с тренером завершён');
+  try{if(x.stream)x.stream.getTracks().forEach(t=>t.enabled=false);}catch(e){}
+  let ended=false;const finish=()=>{if(ended)return;ended=true;try{if(x.dc)x.dc.close();if(x.pc)x.pc.close();if(x.stream)x.stream.getTracks().forEach(t=>t.stop());if(x.audio){x.audio.srcObject=null;x.audio.remove();}}catch(e){}};
+  if(x.dc && x.dc.readyState==='open'){
+    x.dc.addEventListener('message',ev=>{try{if(JSON.parse(ev.data).type==='session.closed')finish();}catch(e){}});
+    try{x.dc.send(JSON.stringify({type:'session.close'}));}catch(e){finish();}
+    setTimeout(finish,15000);
+  }else finish();
+  if(!silent)toast(regionText('end'));
 }
 async function startLiveCoach(){
   if(!cloudURL || !hasAccess()) return false;
@@ -3811,7 +3850,8 @@ async function startLiveCoach(){
 
     let startedResolve=null, startedReject=null;
     const startedPromise=new Promise((resolve,reject)=>{ startedResolve=resolve; startedReject=reject; });
-    const startedTimer=setTimeout(()=>{ if(startedReject) startedReject(new Error('GPT-Live session start timeout')); },10000);
+    startedPromise.catch(()=>{});
+    const startedTimer=setTimeout(()=>{ if(startedReject) startedReject(new Error('GPT-Live session start timeout')); },45000);
 
     dc.onmessage=(ev)=>{
       try{
@@ -3820,7 +3860,7 @@ async function startLiveCoach(){
           clearTimeout(startedTimer);
           liveCoach.active=true;
           if(startedResolve){ startedResolve(true); startedResolve=null; startedReject=null; }
-          toast('GPT-Live на связи — говори');
+          toast(regionText('connected'));
         }else if(e.type==='session.input_transcript.delta'){
           liveTranscriptDelta('me',e.delta||'');
         }else if(e.type==='session.output_transcript.delta'){
@@ -3846,8 +3886,8 @@ async function startLiveCoach(){
     const headers={'Content-Type':'application/json'};
     if(authToken) headers['Authorization']='Bearer '+authToken;
     const r=await fetch(cloudURL.replace(/\/+$/,'')+'/api/live/session',{
-      method:'POST',headers,
-      body:JSON.stringify({sdp:pc.localDescription.sdp,context:coachContext()})
+      method:'POST',headers,signal:AbortSignal.timeout(30000),
+      body:JSON.stringify({sdp:pc.localDescription.sdp,context:coachContext(),language:coachLanguage()})
     });
     if(!r.ok){
       let msg='сервер '+r.status; try{ const j=await r.json(); if(j&&j.error) msg=j.error; }catch(_){}
@@ -3873,7 +3913,7 @@ async function startLiveCoach(){
 
 /* ---- режим разговора (hands-free, как с Алисой): слушает → отвечает → снова слушает ---- */
 let convoMode=false;
-function setConvoUI(on){ const b=$('coachConvo'); if(b){ b.classList.toggle('on',on); b.textContent= on?'⏸ Остановить разговор':'🎙️ Поговорить с тренером'; } }
+function setConvoUI(on){ const b=$('coachConvo'); if(b){ b.classList.toggle('on',on); b.textContent= on?regionText('stop'):regionText('talk'); } }
 async function startLegacyConvo(){
   if(!SpeechRec){ toast('Голосовой ввод не поддерживается'); return; }
   if(isNative){
@@ -3905,7 +3945,7 @@ async function startConvo(){
 function convoListen(){
   if(!convoMode) return;
   try{
-    recog=new SpeechRec(); recog.lang='ru-RU'; recog.interimResults=false; recog.maxAlternatives=1;
+    recog=new SpeechRec(); recog.lang=speechLocale(); recog.interimResults=false; recog.maxAlternatives=1;
     let got=false;
     recog.onstart=()=>{ const b=$('coachMic'); if(b)b.classList.add('rec'); };
     recog.onresult=(ev)=>{ got=true; const t=ev.results[0][0].transcript; if(t) convoAsk(t); };
@@ -4030,6 +4070,11 @@ function applyLang(lang){
   document.querySelectorAll('[data-i18n]').forEach(el=>{ const s=I18N[lang][el.dataset.i18n]; if(s!=null) el.textContent=s; });
   if($('langSel')) $('langSel').value=lang;
   document.documentElement.lang=lang;
+  populateVoiceList(); applyVariant();
+  if(typeof setConvoUI==='function')setConvoUI(typeof convoMode!=='undefined'&&convoMode);
+  if(window.__skrideBooted)render();
+  if(typeof window.skApplyI18n==='function')window.skApplyI18n(lang);
+  if(typeof liveCoach!=='undefined' && liveCoach.active){stopLiveCoach(true);convoMode=false;setConvoUI(false);}
   if(typeof updatePremiumUI==='function') updatePremiumUI();
   if($('onboarding') && $('onboarding').style.display!=='none') obGo(obIdx);
 }
@@ -4116,7 +4161,7 @@ async function boot(){
   const md=await sGet(MODE_KEY); if(md==='manual'||md==='gps') appMode=md;
   const ac=await sGet(ACT_KEY); if(ac==='bike'||ac==='run') activityType=ac;
   const chRaw=await sGet(CHAT_KEY); if(chRaw){ try{ chatMsgs=JSON.parse(chRaw)||[]; }catch(e){ chatMsgs=[]; } }
-  const sv=await sGet(SERVER_KEY); cloudURL=(sv&&sv.trim())?sv.trim():DEFAULT_SERVER; if($('serverUrl')) $('serverUrl').value=cloudURL; try{ fetch(cloudURL.replace(/\/+$/,'')+'/api/voicecheck').catch(()=>{}); }catch(_){}
+  cloudURL=DEFAULT_SERVER; if($('serverUrl')){ $('serverUrl').value=cloudURL; $('serverUrl').readOnly=true; } try{ fetch(cloudURL.replace(/\/+$/,'')+'/api/voicecheck').catch(()=>{}); }catch(_){}
   const tv=await sGet(TTS_VOICE_KEY); if(tv){ ttsVoice=tv; if($('cloudVoiceSel')) $('cloudVoiceSel').value=tv; }
   const bt=await sGet(BIKE_KEY); if(bt){ bikeType=bt; if($('bikeTypeSel')) $('bikeTypeSel').value=bt; }
   const lg=await sGet(LANG_KEY); if(lg) curLang=lg; else curLang=detectLang();
@@ -4126,13 +4171,15 @@ async function boot(){
   const sm=await sGet(STORE_KEY); if(sm==='cloud'||sm==='local') storeMode=sm;
   const lm=await sGet(LISTEN_KEY); if(lm==='coach'||lm==='music'||lm==='both') listenMode=lm;
   /* плеер на старте НЕ показываем — открывается только когда пользователь включит радио или Яндекс Музыку */
-  applyLang(curLang); updatePremiumUI(); updateAuthUI();
+  applyLang(curLang); const regionAuthReady=await migrateRegionAccount(); updatePremiumUI(); updateAuthUI();
   syncVoiceUI(); renderHr();
   renderProfile();
   render(); initMap();
   applyMode(); applyActivity(); initChat(); initMusic();
-  if(storeMode==='cloud' && authToken && cloudURL) cloudSyncInitial();
-  if(authToken && cloudURL){ refreshMe(); }
+  if(regionAuthReady && storeMode==='cloud' && authToken && cloudURL) cloudSyncInitial();
+  if(regionAuthReady && authToken && cloudURL){ refreshMe(); }
+  if(pendingYandexToken){const tk=pendingYandexToken;pendingYandexToken='';await yandexExchange(tk);}
+  if(pendingSkrideToken){const tk=pendingSkrideToken;pendingSkrideToken='';await applySkrideToken(tk);}
   if(/[?&]paid=1/.test(location.search)){ toast('Проверяю оплату…'); setTimeout(refreshMe,1500); setTimeout(refreshMe,5000); }
   const seen=await sGet(ONB_KEY); if(seen!=='1') obStart();
   renderBoard(pickQuoteDaily());
@@ -4141,6 +4188,7 @@ async function boot(){
     try{ navigator.serviceWorker.getRegistrations().then(rs=>{ rs.forEach(r=>r.unregister()); }).catch(()=>{}); }catch(e){}
   }
   if(window.caches && caches.keys){ try{ caches.keys().then(ks=>ks.forEach(k=>caches.delete(k))); }catch(e){} }
+  window.__skrideBooted=true;
   checkForUpdate();
 }
 async function checkForUpdate(){
@@ -4165,6 +4213,6 @@ async function checkForUpdate(){
 boot();
 window.addEventListener('resize',()=>render());
 </script>
-<script src="i18n-full.js" defer></script>
+<script src="i18n-full.js?v=20261029-regions" defer></script>
 </body>
 </html>
