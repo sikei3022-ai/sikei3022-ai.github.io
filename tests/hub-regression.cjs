@@ -162,6 +162,14 @@ const results=[];
    startGoogleLogin();await new Promise(r=>setTimeout(r,0));return {calls:__nativeCalls,token:__applied};
   });assert.deepEqual(r,{calls:1,token:'native-session'});
  });
+
+ await test('Guidance requests cloud speech in all five interface languages',async({page})=>{
+  const r=await page.evaluate(async()=>{
+   const called=[];cloudTTS=async text=>called.push({lang:coachLanguage(),text});listenMode='both';
+   for(const lang of ['ru','en','es','it','ja']){applyLang(lang);await say('Test speech');}
+   return called.map(x=>x.lang);
+  });assert.deepEqual(r,['ru','en','es','it','ja']);
+ });
  await browser.close();
  fs.writeFileSync(output,JSON.stringify({root,total:results.length,passed:results.filter(r=>r.status==='PASS').length,results},null,2));
  if(results.some(r=>r.status==='FAIL'))process.exitCode=1;
