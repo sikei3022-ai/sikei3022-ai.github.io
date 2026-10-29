@@ -1275,7 +1275,7 @@ const $=id=>document.getElementById(id);
 // Можно переопределить своим ключом через настройки ⚙.
 const YANDEX_KEY='fb32ecf2-89e6-454a-9b4c-9d46d2252be2';
 const YANDEX_KEY_BACKUP='729aa267-ca44-4237-9f0d-a5fc13684126';
-const APP_VERSION='2026.10.29.devices.3';
+const APP_VERSION='2026.10.29.native.4';
 var SK_VARIANT=(function(){ try{ var m=(location.search.match(/[?&]variant=(rf|intl)/)||[])[1]; if(m){ localStorage.setItem('sk:variant',m); return m; } var s=localStorage.getItem('sk:variant'); if(s==='rf'||s==='intl') return s; }catch(e){} return 'rf'; })(); // версия для автообновления — меняется при каждом релизе
 let runs=[], pts=[], route=null, placemarks=[], deferredPrompt=null, goal=20, editId=null;
 let routeMode='road';
@@ -1683,7 +1683,7 @@ if($('mSave')) $('mSave').onclick=async()=>{
 let hrDevice=null, hrDeviceId=null, liveBpm=null, hrSamples=[], bleInited=false;
 const HR_SVC='0000180d-0000-1000-8000-00805f9b34fb';
 const HR_CHR='00002a37-0000-1000-8000-00805f9b34fb';
-const BLE=(window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.BluetoothLe) || null;
+const BLE=window.SkrideBluetooth || (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.BluetoothLe) || null;
 
 function updateHrTile(){ const el=$('liveHr'); if(el) el.textContent = liveBpm!=null? liveBpm : '—'; }
 function hrSetState(stateId,text,on){ const el=$(stateId); if(el){ el.textContent=text; el.classList.toggle('on',!!on); } }
@@ -4229,5 +4229,6 @@ window.addEventListener('resize',()=>render());
 </script>
 <script src="i18n-full.js?v=20261029-regions" defer></script>
 <script src="coach-polish.js?v=20261029-3" defer></script>
+<script src="native-devices.js?v=20261029-4" defer></script>
 </body>
 </html>
