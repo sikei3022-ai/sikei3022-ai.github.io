@@ -1,0 +1,32 @@
+/* Quiet refinement: retain Skride green, white cards, Barlow and sports numerals. */
+button,a,input,select{touch-action:manipulation}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #258654;outline-offset:3px}
+button:active{filter:brightness(.96)}
+.sec-h h2{letter-spacing:-.025em}
+.card{box-shadow:0 3px 16px rgba(25,55,38,.045)}
+.nav{background:rgba(255,255,255,.94);backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%);box-shadow:0 -4px 22px rgba(25,55,38,.045)}
+.nav a{min-height:44px}
+.coach-chat{padding:18px!important}
+.coach-chat-h{font-size:18px;letter-spacing:-.02em;margin-bottom:18px}
+.coach-guidance{padding:15px;background:var(--surface);border:1px solid var(--line);border-radius:17px;margin-bottom:20px}
+.coach-mode-title{font-size:16px;font-weight:700;letter-spacing:-.015em;color:var(--ink)}
+.coach-guidance p,.coach-mode-hint{font-size:13px;line-height:1.5;color:var(--muted);margin:6px 0 12px}
+#coachGuidance,.coach-secondary button,#coachMute{font:600 14px var(--body);min-height:44px;border-radius:12px;padding:10px 14px;border:1px solid var(--line2);background:var(--card);color:var(--ink2);cursor:pointer}
+#coachGuidance{width:100%}
+#coachGuidance[aria-pressed=true]{color:#207548;background:#e8f5ec;border-color:#acd8bb}
+.coach-ctrls{display:flex;flex-wrap:wrap;gap:8px}
+.coach-ctrls #coachConvo{flex:1 1 100%;min-height:48px;border-radius:14px;font-size:15px}
+#coachMute{width:100%}
+#coachMute[hidden]{display:none}
+#coachConnectionStatus{font-size:12px;line-height:1.5;color:var(--muted);padding:6px 0 12px;min-height:36px}
+#coachConnectionStatus[data-active=true]{color:#207548}
+.coach-secondary{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.coach-secondary button{flex:1;font-size:12px}
+.coach-secondary button:disabled{opacity:.45;cursor:default}
+.coach-input input{min-width:0;font-size:16px}
+.coach-input button{min-width:46px;min-height:46px;border-radius:13px}
+.coach-chips button{min-height:44px}
+@media(prefers-reduced-motion:no-preference){.coach-ctrls button:active,#coachGuidance:active,.coach-secondary button:active{transform:scale(.98);transition:transform 100ms ease-out}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+@media(prefers-reduced-transparency:reduce){.nav{background:#fff;backdrop-filter:none;-webkit-backdrop-filter:none}}
+@media(prefers-contrast:more){.nav,.card,.coach-guidance{border:1px solid #526459}.coach-mode-hint,.coach-guidance p,#coachConnectionStatus{color:#374151}}
