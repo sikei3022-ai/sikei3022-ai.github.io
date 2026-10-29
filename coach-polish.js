@@ -55,3 +55,30 @@ return oldSpeak(text);
 };
 updateCoachControls();
 })();
+(()=>{
+const copy={
+ru:['Фото табло','Подключить дорожку','Подключить пульс','Поддерживаются датчики с трансляцией пульса Bluetooth HR и дорожки FTMS. Это не синхронизация тренировок, шагов или сна с Apple Watch, Garmin и Mi Band.','Bluetooth недоступен в этой версии приложения. Для совместимых датчиков открой Skride в Chrome на Android.','Сфотографируй табло. Распознанные цифры нужно проверить перед сохранением.','Маршрут записывается, пока приложение открыто. Фоновая запись в текущей версии не поддерживается.'],
+en:['Scan display','Connect treadmill','Connect heart rate','Supports Bluetooth HR broadcasts and FTMS treadmills. This does not sync workouts, steps or sleep from Apple Watch, Garmin or Mi Band.','Bluetooth is unavailable in this app version. Use Skride in Chrome on Android for compatible sensors.','Photograph the display. Check recognized numbers before saving.','Keep the app open to record your route. Background recording is not supported in this version.'],
+es:['Escanear pantalla','Conectar cinta','Conectar pulso','Compatible con sensores Bluetooth HR y cintas FTMS. No sincroniza entrenamientos, pasos ni sueño de Apple Watch, Garmin o Mi Band.','Bluetooth no está disponible en esta versión. Usa Skride en Chrome para Android con sensores compatibles.','Fotografía la pantalla y revisa los números antes de guardar.','Mantén la aplicación abierta para grabar la ruta. Esta versión no graba en segundo plano.'],
+it:['Scansiona display','Collega tapis roulant','Collega frequenza cardiaca','Supporta sensori Bluetooth HR e tapis roulant FTMS. Non sincronizza allenamenti, passi o sonno da Apple Watch, Garmin o Mi Band.','Bluetooth non è disponibile in questa versione. Usa Skride in Chrome per Android con sensori compatibili.','Fotografa il display e verifica i numeri prima di salvare.','Tieni aperta l’app per registrare il percorso. La registrazione in background non è supportata.'],
+ja:['ディスプレイを撮影','トレッドミルを接続','心拍センサーを接続','Bluetooth HRの心拍配信とFTMSトレッドミルに対応。Apple Watch、Garmin、Mi Bandの運動・歩数・睡眠の同期ではありません。','このアプリ版ではBluetoothを利用できません。対応センサーにはAndroid版ChromeでSkrideを開いてください。','ディスプレイを撮影し、保存前に認識結果を確認してください。','経路の記録中はアプリを開いたままにしてください。この版はバックグラウンド記録に対応していません。']
+};
+const available=!!(BLE||navigator.bluetooth);
+const note=document.createElement('p');note.className='device-availability';$('treadSec').append(note);
+const gpsNote=document.createElement('p');gpsNote.className='device-availability';$('mapBar').after(gpsNote);
+function refresh(){
+ const a=copy[coachLanguage()]||copy.en;
+ $('machPhotoLbl').textContent=a[0];
+ // Replace decorative emoji text nodes, preserving the translated span.
+ for(const n of [...$('treadPhoto').childNodes])if(n.nodeType===3)n.textContent='';
+ $('treadBt').textContent=a[1];for(const id of ['watchBt','bandBt','hrConnect'])$(id).textContent=a[2];
+ document.querySelector('.dev-note').textContent=a[3];note.textContent=available?'':a[4];
+ const p=document.querySelector('.mach-card > p');if(p)p.textContent=a[5];
+ gpsNote.textContent=(isNative&&window.Capacitor?.Plugins?.BackgroundGeolocation)?'':a[6];
+ if(!available)for(const id of ['watchBt','bandBt','hrConnect','treadBt'])$(id).onclick=()=>toast(a[4]);
+}
+const prev=applyLang;applyLang=function(l){prev(l);refresh()};
+const machine=updateMachineCard;
+if(typeof machine==='function')updateMachineCard=function(){machine();refresh()};
+refresh();
+})();

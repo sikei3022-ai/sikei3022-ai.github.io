@@ -30,3 +30,20 @@ button:active{filter:brightness(.96)}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
 @media(prefers-reduced-transparency:reduce){.nav{background:#fff;backdrop-filter:none;-webkit-backdrop-filter:none}}
 @media(prefers-contrast:more){.nav,.card,.coach-guidance{border:1px solid #526459}.coach-mode-hint,.coach-guidance p,#coachConnectionStatus{color:#374151}}
+
+/* Secondary actions stay quiet; recording remains the primary action. */
+.chip,.dev-btns button,.map-toggle button,.act-pick button,.bq-opt{min-height:44px;border-radius:12px!important;box-shadow:none!important;text-shadow:none!important}
+.chip:not(.on):not(.cam),.dev-btns button:not(.cam){background:#f6f8f6!important;border-color:#e1e7e2!important;color:var(--ink2)!important}
+#treadPhoto{background:#e8f5ec!important;color:#207548!important;border:1px solid #c4e1cf!important;font-size:14px!important;font-weight:600!important}
+.chip::before,.chip::after,.dev-btns button::before,.dev-btns button::after{box-shadow:none!important}
+.act-opt.on,.map-toggle .mt-opt.on,.bq-opt.on{background:#e8f5ec!important;color:#207548!important;border-color:#b5d9c1!important}
+.dev-card{box-shadow:none;border-color:#e5eae6;border-radius:18px}
+.dev-n{letter-spacing:-.015em}
+.dev-s{line-height:1.5}
+.dev-btns{gap:8px}
+#voiceBtn{min-height:40px}
+#locBtn,#shotBtn{flex:1;justify-content:center;font-size:12px}
+.leaflet-control-zoom a{width:40px!important;height:40px!important;line-height:40px!important}
+.lf-locate{min-width:44px;min-height:44px}
+button:disabled{cursor:default;opacity:.55}
+.device-availability{font-size:12px;line-height:1.55;color:var(--muted);margin:10px 0 0}
