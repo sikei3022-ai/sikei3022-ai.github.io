@@ -1275,7 +1275,7 @@ const $=id=>document.getElementById(id);
 // Можно переопределить своим ключом через настройки ⚙.
 const YANDEX_KEY='fb32ecf2-89e6-454a-9b4c-9d46d2252be2';
 const YANDEX_KEY_BACKUP='729aa267-ca44-4237-9f0d-a5fc13684126';
-const APP_VERSION='2026.10.29.auth.6';
+const APP_VERSION='2026.10.29.auth.7';
 var SK_VARIANT=(function(){ try{ var m=(location.search.match(/[?&]variant=(rf|intl)/)||[])[1]; if(m){ localStorage.setItem('sk:variant',m); return m; } var s=localStorage.getItem('sk:variant'); if(s==='rf'||s==='intl') return s; }catch(e){} return 'rf'; })(); // версия для автообновления — меняется при каждом релизе
 let runs=[], pts=[], ptsBreaks=[], route=null, placemarks=[], deferredPrompt=null, goal=20, editId=null;
 let routeMode='road';
@@ -3436,10 +3436,10 @@ function applyVariant(){
 let authToken='', authUser=null; const AUTH_KEY='stride:auth';
 let storeMode='local'; const STORE_KEY='stride:store';
 async function saveAuth(){ await sSet(AUTH_KEY, JSON.stringify({token:authToken,user:authUser})); }
-async function apiFetch(path, opts){
+async function apiFetch(path, opts, token=authToken){
   if(!cloudURL) throw new Error('Не указан адрес сервера');
   opts=opts||{}; opts.headers=Object.assign({'Content-Type':'application/json','Accept-Language':coachLanguage()}, opts.headers||{});
-  if(authToken) opts.headers['Authorization']='Bearer '+authToken;
+  if(token) opts.headers['Authorization']='Bearer '+token;
   const r=await fetch(cloudURL.replace(/\/+$/,'')+path, opts);
   let d=null; try{ d=await r.json(); }catch(e){}
   if(!r.ok) throw new Error((d&&d.error)||('Ошибка '+r.status));
@@ -3530,6 +3530,7 @@ async function yandexExchange(token){
 }
 let yaWin=null;
 function startYandexLogin(){
+  if(yaWin && !yaWin.closed){ try{yaWin.focus();}catch(_){} return; }
   if(!cloudURL){ toast('Сначала укажи адрес сервера ниже («Облачный ИИ»)'); return; }
   const url=yaAuthURL();
   yaWin=window.open(url,'yandex_login','width=520,height=680');
@@ -3544,7 +3545,7 @@ function updateProfYandex(){
 window.addEventListener('message',(ev)=>{
   if(!ev||!ev.data||typeof ev.data!=='object') return;
   if(ev.origin!==AUTH_YANDEX_SERVER || !yaWin || ev.source!==yaWin) return;
-  if(ev.data.yandexToken){ if(yaWin){try{yaWin.close();}catch(_){}} yandexExchange(ev.data.yandexToken); }
+  if(ev.data.yandexToken){ if(yaWin){try{yaWin.close();}catch(_){}} yaWin=null; yandexExchange(ev.data.yandexToken); }
 });
 if($('authYandexBtn')) $('authYandexBtn').onclick=startYandexLogin;
 if($('profYandexBtn')) $('profYandexBtn').onclick=startYandexLogin;
@@ -3565,12 +3566,22 @@ if($('profYandexBtn')) $('profYandexBtn').onclick=startYandexLogin;
 
 // ===== Вход через Google (по схеме Яндекса; client_id живёт ТОЛЬКО на сервере) =====
 function googleAuthURL(){ return AUTH_GOOGLE_SERVER+'/google-login?region='+encodeURIComponent(SK_VARIANT); }
-let gWin=null;
+let gWin=null, googleNativeBusy=false;
 function startGoogleLogin(){
   if(window.SkrideAuth){
-    window.SkrideAuth.google().then(r=>applySkrideToken(r.token)).catch(e=>toast(e.message||'Google sign-in cancelled'));
+    if(googleNativeBusy)return;
+    googleNativeBusy=true;
+    const buttons=['authGoogleBtn','profGoogleBtn'].map(id=>$(id)).filter(Boolean);
+    const disabled=buttons.map(b=>b.disabled);
+    buttons.forEach(b=>{b.disabled=true;b.setAttribute('aria-busy','true');});
+    Promise.resolve().then(()=>window.SkrideAuth.google()).then(r=>applySkrideToken(r.token)).catch(e=>{
+      const cancelled=/cancel|canceled|cancelled/i.test(e.message||'');
+      const labels={ru:['Вход отменён','Не удалось войти через Google. Попробуй ещё раз.'],en:['Sign-in cancelled','Google sign-in failed. Please try again.'],es:['Inicio de sesión cancelado','No se pudo iniciar sesión con Google. Inténtalo de nuevo.'],it:['Accesso annullato','Accesso con Google non riuscito. Riprova.'],ja:['ログインをキャンセルしました','Googleログインに失敗しました。もう一度お試しください。']};
+      toast((labels[coachLanguage()]||labels.en)[cancelled?0:1]);
+    }).finally(()=>{googleNativeBusy=false;buttons.forEach((b,i)=>{b.disabled=disabled[i];b.removeAttribute('aria-busy');});});
     return;
   }
+  if(gWin && !gWin.closed){ try{gWin.focus();}catch(_){} return; }
   if(!cloudURL){ toast('Сначала укажи адрес сервера ниже («Облачный ИИ»)'); return; }
   const url=googleAuthURL();
   gWin=window.open(url,'google_login','width=520,height=680');
@@ -3581,13 +3592,14 @@ async function applySkrideToken(tk){
   if(!tk) return;
   toast('Входим…');
   try{
+    const d=await apiFetch('/api/me',{signal:AbortSignal.timeout(20000)},tk);
+    if(!d || !d.user)throw new Error('Invalid sign-in response');
     authToken=tk;
-    const d=await apiFetch('/api/me');
     authUser=(d&&d.user)||null; await saveAuth();
     if(authUser && typeof applyYandexProfile==='function') await applyYandexProfile(authUser);
     storeMode='cloud'; await sSet(STORE_KEY,'cloud');
     updateAuthUI(); if(typeof updateProfYandex==='function') updateProfYandex(); await cloudSyncInitial(); toast('Готово ✓ вы вошли');
-  }catch(e){ authToken=''; toast(e.message||'Не удалось войти'); }
+  }catch(e){ toast(e.message||'Не удалось войти'); }
 }
 if($('authGoogleBtn')) $('authGoogleBtn').onclick=startGoogleLogin;
 if($('profGoogleBtn')) $('profGoogleBtn').onclick=startGoogleLogin;
@@ -3601,7 +3613,7 @@ if($('profGoogleBtn')) $('profGoogleBtn').onclick=startGoogleLogin;
 window.addEventListener('message',(ev)=>{
   if(!ev||!ev.data||typeof ev.data!=='object') return;
   if(ev.origin!==AUTH_GOOGLE_SERVER || !gWin || ev.source!==gWin) return;
-  if(ev.data.skrideToken){ if(gWin){try{gWin.close();}catch(_){}} applySkrideToken(ev.data.skrideToken); }
+  if(ev.data.skrideToken){ if(gWin){try{gWin.close();}catch(_){}} gWin=null; applySkrideToken(ev.data.skrideToken); }
 });
 (function(){ try{
   const h=location.hash||'';

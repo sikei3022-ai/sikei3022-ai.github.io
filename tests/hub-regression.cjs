@@ -170,6 +170,49 @@ const results=[];
    return called.map(x=>x.lang);
   });assert.deepEqual(r,['ru','en','es','it','ja']);
  });
+
+ await test('Repeated native Google tap opens once and cancellation releases controls',async({page})=>{
+  const r=await page.evaluate(async()=>{
+   let reject;let count=0;window.SkrideAuth={google:()=>{count++;return new Promise((_,r)=>reject=r)}};
+   startGoogleLogin();startGoogleLogin();const during=$('authGoogleBtn').disabled;await Promise.resolve();
+   reject(new Error('CANCELED'));await new Promise(r=>setTimeout(r,10));
+   return {count,during,after:$('authGoogleBtn').disabled};
+  });assert.deepEqual(r,{count:1,during:true,after:false});
+ });
+ await test('Repeated browser OAuth taps focus existing Google and Yandex popup',async({page})=>{
+  const r=await page.evaluate(()=>{
+   let opens=0,focus=0;window.open=()=>{opens++;return {closed:false,focus(){focus++}}};
+   startGoogleLogin();startGoogleLogin();startYandexLogin();startYandexLogin();return {opens,focus};
+  });assert.deepEqual(r,{opens:2,focus:2});
+ });
+ await test('Rejected Google session preserves an existing valid account',async({page})=>{
+  const r=await page.evaluate(async()=>{
+   authToken='existing-token';authUser={id:42,name:'Existing'};await saveAuth();
+   window.fetch=async()=>({ok:false,status:401,json:async()=>({error:'Invalid login'})});
+   await applySkrideToken('invalid-candidate');
+   return {token:authToken,user:authUser.id,saved:JSON.parse(await sGet(AUTH_KEY)).token};
+  });assert.deepEqual(r,{token:'existing-token',user:42,saved:'existing-token'});
+ });
+ await test('Candidate Google session is verified without exposing it to concurrent requests',async({page})=>{
+  const r=await page.evaluate(async()=>{
+   authToken='existing-token';authUser={id:42};let observed;
+   window.fetch=async(url,options)=>{observed={header:options.headers.Authorization,current:authToken};return {ok:false,status:401,json:async()=>({error:'invalid'})}};
+   await applySkrideToken('candidate');return observed;
+  });assert.deepEqual(r,{header:'Bearer candidate',current:'existing-token'});
+ });
+
+ await test('Verified Google session is saved and cloud synchronization still runs',async({page})=>{
+  const r=await page.evaluate(async()=>{
+   let sync=0;authToken='old';authUser={id:42};
+   window.fetch=async(url,opts)=>{
+    if(String(url).endsWith('/api/me'))return {ok:true,json:async()=>({user:{id:43,name:'New account'}})};
+    if(String(url).endsWith('/api/sync')){sync++;return {ok:true,json:async()=>({runs:[]})};}
+    throw Error('Unexpected request');
+   };
+   await applySkrideToken('verified');
+   return {token:authToken,id:authUser.id,saved:JSON.parse(await sGet(AUTH_KEY)).token,mode:storeMode,sync};
+  });assert.deepEqual(r,{token:'verified',id:43,saved:'verified',mode:'cloud',sync:2});
+ });
  await browser.close();
  fs.writeFileSync(output,JSON.stringify({root,total:results.length,passed:results.filter(r=>r.status==='PASS').length,results},null,2));
  if(results.some(r=>r.status==='FAIL'))process.exitCode=1;
