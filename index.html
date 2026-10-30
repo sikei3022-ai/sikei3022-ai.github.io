@@ -1275,7 +1275,7 @@ const $=id=>document.getElementById(id);
 // Можно переопределить своим ключом через настройки ⚙.
 const YANDEX_KEY='fb32ecf2-89e6-454a-9b4c-9d46d2252be2';
 const YANDEX_KEY_BACKUP='729aa267-ca44-4237-9f0d-a5fc13684126';
-const APP_VERSION='2026.10.29.auth.7';
+const APP_VERSION='2026.10.30.security.1';
 var SK_VARIANT=(function(){ try{ var m=(location.search.match(/[?&]variant=(rf|intl)/)||[])[1]; if(m){ localStorage.setItem('sk:variant',m); return m; } var s=localStorage.getItem('sk:variant'); if(s==='rf'||s==='intl') return s; }catch(e){} return 'rf'; })(); // версия для автообновления — меняется при каждом релизе
 let runs=[], pts=[], ptsBreaks=[], route=null, placemarks=[], deferredPrompt=null, goal=20, editId=null;
 let routeMode='road';
@@ -1870,7 +1870,7 @@ function machInfo(){
 }
 function updateMachineCard(){
   const mi=machInfo();
-  if($('machImg')) $('machImg').innerHTML='<img class="mach-photo" src="'+mi.img+'" alt="">';
+  if($('machImg')) $('machImg').innerHTML='<img class="mach-photo" src="'+safeImageAttr(mi.img)+'" alt="">';
   if($('machName')) $('machName').textContent=mi.name;
   const st=$('treadState'); if(st && /не подключ/.test(st.textContent)) st.textContent=mi.sub;
 }
@@ -2301,8 +2301,8 @@ function render(){
     return `<div class="act">
       <div class="act-head">
         <div class="avatar">${avaInner(profile.ava)}</div>
-        <div><div class="who">${esc(profile.name||'Бегун')}</div><div class="when">${fmtDate(r.date)}</div></div>
-        <button class="menu" data-id="${r.id}">⋯</button>
+        <div><div class="who">${esc(profile.name||'Бегун')}</div><div class="when">${esc(fmtDate(r.date))}</div></div>
+        <button class="menu" data-id="${esc(r.id)}">⋯</button>
       </div>
       <div class="act-title">${isBike?'🚴':'🏃'} ${esc(r.title||actLabel(r.type))}</div>
       <div class="act-stats">
@@ -2310,9 +2310,9 @@ function render(){
         <div class="s"><div class="sl">${isBike?'Скорость':'Темп'}</div><div class="sv">${metric} <span style="font-size:13px;color:var(--muted)">${isBike?'км/ч':'/км'}</span></div></div>
         <div class="s"><div class="sl">Время</div><div class="sv">${fmtTime(r.sec)}</div></div>
       </div>
-      ${r.track&&r.track.length>1?`<canvas class="act-map" data-track="${r.id}"></canvas>`:''}
+      ${r.track&&r.track.length>1?`<canvas class="act-map" data-track="${esc(r.id)}"></canvas>`:''}
       ${r.note?`<div class="act-note">${esc(r.note)}</div>`:''}
-      ${r.landmarks&&r.landmarks.length?`<div class="act-lm">${r.landmarks.map(l=>`<div class="lm"><img src="${l.p}"><span>✓ ${esc(l.n)}</span></div>`).join('')}</div>`:''}
+      ${r.landmarks&&r.landmarks.length?`<div class="act-lm">${r.landmarks.map(l=>`<div class="lm"><img src="${safeImageAttr(l.p)}"><span>✓ ${esc(l.n)}</span></div>`).join('')}</div>`:''}
     </div>`;
   }).join('');
   f.querySelectorAll('.menu').forEach(b=>b.onclick=()=>openEdit(b.dataset.id));
@@ -2961,7 +2961,7 @@ let actLandmarks=[];
 function renderLmThumbs(){
   const box=$('lmThumbs'); if(!box) return;
   box.innerHTML = actLandmarks.map((l,i)=>
-    '<div class="lm-t"><img src="'+l.p+'"><button class="x" data-i="'+i+'">×</button><div class="cap">✓ '+esc(l.n)+'</div></div>'
+    '<div class="lm-t"><img src="'+safeImageAttr(l.p)+'"><button class="x" data-i="'+i+'">×</button><div class="cap">✓ '+esc(l.n)+'</div></div>'
   ).join('');
   box.querySelectorAll('.x').forEach(b=>b.onclick=()=>{ actLandmarks.splice(+b.dataset.i,1); renderLmThumbs(); });
 }
@@ -2992,9 +2992,15 @@ $('lmFile').onchange=e=>{
 };
 
 /* ---- profile ---- */
+function safeImageAttr(value){
+ if(typeof value!=='string')return '';
+ if(/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=\r\n]+$/.test(value))return esc(value);
+ try{const u=new URL(value);if(u.protocol==='https:'&&!u.username&&!u.password)return esc(u.href);}catch(e){}
+ return '';
+}
 function isImgAva(a){ return typeof a==='string' && (a.indexOf('data:')===0 || a.indexOf('http')===0); }
 function isSvgAva(a){ return typeof a==='string' && a.indexOf('svg:')===0; }
-function avaInner(a){ a=a||'Я'; if(isImgAva(a)) return '<img class="ava-img" src="'+a+'" alt="">'; if(isSvgAva(a)) return '<svg class="ava-svg" aria-hidden="true"><use href="#'+a.slice(4)+'"></use></svg>'; return esc(a); }
+function avaInner(a){ a=a||'Я'; if(isImgAva(a)) return '<img class="ava-img" src="'+safeImageAttr(a)+'" alt="">'; if(isSvgAva(a)) return '<svg class="ava-svg" aria-hidden="true"><use href="#'+esc(a.slice(4))+'"></use></svg>'; return esc(a); }
 function renderProfile(){
   $('pAva').innerHTML=avaInner(profile.ava);
   $('pName').textContent=profile.name||'Бегун';
